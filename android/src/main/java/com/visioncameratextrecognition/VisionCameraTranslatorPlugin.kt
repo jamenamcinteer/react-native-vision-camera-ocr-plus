@@ -1,4 +1,4 @@
-package com.visioncameratextrecognition
+package com.rnvisioncameraocr
 
 import android.media.Image
 import android.util.Log

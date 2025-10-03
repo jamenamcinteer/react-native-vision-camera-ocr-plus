@@ -8,8 +8,8 @@ import MLKitTextRecognitionJapanese
 import MLKitTextRecognitionKorean
 import MLKitCommon
 
-@objc(VisionCameraTextRecognition)
-public class VisionCameraTextRecognition: FrameProcessorPlugin {
+@objc(RNVisionCameraOCR)
+public class RNVisionCameraOCR: FrameProcessorPlugin {
 
     private var textRecognizer = TextRecognizer()
     private static let latinOptions = TextRecognizerOptions()
@@ -25,15 +25,15 @@ public class VisionCameraTextRecognition: FrameProcessorPlugin {
         let language = options["language"] as? String ?? "latin"
         switch language {
         case "chinese":
-            self.textRecognizer = TextRecognizer.textRecognizer(options: VisionCameraTextRecognition.chineseOptions)
+            self.textRecognizer = TextRecognizer.textRecognizer(options: RNVisionCameraOCR.chineseOptions)
         case "devanagari":
-            self.textRecognizer = TextRecognizer.textRecognizer(options: VisionCameraTextRecognition.devanagariOptions)
+            self.textRecognizer = TextRecognizer.textRecognizer(options: RNVisionCameraOCR.devanagariOptions)
         case "japanese":
-            self.textRecognizer = TextRecognizer.textRecognizer(options: VisionCameraTextRecognition.japaneseOptions)
+            self.textRecognizer = TextRecognizer.textRecognizer(options: RNVisionCameraOCR.japaneseOptions)
         case "korean":
-            self.textRecognizer = TextRecognizer.textRecognizer(options: VisionCameraTextRecognition.koreanOptions)
+            self.textRecognizer = TextRecognizer.textRecognizer(options: RNVisionCameraOCR.koreanOptions)
         default:
-            self.textRecognizer = TextRecognizer.textRecognizer(options: VisionCameraTextRecognition.latinOptions)
+            self.textRecognizer = TextRecognizer.textRecognizer(options: RNVisionCameraOCR.latinOptions)
         }
     }
 
@@ -45,7 +45,7 @@ public class VisionCameraTextRecognition: FrameProcessorPlugin {
 
         do {
             let result = try self.textRecognizer.results(in: image)
-            let blocks = VisionCameraTextRecognition.processBlocks(blocks: result.blocks)
+            let blocks = RNVisionCameraOCR.processBlocks(blocks: result.blocks)
             data["resultText"] = result.text
             data["blocks"] = blocks
             if result.text.isEmpty {

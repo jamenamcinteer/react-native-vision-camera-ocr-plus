@@ -1,4 +1,4 @@
-package com.visioncameratextrecognition
+package com.rnvisioncameraocr
 
 import com.google.mlkit.nl.translate.TranslateLanguage.*
 

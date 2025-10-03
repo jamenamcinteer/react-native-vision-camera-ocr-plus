@@ -1,4 +1,4 @@
-package com.visioncameratextrecognition
+package com.rnvisioncameraocr
 
 import android.graphics.Point
 import android.graphics.Rect
@@ -20,7 +20,7 @@ import com.mrousavy.camera.frameprocessors.FrameProcessorPlugin
 import com.mrousavy.camera.frameprocessors.VisionCameraProxy
 import java.util.HashMap
 
-class VisionCameraTextRecognitionPlugin(proxy: VisionCameraProxy, options: Map<String, Any>?) :
+class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any>?) :
     FrameProcessorPlugin() {
 
     private var recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)

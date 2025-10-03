@@ -1,4 +1,4 @@
-package com.visioncameratextrecognition
+package com.rnvisioncameraocr
 
 import android.net.Uri
 import com.facebook.react.bridge.Promise

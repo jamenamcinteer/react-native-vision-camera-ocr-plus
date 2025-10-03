@@ -1,4 +1,4 @@
-# react-native-vision-camera-text-recognition
+# react-native-vision-camera-ocr
 
 A plugin to Scanning Text,Translate using ML Kit Text Recognition and ML Kit Translation. With High Performance and many features.
 # 🚨 Required Modules
@@ -8,8 +8,8 @@ react-native-worklets-core = 1.3.3 <br/>
 ## 💻 Installation
 
 ```sh
-npm install react-native-vision-camera-text-recognition
-yarn add react-native-vision-camera-text-recognition
+npm install react-native-vision-camera-ocr
+yarn add react-native-vision-camera-ocr
 ```
 ## 👷Features
     Easy To Use.
@@ -23,11 +23,11 @@ yarn add react-native-vision-camera-text-recognition
     Can translate text. 🌍
 
 ## 💡 Usage
-### 📚 For Live Recognition Text
+### 📚 For Live Recognition of Text
 ```js
 import React, { useState } from 'react'
 import { useCameraDevice } from 'react-native-vision-camera'
-import { Camera } from 'react-native-vision-camera-text-recognition';
+import { Camera } from 'react-native-vision-camera-ocr';
 
 function App (){
   const [data,setData] = useState(null)
@@ -57,11 +57,11 @@ export default App;
 
 ```
 
-### 🌍 For Translate Text
+### 🌍 For Translating Text
 ```js
 import React, { useState } from 'react'
 import { useCameraDevice } from 'react-native-vision-camera'
-import { Camera } from 'react-native-vision-camera-text-recognition';
+import { Camera } from 'react-native-vision-camera-ocr';
 
 function App (){
   const [data,setData] = useState(null)
@@ -90,7 +90,7 @@ export default App;
 
 ```
 
-### Also You Can Use Like This
+### Or
 
 ```js
 import React from 'react';
@@ -100,7 +100,7 @@ import {
   useCameraDevice,
   useFrameProcessor,
 } from "react-native-vision-camera";
-import { useTextRecognition } from "react-native-vision-camera-text-recognition";
+import { useTextRecognition } from "react-native-vision-camera-ocr";
 
 function App() {
   const device = useCameraDevice('back');
@@ -142,7 +142,7 @@ export default App;
 ##  Recognize By Photo 📸
 
 ```js
-import { PhotoRecognizer } from "react-native-vision-camera-text-recognition";
+import { PhotoRecognizer } from "react-native-vision-camera-ocr";
 
 const result = await PhotoRecognizer({
     uri:assets.uri,
@@ -166,7 +166,7 @@ console.log(result);
 
 
 ```js
-import { RemoveLanguageModel } from "react-native-vision-camera-text-recognition";
+import { RemoveLanguageModel } from "react-native-vision-camera-ocr";
 
 const bool = await RemoveLanguageModel("en")
 ```

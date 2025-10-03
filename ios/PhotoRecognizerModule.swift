@@ -21,7 +21,7 @@ class PhotoRecognizerModule: NSObject {
                     let visionImage = VisionImage(image: image!)
                     visionImage.orientation = getOrientation(orientation: orientation)
                     let result = try textRecognizer.results(in: visionImage)
-                    let blocks = VisionCameraTextRecognition.processBlocks(blocks: result.blocks)
+                    let blocks = RNVisionCameraOCR.processBlocks(blocks: result.blocks)
                     data["resultText"] = result.text
                     data["blocks"] = blocks
                     if result.text.isEmpty {
