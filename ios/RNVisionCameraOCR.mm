@@ -4,20 +4,20 @@
 #import <VisionCamera/Frame.h>
 
 
-#if __has_include("VisionCameraTextRecognition/VisionCameraTextRecognition-Swift.h")
-#import "VisionCameraTextRecognition/VisionCameraTextRecognition-Swift.h"
+#if __has_include("RNVisionCameraOCR/RNVisionCameraOCR-Swift.h")
+#import "RNVisionCameraOCR/RNVisionCameraOCR-Swift.h"
 #else
-#import "VisionCameraTextRecognition-Swift.h"
+#import "RNVisionCameraOCR-Swift.h"
 #endif
 
-@interface VisionCameraTextRecognition (FrameProcessorPluginLoader)
+@interface RNVisionCameraOCR (FrameProcessorPluginLoader)
 @end
 
-@implementation VisionCameraTextRecognition (FrameProcessorPluginLoader)
+@implementation RNVisionCameraOCR (FrameProcessorPluginLoader)
 + (void) load {
   [FrameProcessorPluginRegistry addFrameProcessorPlugin:@"scanText"
     withInitializer:^FrameProcessorPlugin*(VisionCameraProxyHolder* proxy, NSDictionary* options) {
-    return [[VisionCameraTextRecognition alloc] initWithProxy:proxy withOptions:options];
+    return [[RNVisionCameraOCR alloc] initWithProxy:proxy withOptions:options];
   }];
 }
 @end

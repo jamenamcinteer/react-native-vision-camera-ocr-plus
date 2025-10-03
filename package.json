@@ -1,7 +1,7 @@
 {
-  "name": "react-native-vision-camera-text-recognition",
-  "version": "3.1.1",
-  "description": "A plugin to Scanning Text,Translate using ML Kit Text Recognition and ML Kit Translation. With High Performance and many features.",
+  "name": "react-native-vision-camera-ocr",
+  "version": "1.0.0",
+  "description": "React Native Vision Camera plugin for on-device text recognition (OCR) and translation using ML Kit. Maintained fork of react-native-vision-camera-text-recognition",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
   "types": "lib/typescript/src/index.d.ts",
@@ -26,7 +26,6 @@
     "!**/.*"
   ],
   "scripts": {
-    "example": "yarn workspace react-native-vision-camera-text-recognition-example",
     "test": "jest",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
@@ -34,7 +33,6 @@
     "prepare": "bob build",
     "release": "release-it",
     "pack-zip": "npm-pack-zip"
-
   },
   "keywords": [
     "react-native",
@@ -46,18 +44,30 @@
     "react-native-vision-camera",
     "vision-camera",
     "text-recognition",
-    "text"
+    "text",
+    "ocr",
+    "text",
+    "text-detector",
+    "text-recognizer",
+    "mlkit",
+    "google-mlkit",
+    "machine-learning",
+    "image-processing",
+    "react-native-camera",
+    "react-native-ocr",
+    "vision-camera-ocr",
+    "react-native-vision-camera-text-recognition"
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/gev2002/react-native-vision-camera-text-recognition.git"
+    "url": "git+https://github.com/jamenamcinteer/react-native-vision-camera-ocr.git"
   },
-  "author": "gev2002 <gevorg2002@inbox.ru> (https://github.com/gev2002)",
+  "author": "Jamena McInteer <hello@jamena.dev> (https://github.com/jamenamcinteer)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/gev2002/react-native-vision-camera-text-recognition/issues"
+    "url": "https://github.com/jamenamcinteer/react-native-vision-camera-ocr/issues"
   },
-  "homepage": "https://github.com/gev2002/react-native-vision-camera-text-recognition#readme",
+  "homepage": "https://github.com/jamenamcinteer/react-native-vision-camera-ocr#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
@@ -91,9 +101,6 @@
     "react": "*",
     "react-native": "*"
   },
-  "workspaces": [
-    "example"
-  ],
   "jest": {
     "preset": "react-native",
     "modulePathIgnorePatterns": [

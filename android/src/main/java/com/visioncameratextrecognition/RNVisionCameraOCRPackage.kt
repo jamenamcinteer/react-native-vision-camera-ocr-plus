@@ -1,4 +1,4 @@
-package com.visioncameratextrecognition
+package com.rnvisioncameraocr
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.ReactApplicationContext
@@ -6,11 +6,11 @@ import com.facebook.react.uimanager.ViewManager
 import com.facebook.react.bridge.NativeModule
 import com.mrousavy.camera.frameprocessors.FrameProcessorPluginRegistry
 
-class VisionCameraTextRecognitionPackage : ReactPackage {
+class RNVisionCameraOCRPackage : ReactPackage {
     companion object {
         init {
             FrameProcessorPluginRegistry.addFrameProcessorPlugin("scanText") { proxy, options ->
-                VisionCameraTextRecognitionPlugin(proxy, options)
+                RNVisionCameraOCRPlugin(proxy, options)
             }
             FrameProcessorPluginRegistry.addFrameProcessorPlugin("translate") { proxy, options ->
                 VisionCameraTranslatorPlugin(proxy, options)
