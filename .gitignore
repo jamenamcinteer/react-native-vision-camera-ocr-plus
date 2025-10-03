@@ -98,8 +98,7 @@ lib/
 
 lefthook.yml
 package-lock.json
-# Example
-example
 .pnp/
 .pnp.*
 
+*.tgz
