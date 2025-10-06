@@ -23,28 +23,28 @@ The [example app](/example/) demonstrates usage of the library. You need to run 
 
 It is configured to use the local version of the library, so any changes you make to the library's source code will be reflected in the example app. Changes to the library's JavaScript code will be reflected in the example app without a rebuild, but native code changes will require a rebuild of the example app.
 
-If you want to use Android Studio or XCode to edit the native code, you can open the `example/android` or `example/ios` directories respectively in those editors. To edit the Objective-C or Swift files, open `example/ios/VisionCameraTextRecognitionExample.xcworkspace` in XCode and find the source files at `Pods > Development Pods > react-native-vision-camera-ocr`.
+If you want to use Android Studio or XCode to edit the native code, you can open the `android` or `ios` directories respectively in those editors. To edit the Objective-C or Swift files, open `ios/VisionCameraTextRecognitionExample.xcworkspace` in XCode and find the source files at `Pods > Development Pods > react-native-vision-camera-ocr`.
 
-To edit the Java or Kotlin files, open `example/android` in Android studio and find the source files at `react-native-vision-camera-ocr` under `Android`.
+To edit the Java or Kotlin files, open `android` in Android studio and find the source files at `react-native-vision-camera-ocr` under `Android`.
 
 You can use various commands from the root directory to work with the project.
 
-To start the packager:
+To start the packager, `cd` into the `example` directory, `cd example`, and then:
 
 ```sh
-yarn example start
+yarn start
 ```
 
 To run the example app on Android:
 
 ```sh
-yarn example android
+yarn android
 ```
 
 To run the example app on iOS:
 
 ```sh
-yarn example ios
+yarn ios
 ```
 
 Make sure your code passes TypeScript and ESLint. Run the following to verify:
@@ -105,9 +105,9 @@ The `package.json` file contains various scripts for common tasks:
 - `yarn typecheck`: type-check files with TypeScript.
 - `yarn lint`: lint files with ESLint.
 - `yarn test`: run unit tests with Jest.
-- `yarn example start`: start the Metro server for the example app.
-- `yarn example android`: run the example app on Android.
-- `yarn example ios`: run the example app on iOS.
+- `yarn start`: start the Metro server for the example app.
+- `yarn android`: run the example app on Android.
+- `yarn ios`: run the example app on iOS.
 
 ### Sending a pull request
 

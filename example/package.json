@@ -19,7 +19,7 @@
     "react": "19.1.0",
     "react-native": "0.81.4",
     "react-native-vision-camera": "^4.7.2",
-    "react-native-vision-camera-ocr": "file:../react-native-vision-camera-ocr-1.0.0.tgz",
+    "react-native-vision-camera-ocr": "link:..",
     "react-native-worklets-core": "^1.6.2"
   },
   "devDependencies": {
