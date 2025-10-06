@@ -1,5 +1,7 @@
 # react-native-vision-camera-ocr
 
+[![Lint and Test](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/actions/workflows/ci.yml/badge.svg)](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/actions/workflows/ci.yml)
+
 A plugin to Scanning Text,Translate using ML Kit Text Recognition and ML Kit Translation. With High Performance and many features.
 # 🚨 Required Modules
 react-native-vision-camera = 4.5.1 <br/>
