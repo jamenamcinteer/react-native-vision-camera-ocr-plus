@@ -52,7 +52,7 @@ class VisionCameraTranslatorPlugin(proxy: VisionCameraProxy, options: Map<String
         downloadModel()
     }
 
-    override fun callback(frame: Frame, params: MutableMap<String, Any>?) : Any? {
+    override fun callback(frame: Frame, arguments: Map<String, Any>?): HashMap<String, Any?>? {
         val mediaImage: Image = frame.image
         println(" OKKK ${ frame.imageProxy.imageInfo.rotationDegrees }")
         val image = InputImage.fromMediaImage(mediaImage, frame.imageProxy.imageInfo.rotationDegrees)
