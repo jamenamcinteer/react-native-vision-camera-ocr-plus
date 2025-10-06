@@ -48,11 +48,13 @@ jobs:
       - name: Test Android Build
         run: |
           cd example
+          yarn install --frozen-lockfile
           yarn clean:android
           yarn android --no-jetifier --no-build-cache --variant=release
 
       - name: Test iOS Build
         run: |
           cd example
+          yarn install --frozen-lockfile
           yarn clean:ios
           yarn ios --no-build-cache --variant=release
