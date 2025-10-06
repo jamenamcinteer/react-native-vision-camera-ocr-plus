@@ -50,7 +50,7 @@ jobs:
           cd example
           yarn install --frozen-lockfile
           yarn clean:android
-          yarn android --no-build-cache --variant=release
+          ./gradlew assembleDebug
 
       - name: Test iOS Build
         run: |
