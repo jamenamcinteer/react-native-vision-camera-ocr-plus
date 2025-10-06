@@ -58,4 +58,4 @@ jobs:
           cd example
           yarn install --frozen-lockfile
           yarn clean:ios
-          yarn ios --no-build-cache --variant=release
+          yarn ios --no-build-cache
