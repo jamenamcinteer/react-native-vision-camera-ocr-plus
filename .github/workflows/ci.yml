@@ -33,8 +33,8 @@ jobs:
       #   - name: Run linter
       #     run: yarn lint
 
-      #   - name: Run tests with coverage
-      #     run: yarn test:coverage
+      - name: Run tests with coverage
+        run: yarn test:coverage
 
       - name: Validate PR title
         if: github.event_name == 'pull_request'
