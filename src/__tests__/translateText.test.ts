@@ -280,7 +280,7 @@ describe('createTranslatorPlugin', () => {
       const plugin = createTranslatorPlugin({ from: 'en', to: 'es' });
 
       const mockFrame: Frame = {} as Frame;
-      
+
       mockPlugin.call
         .mockReturnValueOnce('Uno')
         .mockReturnValueOnce('Dos')

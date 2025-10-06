@@ -3,12 +3,63 @@ describe('Type Definitions and Edge Cases', () => {
   describe('Language type validation', () => {
     it('should support all defined language codes', () => {
       const supportedLanguages = [
-        'af', 'sq', 'ar', 'be', 'bn', 'bg', 'ca', 'zh', 'cs', 'da',
-        'nl', 'en', 'eo', 'et', 'fi', 'fr', 'gl', 'ka', 'de', 'el',
-        'gu', 'ht', 'he', 'hi', 'hu', 'is', 'id', 'ga', 'it', 'ja',
-        'kn', 'ko', 'lv', 'lt', 'mk', 'ms', 'mt', 'mr', 'no', 'fa',
-        'pl', 'pt', 'ro', 'ru', 'sk', 'sl', 'es', 'sw', 'tl', 'ta',
-        'te', 'th', 'tr', 'uk', 'ur', 'vi', 'cy',
+        'af',
+        'sq',
+        'ar',
+        'be',
+        'bn',
+        'bg',
+        'ca',
+        'zh',
+        'cs',
+        'da',
+        'nl',
+        'en',
+        'eo',
+        'et',
+        'fi',
+        'fr',
+        'gl',
+        'ka',
+        'de',
+        'el',
+        'gu',
+        'ht',
+        'he',
+        'hi',
+        'hu',
+        'is',
+        'id',
+        'ga',
+        'it',
+        'ja',
+        'kn',
+        'ko',
+        'lv',
+        'lt',
+        'mk',
+        'ms',
+        'mt',
+        'mr',
+        'no',
+        'fa',
+        'pl',
+        'pt',
+        'ro',
+        'ru',
+        'sk',
+        'sl',
+        'es',
+        'sw',
+        'tl',
+        'ta',
+        'te',
+        'th',
+        'tr',
+        'uk',
+        'ur',
+        'vi',
+        'cy',
       ];
 
       // This test ensures the type definitions are comprehensive
@@ -23,7 +74,7 @@ describe('Type Definitions and Edge Cases', () => {
       const textRecognitionLanguages = [
         'latin',
         'chinese',
-        'devanagari', 
+        'devanagari',
         'japanese',
         'korean',
       ];
@@ -82,7 +133,7 @@ describe('Type Definitions and Edge Cases', () => {
       expect(mockResult).toHaveProperty('resultText');
       expect(Array.isArray(mockResult.blocks)).toBe(true);
       expect(mockResult.blocks[0]).toHaveLength(5);
-      
+
       // Validate frame structure
       const frame = mockResult.blocks[0][0];
       expect(frame).toHaveProperty('boundingCenterX');
@@ -91,13 +142,13 @@ describe('Type Definitions and Edge Cases', () => {
       expect(frame).toHaveProperty('width');
       expect(frame).toHaveProperty('x');
       expect(frame).toHaveProperty('y');
-      
+
       // Validate corner points
       expect(Array.isArray(mockResult.blocks[0][1])).toBe(true);
-      
+
       // Validate languages array
       expect(Array.isArray(mockResult.blocks[0][3])).toBe(true);
-      
+
       // Validate text
       expect(typeof mockResult.blocks[0][4]).toBe('string');
     });
@@ -111,9 +162,12 @@ describe('Type Definitions and Edge Cases', () => {
       expect(photoOptions).toHaveProperty('uri');
       expect(typeof photoOptions.uri).toBe('string');
       expect(photoOptions).toHaveProperty('orientation');
-      expect(['portrait', 'landscapeLeft', 'landscapeRight', 'portraitUpsideDown']).toContain(
-        photoOptions.orientation
-      );
+      expect([
+        'portrait',
+        'landscapeLeft',
+        'landscapeRight',
+        'portraitUpsideDown',
+      ]).toContain(photoOptions.orientation);
     });
 
     it('should validate translator options structure', () => {
@@ -146,7 +200,7 @@ describe('Type Definitions and Edge Cases', () => {
       // Validate recognize mode
       expect(recognizeMode.mode).toBe('recognize');
       expect(recognizeMode.options).toHaveProperty('language');
-      
+
       // Validate translate mode
       expect(translateMode.mode).toBe('translate');
       expect(translateMode.options).toHaveProperty('from');
@@ -164,11 +218,11 @@ describe('Type Definitions and Edge Cases', () => {
     it('should handle null and undefined values', () => {
       expect(null).toBeNull();
       expect(undefined).toBeUndefined();
-      
+
       // Test that these values are properly handled by type system
       const nullValue: null = null;
       const undefinedValue: undefined = undefined;
-      
+
       expect(nullValue).toBeNull();
       expect(undefinedValue).toBeUndefined();
     });
@@ -277,13 +331,7 @@ describe('Type Definitions and Edge Cases', () => {
     });
 
     it('should handle nested array structures', () => {
-      const nestedArray = [
-        [
-          [{ x: 0, y: 0 }],
-          { frame: 'data' },
-          'text',
-        ],
-      ];
+      const nestedArray = [[[{ x: 0, y: 0 }], { frame: 'data' }, 'text']];
 
       expect(Array.isArray(nestedArray)).toBe(true);
       expect(Array.isArray(nestedArray[0])).toBe(true);

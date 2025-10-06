@@ -1,0 +1,7 @@
+node_modules/
+lib/
+coverage/
+android/build/
+ios/build/
+example/android/build/
+example/ios/build/

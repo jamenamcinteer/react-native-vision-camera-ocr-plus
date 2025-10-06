@@ -80,12 +80,11 @@ export type TranslatorOptions = {
 export type CameraTypes = {
   callback: (data: string | Text[]) => void;
   mode: 'translate' | 'recognize';
-} & CameraProps & (
-  | { mode: 'recognize'; options: TextRecognitionOptions }
-  | { mode: 'translate'; options: TranslatorOptions }
-  );;
-
-
+} & CameraProps &
+  (
+    | { mode: 'recognize'; options: TextRecognitionOptions }
+    | { mode: 'translate'; options: TranslatorOptions }
+  );
 
 export type TextRecognitionPlugin = {
   scanText: (frame: Frame) => Text[];

@@ -16,35 +16,35 @@ jest.mock('../PhotoRecognizer', () => ({
 describe('Index Exports', () => {
   it('should export Camera component', () => {
     const index = require('../index');
-    
+
     expect(index).toHaveProperty('Camera');
     expect(typeof index.Camera).toBe('function');
   });
 
   it('should export useTranslate hook', () => {
     const index = require('../index');
-    
+
     expect(index).toHaveProperty('useTranslate');
     expect(typeof index.useTranslate).toBe('function');
   });
 
   it('should export useTextRecognition hook', () => {
     const index = require('../index');
-    
+
     expect(index).toHaveProperty('useTextRecognition');
     expect(typeof index.useTextRecognition).toBe('function');
   });
 
   it('should export RemoveLanguageModel function', () => {
     const index = require('../index');
-    
+
     expect(index).toHaveProperty('RemoveLanguageModel');
     expect(typeof index.RemoveLanguageModel).toBe('function');
   });
 
   it('should export PhotoRecognizer function', () => {
     const index = require('../index');
-    
+
     expect(index).toHaveProperty('PhotoRecognizer');
     expect(typeof index.PhotoRecognizer).toBe('function');
   });
@@ -60,7 +60,7 @@ describe('Index Exports', () => {
     ];
 
     const actualExports = Object.keys(index);
-    
+
     expectedExports.forEach((exportName) => {
       expect(actualExports).toContain(exportName);
     });
@@ -88,7 +88,7 @@ describe('Index Exports', () => {
     it('should import Camera components correctly', () => {
       const { Camera: MockCamera } = require('../Camera');
       const index = require('../index');
-      
+
       expect(index.Camera).toBe(MockCamera);
     });
 

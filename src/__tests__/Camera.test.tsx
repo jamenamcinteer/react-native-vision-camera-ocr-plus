@@ -24,7 +24,7 @@ describe('Camera Module Tests', () => {
     it('should create text recognition plugin with options', () => {
       const { createTextRecognitionPlugin } = require('../scanText');
       const options = { language: 'chinese' as const };
-      
+
       createTextRecognitionPlugin(options);
 
       expect(mockCreateTextRecognitionPlugin).toHaveBeenCalledWith(options);
@@ -32,7 +32,7 @@ describe('Camera Module Tests', () => {
 
     it('should create text recognition plugin without options', () => {
       const { createTextRecognitionPlugin } = require('../scanText');
-      
+
       createTextRecognitionPlugin();
 
       expect(mockCreateTextRecognitionPlugin).toHaveBeenCalledWith();
@@ -41,7 +41,7 @@ describe('Camera Module Tests', () => {
     it('should create translator plugin with language pair options', () => {
       const { createTranslatorPlugin } = require('../translateText');
       const options = { from: 'en' as const, to: 'es' as const };
-      
+
       createTranslatorPlugin(options);
 
       expect(mockCreateTranslatorPlugin).toHaveBeenCalledWith(options);
@@ -49,7 +49,7 @@ describe('Camera Module Tests', () => {
 
     it('should create translator plugin without options', () => {
       const { createTranslatorPlugin } = require('../translateText');
-      
+
       createTranslatorPlugin();
 
       expect(mockCreateTranslatorPlugin).toHaveBeenCalledWith();
@@ -57,18 +57,18 @@ describe('Camera Module Tests', () => {
 
     it('should return plugin with scanText method for text recognition', () => {
       const { createTextRecognitionPlugin } = require('../scanText');
-      
+
       const plugin = createTextRecognitionPlugin();
-      
+
       expect(plugin).toHaveProperty('scanText');
       expect(typeof plugin.scanText).toBe('function');
     });
 
     it('should return plugin with translate method for translation', () => {
       const { createTranslatorPlugin } = require('../translateText');
-      
+
       const plugin = createTranslatorPlugin();
-      
+
       expect(plugin).toHaveProperty('translate');
       expect(typeof plugin.translate).toBe('function');
     });
@@ -112,7 +112,7 @@ describe('Camera Module Tests', () => {
   describe('Error Handling', () => {
     it('should handle plugin creation errors gracefully', () => {
       const { createTextRecognitionPlugin } = require('../scanText');
-      
+
       mockCreateTextRecognitionPlugin.mockImplementationOnce(() => {
         throw new Error('Plugin creation failed');
       });
@@ -124,7 +124,7 @@ describe('Camera Module Tests', () => {
 
     it('should handle translation plugin creation errors', () => {
       const { createTranslatorPlugin } = require('../translateText');
-      
+
       mockCreateTranslatorPlugin.mockImplementationOnce(() => {
         throw new Error('Translation plugin creation failed');
       });
