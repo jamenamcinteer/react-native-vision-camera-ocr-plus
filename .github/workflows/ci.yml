@@ -50,7 +50,7 @@ jobs:
           cd example
           yarn install --frozen-lockfile
           yarn clean:android
-          yarn android --no-jetifier --no-build-cache --variant=release
+          yarn android --no-build-cache --variant=release
 
       - name: Test iOS Build
         run: |
