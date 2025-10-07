@@ -1,0 +1,87 @@
+name: Check for Yarn dependency updates
+
+on:
+  schedule:
+    # Runs every 2 weeks (Monday at 00:00 UTC)
+    - cron: '0 0 */14 * *'
+  workflow_dispatch: # Optional: Allow manual trigger
+
+permissions:
+  contents: write
+  issues: write
+  pull-requests: write
+
+jobs:
+  dependency-check:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+        with:
+          ref: 'next-release'
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '22'
+
+      - name: Install scripts dependencies
+        run: |
+          cd .github/scripts
+          npm install
+
+      - name: Install project dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: Check for outdated dependencies
+        id: outdated
+        run: |
+          yarn outdated --json > outdated.json || true
+
+      - name: Determine if any dependencies are outdated
+        id: check_outdated
+        run: |
+          if [ -s outdated.json ]; then
+            echo "outdated=true" >> $GITHUB_ENV
+          else
+            echo "outdated=false" >> $GITHUB_ENV
+          fi
+
+      - name: Install example dependencies
+        run: cd example && yarn install --frozen-lockfile
+
+      - name: Check for outdated dependencies (example)
+        id: outdated_example
+        run: |
+          cd example && yarn outdated --json > outdated_example.json || true
+
+      - name: Determine if any dependencies are outdated
+        id: check_outdated_example
+        run: |
+          if [ -s outdated_example.json ]; then
+            echo "outdated=true" >> $GITHUB_ENV
+          fi
+
+      - name: Create branch and update dependencies
+        if: env.outdated == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "github-actions[bot]@users.noreply.github.com"
+          git checkout -b dependency-updates
+          yarn upgrade --latest
+          # yarn upgrade --latest --minor
+          # yarn upgrade --latest --patch
+          cd example && yarn upgrade --latest
+          cd ..
+          git commit -am "chore: upgrade dependencies"
+          git push origin dependency-updates
+
+      - name: Create pull request linking to issue
+        if: env.outdated == 'true'
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          node .github/scripts/create-pull-request.js
