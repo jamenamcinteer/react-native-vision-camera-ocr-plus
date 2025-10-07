@@ -1,126 +1,78 @@
-# react-native-vision-camera-ocr-plus
+# 📷 react-native-vision-camera-ocr-plus
 
-[![Lint and Test](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml/badge.svg)](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml)
+[![CI Status](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml/badge.svg)](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/react-native-vision-camera-ocr-plus.svg)](https://www.npmjs.com/package/react-native-vision-camera-ocr-plus)
 
-📷 A [React Native Vision Camera](https://github.com/mrousavy/react-native-vision-camera) frame processor for text recognition (OCR) and translation using ML Kit. 
+A **React Native Vision Camera** frame processor for **on-device text recognition (OCR)** and **translation** using **ML Kit**.
 
-✨ Maintained fork of [react-native-vision-camera-text-recognition](https://www.npmjs.com/package/react-native-vision-camera-text-recognition).  
+✨ Actively maintained fork of [`react-native-vision-camera-text-recognition`](https://www.npmjs.com/package/react-native-vision-camera-text-recognition), with modern improvements, bug fixes, and support for the latest Vision Camera and React Native versions.
+
+---
+
+## 🌟 Why Use This Fork?
+
+The original packages are **no longer actively maintained**.  
+This fork provides:
+
+- ✅ Ongoing maintenance and compatibility with **React Native 0.76+** and **Vision Camera v4+**  
+- 🧠 **Translation support** (not just OCR) powered by ML Kit  
+- 🛠 **Improved stability and error handling**  
+- 🚀 **Faster processing** and frame optimization  
+- 📦 **TypeScript definitions** included  
+- 🧩 Consistent API that works seamlessly with modern React Native projects
+
+---
+
+## 🚀 Features
+
+- 🧩 Simple drop-in API  
+- ⚡ Fast, accurate on-device OCR  
+- 📱 Works on **Android** and **iOS**  
+- 🌐 Built-in translation via ML Kit  
+- 📸 Recognize text from live camera or static photos  
+- 🪄 Written in **Kotlin** and **Swift**  
+- 🔧 Compatible with `react-native-vision-camera` and `react-native-worklets-core`
+
+---
 
 ## 💻 Installation
 
-**Requires react-native-vision-camera and react-native-worklets-core**
+> **Peer dependencies:**  
+> You must have `react-native-vision-camera` and `react-native-worklets-core` installed.
 
-```sh
+```bash
 npm install react-native-vision-camera-ocr-plus
+# or
 yarn add react-native-vision-camera-ocr-plus
 ```
 
-## Migrating
-- If you were using `react-native-vision-camera-text-recognition`, switch to this package for updates and fixes. This package is an easy replacement.
-- If you were using `vision-camera-ocr`, this is an actively maintained replacement.
+---
 
-## 👷Features
-*    Easy to use.
-*    Works with React Native Vision Camera.
-*    Works for Both Cameras.
-*    Fast text recognition.
-*    Works with Android 🤖 and iOS.📱
-*    Writen with Kotlin and Swift.
-*    Can recognize text from photo. 📸
-*    Can translate text. 🌍
+## 🔄 Migration
+
+| Previous Package | Replacement | Notes |
+|------------------|-------------|-------|
+| `react-native-vision-camera-text-recognition` | ✅ `react-native-vision-camera-ocr-plus` | Drop-in replacement with fixes and updates |
+| `vision-camera-ocr` | ✅ `react-native-vision-camera-ocr-plus` | Actively maintained alternative |
+
+---
 
 ## 💡 Usage
 
-* [Example](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/tree/next-release/example)
+👉 See the [example app](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/tree/main/example) for a working demo.
 
-### 📚 For Live Recognition of Text
-```js
-import React, { useState } from 'react'
-import { useCameraDevice } from 'react-native-vision-camera'
+### 📚 Live Text Recognition
+
+```jsx
+import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { useCameraDevice } from 'react-native-vision-camera';
 import { Camera } from 'react-native-vision-camera-ocr-plus';
 
-function App (){
-  const [data,setData] = useState(null)
+export default function App() {
+  const [data, setData] = useState(null);
   const device = useCameraDevice('back');
-  console.log(data)
-  return(
-    <>
-      {!!device && (
-        <Camera
-          style={StyleSheet.absoluteFill}
-          device={device}
-          isActive
-          options={{
-            language: 'latin'
-          }}
-          mode={'recognize'}
-          callback={(d) => setData(d)}
-        />
-      )}
-    </>
-  )
-}
 
-export default App;
-
-
-
-```
-
-### 🌍 For Translating Text
-```js
-import React, { useState } from 'react'
-import { useCameraDevice } from 'react-native-vision-camera'
-import { Camera } from 'react-native-vision-camera-ocr-plus';
-
-function App (){
-  const [data,setData] = useState(null)
-  const device = useCameraDevice('back');
-  console.log(data)
-  return(
-    <>
-      {!!device && (
-        <Camera
-          style={StyleSheet.absoluteFill}
-          device={device}
-          isActive
-          options={{
-            from: 'en',
-            to: 'de'
-          }}
-          mode={'translate'}
-          callback={(d) => setData(d)}
-        />
-      )}
-    </>
-  )
-}
-
-export default App;
-
-```
-
-### Or
-
-```js
-import React from 'react';
-import { StyleSheet } from "react-native";
-import {
-  Camera,
-  useCameraDevice,
-  useFrameProcessor,
-} from "react-native-vision-camera";
-import { useTextRecognition } from "react-native-vision-camera-ocr-plus";
-
-function App() {
-  const device = useCameraDevice('back');
-  const options = { language : 'latin' }
-  const {scanText} = useTextRecognition(options)
-  const frameProcessor = useFrameProcessor((frame) => {
-    'worklet'
-    const data = scanText(frame)
-    console.log(data, 'data')
-  }, [])
   return (
     <>
       {!!device && (
@@ -128,117 +80,166 @@ function App() {
           style={StyleSheet.absoluteFill}
           device={device}
           isActive
-          mode={'recognize'}
-          frameProcessor={frameProcessor}
+          mode="recognize"
+          options={{ language: 'latin' }}
+          callback={(result) => setData(result)}
         />
       )}
     </>
   );
 }
-export default App;
-
-
 ```
+
 ---
+
+### 🌍 Translate Text in Real Time
+
+```jsx
+import React, { useState } from 'react';
+import { StyleSheet } from 'react-native';
+import { useCameraDevice } from 'react-native-vision-camera';
+import { Camera } from 'react-native-vision-camera-ocr-plus';
+
+export default function App() {
+  const [data, setData] = useState(null);
+  const device = useCameraDevice('back');
+
+  return (
+    <>
+      {!!device && (
+        <Camera
+          style={StyleSheet.absoluteFill}
+          device={device}
+          isActive
+          mode="translate"
+          options={{ from: 'en', to: 'de' }}
+          callback={(result) => setData(result)}
+        />
+      )}
+    </>
+  );
+}
+```
+
+---
+
+### ⚙️ Using a Frame Processor
+
+```jsx
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { Camera, useCameraDevice, useFrameProcessor } from 'react-native-vision-camera';
+import { useTextRecognition } from 'react-native-vision-camera-ocr-plus';
+
+export default function App() {
+  const device = useCameraDevice('back');
+  const { scanText } = useTextRecognition({ language: 'latin' });
+
+  const frameProcessor = useFrameProcessor((frame) => {
+    'worklet';
+    const data = scanText(frame);
+    console.log('Detected text:', data);
+  }, []);
+
+  return (
+    <>
+      {!!device && (
+        <Camera
+          style={StyleSheet.absoluteFill}
+          device={device}
+          isActive
+          frameProcessor={frameProcessor}
+          mode="recognize"
+        />
+      )}
+    </>
+  );
+}
+```
+
+---
+
 ## ⚙️ Options
 
-|   Name   |  Type    |                    Values                    |  Default  |
-|:--------:| :---: |:--------------------------------------------:|:---------:|
-| language | string | latin, chinese, devanagari, japanese, korean |   latin   |
-|   mode   | string |             recognize, translate             | recognize |
-| from,to  | string |                  See Below                   |   en,de   |
+| Option | Type | Values | Default |
+|:-------|:-----|:--------|:---------|
+| `language` | `string` | `latin`, `chinese`, `devanagari`, `japanese`, `korean` | `latin` |
+| `mode` | `string` | `recognize`, `translate` | `recognize` |
+| `from`, `to` | `string` | See [Supported Languages](#-supported-languages) | `en`, `de` |
 
+---
 
-##  Recognize By Photo 📸
+## 🖼 Recognize Text from a Photo
 
 ```js
-import { PhotoRecognizer } from "react-native-vision-camera-ocr-plus";
+import { PhotoRecognizer } from 'react-native-vision-camera-ocr-plus';
 
 const result = await PhotoRecognizer({
-    uri:assets.uri,
-    orientation: "portrait"
-})
+  uri: asset.uri,
+  orientation: 'portrait',
+});
+
 console.log(result);
-
 ```
-<h4>🚨 Orientation available only for iOS. It is suggested to use it when you are using Camera.
 
-|    Name     |  Type  |                           Values                            | Required | Default  |   Platform   |
-|:-----------:|:------:|:-----------------------------------------------------------:|:--------:|:--------:|:------------:|
-|     uri     | string |                                                             |   yes    |          | android, iOS |
-| orientation | string | portrait, portraitUpsideDown, landscapeLeft, landscapeRight |    no    | portrait |     iOS      |
+> ⚠️ **Note (iOS only):**  
+> The `orientation` option is available only on iOS and is recommended when using photos captured via the camera.
 
+| Property | Type | Values | Required | Default | Platform |
+|:----------|:------|:--------|:----------|:----------|:-----------|
+| `uri` | `string` | — | ✅ Yes | — | Android, iOS |
+| `orientation` | `string` | `portrait`, `portraitUpsideDown`, `landscapeLeft`, `landscapeRight` | ❌ No | `portrait` | iOS only |
 
+---
 
-
-### You can also remove unnecessary translation model
-
-
+## 🧹 Remove Unused Translation Models
 
 ```js
-import { RemoveLanguageModel } from "react-native-vision-camera-ocr-plus";
+import { RemoveLanguageModel } from 'react-native-vision-camera-ocr-plus';
 
-const bool = await RemoveLanguageModel("en")
+await RemoveLanguageModel('en');
 ```
-<h2>Supported Languages</h2>
 
-```
-Afrikaans: 🇿🇦, 🇨🇫 <---> code : "af"
-Albanian: 🇦🇱 <---> code : "sq"
-Arabic: 🇦🇪, 🇸🇦 <---> code : "ar"
-Belarusian: 🇧🇾 <---> code : "be"
-Bulgarian: 🇧🇬 <---> code : "bn"
-Bengali: 🇧🇩 <---> code : "bg"
-Catalan: 🏴 <---> code : "ca"
-Czech: 🇨🇿 <---> code : "cs"
-Welsh: 🏴󠁧󠁢󠁷󠁬󠁳󠁿 <---> code : "cy"
-Danish: 🇩🇰 <---> code : "da"
-German: 🇩🇪 <---> code : "de"
-Greek: 🇬🇷 <---> code : "el"
-English: 🇬🇧, 🇺🇸 <---> code : "en"
-Esperanto: 🌍 <---> code : "eo"
-Spanish: 🇪🇸 <---> code : "es"
-Estonian: 🇪🇪 <---> code : "et"
-Persian: 🇮🇷 <---> code : "fa"
-Finnish: 🇫🇮 <---> code : "fi"
-French: 🇫🇷 <---> code : "fr"
-Irish: 🇮🇪 <---> code : "ga"
-Galician: 🏴 <---> code : "gl"
-Gujarati: 🏴 <---> code : "gu"
-Hebrew: 🇮🇱 <---> code : "he"
-Hindi: 🇮🇳 <---> code : "hi"
-Croatian: 🇭🇷 <---> code : "hr"
-Haitian: 🇭🇹 <---> code : "ht"
-Hungarian: 🇭🇺 <---> code : "hu"
-Indonesian: 🇮🇩 <---> code : "id"
-Icelandic: 🇮🇸 <---> code : "is"
-Italian: 🇮🇹 <---> code : "it"
-Japanese: 🇯🇵 <---> code : "ja"
-Georgian: 🇬🇪 <---> code : "ka"
-Kannada: 🇨🇦 <---> code : "kn"
-Korean: 🇰🇷, 🇰🇵 <---> code : "ko"
-Lithuanian: 🇱🇹 <---> code : "lt"
-Latvian: 🇱🇻 <---> code : "lv"
-Macedonian: 🇲🇰 <---> code : "mk"
-Marathi: 🇮🇳 <---> code : "mr"
-Malay: 🇲🇾 <---> code : "ms"
-Maltese: 🇲🇹 <---> code : "mt"
-Dutch: 🇳🇱 <---> code : "nl"
-Norwegian: 🇳🇴 <---> code : "no"
-Polish: 🇵🇱 <---> code : "pl"
-Portuguese: 🇵🇹 <---> code : "pt"
-Romanian: 🇷🇴 <---> code : "ro"
-Russian: 🇷🇺 <---> code : "ru"
-Slovak: 🇸🇰 <---> code : "sk"
-Slovenian: 🇸🇮 <---> code : "sl"
-Swedish: 🇸🇪 <---> code : "sv"
-Swahili: 🇰🇪 <---> code : "sw"
-Tamil: 🇱🇰 <---> code : "ta"
-Telugu: 🇮🇳 <---> code : "te"
-Thai: 🇹🇭 <---> code : "th"
-Tagalog: 🇵🇭 <---> code : "tl"
-Turkish: 🇹🇷 <---> code : "tr"
-Ukrainian: 🇺🇦 <---> code : "uk"
-Urdu: 🇵🇰 <---> code : "ur"
-Vietnamese: 🇻🇳 <---> code : "vi"
-Chinese: 🇨🇳 <---> code : "zh"
+---
+
+## 🌍 Supported Languages
+
+| Language | Code | Flag |
+|:----------|:------|:------|
+| Afrikaans | `af` | 🇿🇦 |
+| Arabic | `ar` | 🇸🇦 |
+| Bengali | `bn` | 🇧🇩 |
+| Chinese | `zh` | 🇨🇳 |
+| English | `en` | 🇺🇸🇬🇧 |
+| French | `fr` | 🇫🇷 |
+| German | `de` | 🇩🇪 |
+| Hindi | `hi` | 🇮🇳 |
+| Japanese | `ja` | 🇯🇵 |
+| Korean | `ko` | 🇰🇷 |
+| Portuguese | `pt` | 🇵🇹 |
+| Russian | `ru` | 🇷🇺 |
+| Spanish | `es` | 🇪🇸 |
+| ...and [many more](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/blob/next-release/src/types.ts). |
+
+---
+
+## 🧠 Contributing
+
+Contributions, feature requests, and bug reports are always welcome!  
+Please open an [issue](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues) or [pull request](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/pulls).
+
+---
+
+## ☕ Support the Project
+
+If this library helps you build awesome apps, consider supporting future maintenance and development 💛
+
+- [💖 Sponsor on GitHub](https://github.com/sponsors/jamenamcinteer)
+
+Your support helps keep the package updated and open source ❤️
+
+---
+
+## 📄 License
+
+MIT © [Jamena McInteer](https://github.com/jamenamcinteer)
