@@ -1,35 +1,43 @@
-# react-native-vision-camera-ocr
+# @jamenamcinteer/react-native-vision-camera-ocr
 
 [![Lint and Test](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/actions/workflows/ci.yml/badge.svg)](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/actions/workflows/ci.yml)
 
-A plugin to Scanning Text,Translate using ML Kit Text Recognition and ML Kit Translation. With High Performance and many features.
-# 🚨 Required Modules
-react-native-vision-camera = 4.5.1 <br/>
-react-native-worklets-core = 1.3.3 <br/>
+📷 A [React Native Vision Camera](https://github.com/mrousavy/react-native-vision-camera) frame processor for text recognition (OCR) and translation using ML Kit. 
+
+✨ Maintained fork of [react-native-vision-camera-text-recognition](https://www.npmjs.com/package/react-native-vision-camera-text-recognition).  
 
 ## 💻 Installation
 
+**Requires react-native-vision-camera and react-native-worklets-core**
+
 ```sh
-npm install react-native-vision-camera-ocr
-yarn add react-native-vision-camera-ocr
+npm install @jamenamcinteer/react-native-vision-camera-ocr
+yarn add @jamenamcinteer/react-native-vision-camera-ocr
 ```
+
+## Migrating
+- If you were using `react-native-vision-camera-text-recognition`, switch to this package for updates and fixes. This package is an easy replacement.
+- If you were using `vision-camera-ocr`, this is an actively maintained replacement.
+
 ## 👷Features
-    Easy To Use.
-    Works Just Writing few lines of Code.
-    Works With React Native Vision Camera.
-    Works for Both Cameras.
-    Works Fast.
-    Works With Android 🤖 and IOS.📱
-    Writen With Kotlin and Swift.
-    Can Recognize Text From Photo. 📸
-    Can translate text. 🌍
+*    Easy to use.
+*    Works with React Native Vision Camera.
+*    Works for Both Cameras.
+*    Fast text recognition.
+*    Works with Android 🤖 and iOS.📱
+*    Writen with Kotlin and Swift.
+*    Can recognize text from photo. 📸
+*    Can translate text. 🌍
 
 ## 💡 Usage
+
+* [Example](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/tree/next-release/example)
+
 ### 📚 For Live Recognition of Text
 ```js
 import React, { useState } from 'react'
 import { useCameraDevice } from 'react-native-vision-camera'
-import { Camera } from 'react-native-vision-camera-ocr';
+import { Camera } from '@jamenamcinteer/react-native-vision-camera-ocr';
 
 function App (){
   const [data,setData] = useState(null)
@@ -63,7 +71,7 @@ export default App;
 ```js
 import React, { useState } from 'react'
 import { useCameraDevice } from 'react-native-vision-camera'
-import { Camera } from 'react-native-vision-camera-ocr';
+import { Camera } from '@jamenamcinteer/react-native-vision-camera-ocr';
 
 function App (){
   const [data,setData] = useState(null)
@@ -102,7 +110,7 @@ import {
   useCameraDevice,
   useFrameProcessor,
 } from "react-native-vision-camera";
-import { useTextRecognition } from "react-native-vision-camera-ocr";
+import { useTextRecognition } from "@jamenamcinteer/react-native-vision-camera-ocr";
 
 function App() {
   const device = useCameraDevice('back');
@@ -144,7 +152,7 @@ export default App;
 ##  Recognize By Photo 📸
 
 ```js
-import { PhotoRecognizer } from "react-native-vision-camera-ocr";
+import { PhotoRecognizer } from "@jamenamcinteer/react-native-vision-camera-ocr";
 
 const result = await PhotoRecognizer({
     uri:assets.uri,
@@ -153,7 +161,7 @@ const result = await PhotoRecognizer({
 console.log(result);
 
 ```
-<h4>🚨 Orientation available only for iOS, recommendation give it when you are using Camera.</h3>
+<h4>🚨 Orientation available only for iOS. It is suggested to use it when you are using Camera.
 
 |    Name     |  Type  |                           Values                            | Required | Default  |   Platform   |
 |:-----------:|:------:|:-----------------------------------------------------------:|:--------:|:--------:|:------------:|
@@ -168,69 +176,69 @@ console.log(result);
 
 
 ```js
-import { RemoveLanguageModel } from "react-native-vision-camera-ocr";
+import { RemoveLanguageModel } from "@jamenamcinteer/react-native-vision-camera-ocr";
 
 const bool = await RemoveLanguageModel("en")
 ```
-<h2>Supported Languages.</h2>
+<h2>Supported Languages</h2>
 
 ```
-<h3>Afrikaans: 🇿🇦, 🇨🇫 <---> code : "af"</h3>
-<h3>Albanian: 🇦🇱 <---> code : "sq"</h3>
-<h3>Arabic: 🇦🇪, 🇸🇦 <---> code : "ar"</h3>
-<h3>Belarusian: 🇧🇾 <---> code : "be"</h3>
-<h3>Bulgarian: 🇧🇬 <---> code : "bn"</h3>
-<h3>Bengali: 🇧🇩 <---> code : "bg"</h3>
-<h3>Catalan: 🏴 <---> code : "ca"</h3>
-<h3>Czech: 🇨🇿 <---> code : "cs"</h3>
-<h3>Welsh: 🏴󠁧󠁢󠁷󠁬󠁳󠁿 <---> code : "cy"</h3>
-<h3>Danish: 🇩🇰 <---> code : "da"</h3>
-<h3>German: 🇩🇪 <---> code : "de"</h3>
-<h3>Greek: 🇬🇷 <---> code : "el"</h3>
-<h3>English: 🇬🇧, 🇺🇸 <---> code : "en"</h3>
-<h3>Esperanto: 🌍 <---> code : "eo"</h3>
-<h3>Spanish: 🇪🇸 <---> code : "es"</h3>
-<h3>Estonian: 🇪🇪 <---> code : "et"</h3>
-<h3>Persian: 🇮🇷 <---> code : "fa"</h3>
-<h3>Finnish: 🇫🇮 <---> code : "fi"</h3>
-<h3>French: 🇫🇷 <---> code : "fr"</h3>
-<h3>Irish: 🇮🇪 <---> code : "ga"</h3>
-<h3>Galician: 🏴 <---> code : "gl"</h3>
-<h3>Gujarati: 🏴 <---> code : "gu"</h3>
-<h3>Hebrew: 🇮🇱 <---> code : "he"</h3>
-<h3>Hindi: 🇮🇳 <---> code : "hi"</h3>
-<h3>Croatian: 🇭🇷 <---> code : "hr"</h3>
-<h3>Haitian: 🇭🇹 <---> code : "ht"</h3>
-<h3>Hungarian: 🇭🇺 <---> code : "hu"</h3>
-<h3>Indonesian: 🇮🇩 <---> code : "id"</h3>
-<h3>Icelandic: 🇮🇸 <---> code : "is"</h3>
-<h3>Italian: 🇮🇹 <---> code : "it"</h3>
-<h3>Japanese: 🇯🇵 <---> code : "ja"</h3>
-<h3>Georgian: 🇬🇪 <---> code : "ka"</h3>
-<h3>Kannada: 🇨🇦 <---> code : "kn"</h3>
-<h3>Korean: 🇰🇷, 🇰🇵 <---> code : "ko"</h3>
-<h3>Lithuanian: 🇱🇹 <---> code : "lt"</h3>
-<h3>Latvian: 🇱🇻 <---> code : "lv"</h3>
-<h3>Macedonian: 🇲🇰 <---> code : "mk"</h3>
-<h3>Marathi: 🇮🇳 <---> code : "mr"</h3>
-<h3>Malay: 🇲🇾 <---> code : "ms"</h3>
-<h3>Maltese: 🇲🇹 <---> code : "mt"</h3>
-<h3>Dutch: 🇳🇱 <---> code : "nl"</h3>
-<h3>Norwegian: 🇳🇴 <---> code : "no"</h3>
-<h3>Polish: 🇵🇱 <---> code : "pl"</h3>
-<h3>Portuguese: 🇵🇹 <---> code : "pt"</h3>
-<h3>Romanian: 🇷🇴 <---> code : "ro"</h3>
-<h3>Russian: 🇷🇺 <---> code : "ru"</h3>
-<h3>Slovak: 🇸🇰 <---> code : "sk"</h3>
-<h3>Slovenian: 🇸🇮 <---> code : "sl"</h3>
-<h3>Swedish: 🇸🇪 <---> code : "sv"</h3>
-<h3>Swahili: 🇰🇪 <---> code : "sw"</h3>
-<h3>Tamil: 🇱🇰 <---> code : "ta"</h3>
-<h3>Telugu: 🇮🇳 <---> code : "te"</h3>
-<h3>Thai: 🇹🇭 <---> code : "th"</h3>
-<h3>Tagalog: 🇵🇭 <---> code : "tl"</h3>
-<h3>Turkish: 🇹🇷 <---> code : "tr"</h3>
-<h3>Ukrainian: 🇺🇦 <---> code : "uk"</h3>
-<h3>Urdu: 🇵🇰 <---> code : "ur"</h3>
-<h3>Vietnamese: 🇻🇳 <---> code : "vi"</h3>
-<h3>Chinese: 🇨🇳 <---> code : "zh"</h3>
+Afrikaans: 🇿🇦, 🇨🇫 <---> code : "af"
+Albanian: 🇦🇱 <---> code : "sq"
+Arabic: 🇦🇪, 🇸🇦 <---> code : "ar"
+Belarusian: 🇧🇾 <---> code : "be"
+Bulgarian: 🇧🇬 <---> code : "bn"
+Bengali: 🇧🇩 <---> code : "bg"
+Catalan: 🏴 <---> code : "ca"
+Czech: 🇨🇿 <---> code : "cs"
+Welsh: 🏴󠁧󠁢󠁷󠁬󠁳󠁿 <---> code : "cy"
+Danish: 🇩🇰 <---> code : "da"
+German: 🇩🇪 <---> code : "de"
+Greek: 🇬🇷 <---> code : "el"
+English: 🇬🇧, 🇺🇸 <---> code : "en"
+Esperanto: 🌍 <---> code : "eo"
+Spanish: 🇪🇸 <---> code : "es"
+Estonian: 🇪🇪 <---> code : "et"
+Persian: 🇮🇷 <---> code : "fa"
+Finnish: 🇫🇮 <---> code : "fi"
+French: 🇫🇷 <---> code : "fr"
+Irish: 🇮🇪 <---> code : "ga"
+Galician: 🏴 <---> code : "gl"
+Gujarati: 🏴 <---> code : "gu"
+Hebrew: 🇮🇱 <---> code : "he"
+Hindi: 🇮🇳 <---> code : "hi"
+Croatian: 🇭🇷 <---> code : "hr"
+Haitian: 🇭🇹 <---> code : "ht"
+Hungarian: 🇭🇺 <---> code : "hu"
+Indonesian: 🇮🇩 <---> code : "id"
+Icelandic: 🇮🇸 <---> code : "is"
+Italian: 🇮🇹 <---> code : "it"
+Japanese: 🇯🇵 <---> code : "ja"
+Georgian: 🇬🇪 <---> code : "ka"
+Kannada: 🇨🇦 <---> code : "kn"
+Korean: 🇰🇷, 🇰🇵 <---> code : "ko"
+Lithuanian: 🇱🇹 <---> code : "lt"
+Latvian: 🇱🇻 <---> code : "lv"
+Macedonian: 🇲🇰 <---> code : "mk"
+Marathi: 🇮🇳 <---> code : "mr"
+Malay: 🇲🇾 <---> code : "ms"
+Maltese: 🇲🇹 <---> code : "mt"
+Dutch: 🇳🇱 <---> code : "nl"
+Norwegian: 🇳🇴 <---> code : "no"
+Polish: 🇵🇱 <---> code : "pl"
+Portuguese: 🇵🇹 <---> code : "pt"
+Romanian: 🇷🇴 <---> code : "ro"
+Russian: 🇷🇺 <---> code : "ru"
+Slovak: 🇸🇰 <---> code : "sk"
+Slovenian: 🇸🇮 <---> code : "sl"
+Swedish: 🇸🇪 <---> code : "sv"
+Swahili: 🇰🇪 <---> code : "sw"
+Tamil: 🇱🇰 <---> code : "ta"
+Telugu: 🇮🇳 <---> code : "te"
+Thai: 🇹🇭 <---> code : "th"
+Tagalog: 🇵🇭 <---> code : "tl"
+Turkish: 🇹🇷 <---> code : "tr"
+Ukrainian: 🇺🇦 <---> code : "uk"
+Urdu: 🇵🇰 <---> code : "ur"
+Vietnamese: 🇻🇳 <---> code : "vi"
+Chinese: 🇨🇳 <---> code : "zh"
