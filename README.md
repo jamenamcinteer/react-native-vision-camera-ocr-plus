@@ -219,6 +219,7 @@ await RemoveLanguageModel('en');
 | Portuguese | `pt` | 🇵🇹 |
 | Russian | `ru` | 🇷🇺 |
 | Spanish | `es` | 🇪🇸 |
+| ...and [many more](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/blob/next-release/src/types.ts). |
 
 ---
 
