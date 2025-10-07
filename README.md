@@ -1,9 +1,10 @@
 # @jamenamcinteer/react-native-vision-camera-ocr
 
+[![Lint and Test](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/actions/workflows/ci.yml/badge.svg)](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/actions/workflows/ci.yml)
+
 📷 A [React Native Vision Camera](https://github.com/mrousavy/react-native-vision-camera) frame processor for text recognition (OCR) and translation using ML Kit. 
 
 ✨ Maintained fork of [react-native-vision-camera-text-recognition](https://www.npmjs.com/package/react-native-vision-camera-text-recognition).  
-
 
 ## 💻 Installation
 
