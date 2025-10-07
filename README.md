@@ -1,6 +1,6 @@
-# @jamenamcinteer/react-native-vision-camera-ocr
+# react-native-vision-camera-ocr-plus
 
-[![Lint and Test](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/actions/workflows/ci.yml/badge.svg)](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/actions/workflows/ci.yml)
+[![Lint and Test](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml/badge.svg)](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml)
 
 📷 A [React Native Vision Camera](https://github.com/mrousavy/react-native-vision-camera) frame processor for text recognition (OCR) and translation using ML Kit. 
 
@@ -11,8 +11,8 @@
 **Requires react-native-vision-camera and react-native-worklets-core**
 
 ```sh
-npm install @jamenamcinteer/react-native-vision-camera-ocr
-yarn add @jamenamcinteer/react-native-vision-camera-ocr
+npm install react-native-vision-camera-ocr-plus
+yarn add react-native-vision-camera-ocr-plus
 ```
 
 ## Migrating
@@ -37,7 +37,7 @@ yarn add @jamenamcinteer/react-native-vision-camera-ocr
 ```js
 import React, { useState } from 'react'
 import { useCameraDevice } from 'react-native-vision-camera'
-import { Camera } from '@jamenamcinteer/react-native-vision-camera-ocr';
+import { Camera } from 'react-native-vision-camera-ocr-plus';
 
 function App (){
   const [data,setData] = useState(null)
@@ -71,7 +71,7 @@ export default App;
 ```js
 import React, { useState } from 'react'
 import { useCameraDevice } from 'react-native-vision-camera'
-import { Camera } from '@jamenamcinteer/react-native-vision-camera-ocr';
+import { Camera } from 'react-native-vision-camera-ocr-plus';
 
 function App (){
   const [data,setData] = useState(null)
@@ -110,7 +110,7 @@ import {
   useCameraDevice,
   useFrameProcessor,
 } from "react-native-vision-camera";
-import { useTextRecognition } from "@jamenamcinteer/react-native-vision-camera-ocr";
+import { useTextRecognition } from "react-native-vision-camera-ocr-plus";
 
 function App() {
   const device = useCameraDevice('back');
@@ -152,7 +152,7 @@ export default App;
 ##  Recognize By Photo 📸
 
 ```js
-import { PhotoRecognizer } from "@jamenamcinteer/react-native-vision-camera-ocr";
+import { PhotoRecognizer } from "react-native-vision-camera-ocr-plus";
 
 const result = await PhotoRecognizer({
     uri:assets.uri,
@@ -176,7 +176,7 @@ console.log(result);
 
 
 ```js
-import { RemoveLanguageModel } from "@jamenamcinteer/react-native-vision-camera-ocr";
+import { RemoveLanguageModel } from "react-native-vision-camera-ocr-plus";
 
 const bool = await RemoveLanguageModel("en")
 ```
