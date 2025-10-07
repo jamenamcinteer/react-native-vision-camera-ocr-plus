@@ -35,7 +35,7 @@ export const Camera = forwardRef(function Camera(
     plugin = scanText;
   }
 
-  const useWorklets = useRunOnJS(
+  const runOnJS = useRunOnJS(
     (data): void => {
       callback(data);
     },
@@ -45,8 +45,7 @@ export const Camera = forwardRef(function Camera(
     (frame: Frame) => {
       'worklet';
       const data: Text[] | string = plugin(frame);
-      // @ts-ignore
-      useWorklets(data);
+      runOnJS(data);
     },
     []
   );

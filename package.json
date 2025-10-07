@@ -27,6 +27,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test:coverage": "jest --coverage",
     "typecheck": "tsc --noEmit",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
     "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
@@ -106,6 +107,25 @@
     "modulePathIgnorePatterns": [
       "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
+    ],
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/**/*.{js,jsx,ts,tsx}",
+      "<rootDir>/src/**/*.(test|spec).{js,jsx,ts,tsx}"
+    ],
+    "collectCoverageFrom": [
+      "src/**/*.{js,jsx,ts,tsx}",
+      "!src/**/*.d.ts",
+      "!src/__tests__/**/*"
+    ],
+    "coverageDirectory": "coverage",
+    "coverageReporters": [
+      "text",
+      "lcov",
+      "html"
+    ],
+    "testEnvironment": "node",
+    "transformIgnorePatterns": [
+      "node_modules/(?!(react-native|@react-native|react-native-vision-camera|react-native-worklets-core)/)"
     ]
   },
   "commitlint": {
