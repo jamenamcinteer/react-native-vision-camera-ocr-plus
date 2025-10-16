@@ -13,11 +13,11 @@
     "test": "jest"
   },
   "dependencies": {
-    "babel-preset-expo": "~54.0.0",
-    "expo": "~54.0.12",
+    "babel-preset-expo": "~54.0.4",
+    "expo": "~54.0.13",
     "expo-status-bar": "~3.0.8",
-    "react": "19.1.0",
-    "react-native": "0.81.4",
+    "react": "19.2.0",
+    "react-native": "0.82.0",
     "react-native-vision-camera": "^4.7.2",
     "react-native-vision-camera-ocr": "link:..",
     "react-native-worklets-core": "^1.6.2"
@@ -25,7 +25,7 @@
   "devDependencies": {
     "@babel/core": "^7.28.4",
     "@babel/preset-env": "^7.28.3",
-    "@types/react": "~19.1.0",
+    "@types/react": "~19.2.2",
     "typescript": "~5.9.2"
   },
   "private": true
