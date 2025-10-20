@@ -9,6 +9,7 @@ on:
     branches:
       - next-release # runs on PRs targeting next-release
       - main # runs on PRs targeting main
+  workflow_dispatch: # Optional: Allow manual trigger
 
 permissions:
   contents: read # Allows actions/checkout to read the repository
