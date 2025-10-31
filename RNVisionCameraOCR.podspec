@@ -18,11 +18,20 @@ Pod::Spec.new do |s|
 
   s.dependency "React-Core"
   s.dependency "VisionCamera"
-  s.dependency "GoogleMLKit/TextRecognition"
-  s.dependency "GoogleMLKit/TextRecognitionChinese"
-  s.dependency "GoogleMLKit/TextRecognitionDevanagari"
-  s.dependency "GoogleMLKit/TextRecognitionJapanese"
-  s.dependency "GoogleMLKit/TextRecognitionKorean"
-  s.dependency "GoogleMLKit/Translate"
 
+  if min_ios_version_supported.to_f >= 16.0
+    s.dependency "GoogleMLKit/TextRecognition", '>= 8.0.0'
+    s.dependency "GoogleMLKit/TextRecognitionChinese", '>= 5.0.0'
+    s.dependency "GoogleMLKit/TextRecognitionDevanagari", '>= 5.0.0'
+    s.dependency "GoogleMLKit/TextRecognitionJapanese", '>= 5.0.0'
+    s.dependency "GoogleMLKit/TextRecognitionKorean", '>= 5.0.0'
+    s.dependency "GoogleMLKit/Translate", '>= 7.0.0'
+  else
+    s.dependency "GoogleMLKit/TextRecognition"
+    s.dependency "GoogleMLKit/TextRecognitionChinese"
+    s.dependency "GoogleMLKit/TextRecognitionDevanagari"
+    s.dependency "GoogleMLKit/TextRecognitionJapanese"
+    s.dependency "GoogleMLKit/TextRecognitionKorean"
+    s.dependency "GoogleMLKit/Translate"
+  end
 end

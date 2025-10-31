@@ -32,6 +32,7 @@ This fork provides:
 - 📸 Recognize text from live camera or static photos  
 - 🪄 Written in **Kotlin** and **Swift**  
 - 🔧 Compatible with `react-native-vision-camera` and `react-native-worklets-core`
+- 🔥 Compatible with Firebase
 
 ---
 
@@ -45,6 +46,9 @@ npm install react-native-vision-camera-ocr-plus
 # or
 yarn add react-native-vision-camera-ocr-plus
 ```
+
+### 🔥 Firebase Compatibility
+If you have Firebase in your project, you will need to set your iOS Deployment Target to at least 16.0.
 
 ---
 
