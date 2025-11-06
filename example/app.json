@@ -17,7 +17,7 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera"
       },
-      "bundleIdentifier": "com.anonymous.example"
+      "bundleIdentifier": "com.visionocr.example"
     },
     "android": {
       "adaptiveIcon": {
@@ -29,7 +29,7 @@
       "permissions": [
         "android.permission.CAMERA"
       ],
-      "package": "com.anonymous.example"
+      "package": "com.visionocr.example"
     },
     "web": {
       "favicon": "./assets/favicon.png"
