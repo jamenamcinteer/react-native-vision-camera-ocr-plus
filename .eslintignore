@@ -5,3 +5,5 @@ android/build/
 ios/build/
 example/android/build/
 example/ios/build/
+metro.config.js
+babel.config.js
