@@ -7,6 +7,10 @@ on:
   release:
     types: [created]
 
+permissions:
+  id-token: write # Required for OIDC
+  contents: read
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -37,10 +41,11 @@ jobs:
             ios
             package.json
 
-  publish-npm:
+  publish:
     needs: build
     runs-on: ubuntu-latest
     permissions:
+      id-token: write # Required for OIDC authentication
       contents: read
       packages: write
     steps:
@@ -63,5 +68,3 @@ jobs:
 
       - name: Publish to npm
         run: npm publish
-        env:
-          NODE_AUTH_TOKEN: ${{secrets.npm_token}}
