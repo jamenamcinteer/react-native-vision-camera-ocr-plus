@@ -9,8 +9,7 @@
     "ios": "expo run:ios --device",
     "web": "expo start --web",
     "clean:ios": "rm -rf ios && expo prebuild --platform ios",
-    "clean:android": "rm -rf android && expo prebuild --platform android",
-    "test": "jest"
+    "clean:android": "rm -rf android && expo prebuild --platform android"
   },
   "dependencies": {
     "babel-preset-expo": "~54.0.0",
