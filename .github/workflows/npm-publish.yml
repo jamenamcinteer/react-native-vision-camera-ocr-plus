@@ -6,6 +6,7 @@ name: Node.js Package
 on:
   release:
     types: [created]
+  workflow_dispatch: # Optional: Allow manual trigger
 
 permissions:
   id-token: write # Required for OIDC
@@ -57,6 +58,9 @@ jobs:
         with:
           node-version: 22
           registry-url: 'https://registry.npmjs.org'
+
+      - name: Upgrade npm (OIDC support)
+        run: npm install -g npm@latest
 
       - name: Install dependencies
         run: yarn install --frozen-lockfile
