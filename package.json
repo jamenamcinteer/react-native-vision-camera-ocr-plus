@@ -60,7 +60,7 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus.git"
+    "url": "https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus"
   },
   "author": "Jamena McInteer <hello@jamena.dev> (https://github.com/jamenamcinteer)",
   "license": "MIT",
