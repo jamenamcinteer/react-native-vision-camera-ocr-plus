@@ -60,14 +60,14 @@
   ],
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/jamenamcinteer/react-native-vision-camera-ocr.git"
+    "url": "git+https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus.git"
   },
   "author": "Jamena McInteer <hello@jamena.dev> (https://github.com/jamenamcinteer)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jamenamcinteer/react-native-vision-camera-ocr/issues"
+    "url": "https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues"
   },
-  "homepage": "https://github.com/jamenamcinteer/react-native-vision-camera-ocr#readme",
+  "homepage": "https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
