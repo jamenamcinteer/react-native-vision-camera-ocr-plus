@@ -2,6 +2,16 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.8](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/compare/v1.0.7...v1.0.8) (2025-11-19)
+
+
+### Bug Fixes
+
+* Bump glob to fix dependabot alert ([#48](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/issues/48)) ([1d98a58](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/commit/1d98a58211e8e29798edfad5c3de57d5419ce6fa))
+* Bump js-yaml to fix dependabot alerts ([#47](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/issues/47)) ([f4684e3](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/commit/f4684e31604d95e82e2c4f86d5cffec48fc268d8))
+* Bump js-yaml version to 4.1.1 to fix dependabot alert ([#49](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/issues/49)) ([007ebe7](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/commit/007ebe73ed4a924b3a5314da76eba071081de5d5))
+* Upgrade js-yaml to fix depandabot alert ([#46](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/issues/46)) ([e1540e3](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/commit/e1540e31ce66747a748c6e594be34f2e55fe6683))
+
 ### [1.0.7](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/compare/v1.0.6...v1.0.7) (2025-11-15)
 
 ### [1.0.6](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/compare/v1.0.5...v1.0.6) (2025-11-07)
