@@ -1,5 +1,14 @@
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import {
+  Alert,
+  Button,
+  Dimensions,
+  Image,
+  Modal,
+  StyleSheet,
+  Text,
+  View,
+} from 'react-native';
 import {
   Camera,
   useCameraDevice,
@@ -7,7 +16,11 @@ import {
   useFrameProcessor,
 } from 'react-native-vision-camera';
 import { Worklets } from 'react-native-worklets-core';
-import { useTextRecognition } from 'react-native-vision-camera-ocr';
+import {
+  PhotoRecognizer,
+  useTextRecognition,
+} from 'react-native-vision-camera-ocr';
+import * as ImagePicker from 'expo-image-picker';
 
 // TODO: Improve types in library
 type TextRecognitionResult = {
@@ -19,10 +32,28 @@ export default function App() {
   const device = useCameraDevice('back');
   const { hasPermission, requestPermission } = useCameraPermission();
   const [detectedText, setDetectedText] = React.useState<string>();
+  const [image, setImage] = React.useState<string | null>(null);
+  const [imageText, setImageText] = React.useState<string>('');
 
   React.useEffect(() => {
     if (!hasPermission) requestPermission();
   }, [hasPermission, requestPermission]);
+
+  React.useEffect(() => {
+    const readImage = async () => {
+      setImageText('');
+      const result = await PhotoRecognizer({
+        uri: image || '',
+        orientation: 'portrait',
+      });
+      console.log('result', result);
+      setImageText(result.resultText || '');
+    };
+
+    if (image) {
+      readImage();
+    }
+  }, [image]);
 
   const onText = React.useMemo(
     () =>
@@ -44,6 +75,30 @@ export default function App() {
     },
     [scanText, onText]
   );
+
+  const pickImage = async () => {
+    const permissionResult =
+      await ImagePicker.requestMediaLibraryPermissionsAsync();
+
+    if (!permissionResult.granted) {
+      Alert.alert(
+        'Permission required',
+        'Permission to access the media library is required.'
+      );
+      return;
+    }
+
+    let result = await ImagePicker.launchImageLibraryAsync({
+      mediaTypes: ['images'],
+      allowsEditing: true,
+      quality: 1,
+      allowsMultipleSelection: false,
+    });
+
+    if (!result.canceled) {
+      setImage(result.assets[0].uri);
+    }
+  };
 
   if (!device || !hasPermission) {
     return (
@@ -67,6 +122,27 @@ export default function App() {
         <Text style={styles.title}>Detected text:</Text>
         <Text style={styles.line}>{detectedText}</Text>
       </View>
+      <View style={styles.buttonContainer}>
+        <Button title="Photo Recognizer" onPress={pickImage} />
+      </View>
+      {image && (
+        <Modal visible={true} animationType="slide">
+          <View style={styles.modalContainer}>
+            <Image
+              source={{ uri: image }}
+              style={styles.image}
+              resizeMode="contain"
+            />
+            <View style={styles.overlay}>
+              <Text style={styles.title}>Detected text from image:</Text>
+              <Text style={styles.line}>{imageText}</Text>
+            </View>
+            <View style={styles.buttonContainer}>
+              <Button title="Close" onPress={() => setImage(null)} />
+            </View>
+          </View>
+        </Modal>
+      )}
     </View>
   );
 }
@@ -78,11 +154,17 @@ const styles = StyleSheet.create({
     position: 'absolute',
     left: 16,
     right: 16,
-    bottom: 24,
+    bottom: 56,
     backgroundColor: 'rgba(0,0,0,0.5)',
     padding: 12,
     borderRadius: 12,
   },
   title: { color: 'white', fontWeight: '600', marginBottom: 8 },
   line: { color: 'white' },
+  modalContainer: { backgroundColor: 'black', flex: 1 },
+  buttonContainer: { position: 'absolute', top: 48, right: 16 },
+  image: {
+    width: Dimensions.get('window').width,
+    height: Dimensions.get('window').height,
+  },
 });
