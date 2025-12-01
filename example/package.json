@@ -14,7 +14,7 @@
   },
   "dependencies": {
     "babel-preset-expo": "~54.0.7",
-    "expo": "^55.0.0-canary-20251118-8f7ee64",
+    "expo": "^54.0.25",
     "expo-status-bar": "~3.0.8",
     "react": "19.2.0",
     "react-native": "0.82.1",
@@ -30,7 +30,7 @@
     "@babel/plugin-transform-shorthand-properties": "^7.27.1",
     "@babel/plugin-transform-template-literals": "^7.27.1",
     "@babel/preset-env": "^7.28.5",
-    "@types/react": "~19.2.6",
+    "@types/react": "~19.2.7",
     "patch-package": "^8.0.1",
     "typescript": "~5.9.3"
   },
