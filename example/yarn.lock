@@ -4402,8 +4402,7 @@ react-native-is-edge-to-edge@^1.2.1:
   integrity sha512-FLbPWl/MyYQWz+KwqOZsSyj2JmLKglHatd3xLZWskXOpRaio4LfEDEz8E/A6uD8QoTHW6Aobw1jbEwK7KMgR7Q==
 
 "react-native-vision-camera-ocr@link:..":
-  version "0.0.0"
-  uid ""
+  version "1.0.8"
 
 react-native-vision-camera@^4.7.3:
   version "4.7.3"
