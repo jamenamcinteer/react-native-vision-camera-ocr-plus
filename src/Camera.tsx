@@ -67,7 +67,21 @@ export const Camera = forwardRef(function Camera(
 export function useTextRecognition(
   options?: TextRecognitionOptions
 ): TextRecognitionPlugin {
-  return useMemo(() => createTextRecognitionPlugin(options), [options]);
+  // Apply performance defaults for Android to reduce camera lag
+  const optimizedOptions = useMemo(
+    () => ({
+      frameSkipThreshold: 10, // Process every 10th frame
+      useLightweightMode: true, // Use lightweight data structures
+      language: options?.language ?? 'latin',
+      ...options,
+    }),
+    [options]
+  );
+
+  return useMemo(
+    () => createTextRecognitionPlugin(optimizedOptions),
+    [optimizedOptions]
+  );
 }
 export function useTranslate(options?: TranslatorOptions): TranslatorPlugin {
   return useMemo(() => createTranslatorPlugin(options), [options]);

@@ -69,7 +69,23 @@ export type Languages =
   | 'cy';
 
 export type TextRecognitionOptions = {
-  language: 'latin' | 'chinese' | 'devanagari' | 'japanese' | 'korean';
+  /**
+   * Language to recognize
+   * @default 'latin'
+   */
+  language?: 'latin' | 'chinese' | 'devanagari' | 'japanese' | 'korean';
+  /**
+   * Performance optimization: Skip frames to reduce processing load
+   * Higher values = better performance, lower accuracy
+   * @default 10
+   */
+  frameSkipThreshold?: number;
+  /**
+   * Use lightweight processing for better performance
+   * Reduces detailed corner points and element data
+   * @default true
+   */
+  useLightweightMode?: boolean;
 };
 
 export type TranslatorOptions = {

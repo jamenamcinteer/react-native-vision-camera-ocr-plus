@@ -165,11 +165,62 @@ export default function App() {
 
 ## ⚙️ Options
 
-| Option | Type | Values | Default |
-|:-------|:-----|:--------|:---------|
-| `language` | `string` | `latin`, `chinese`, `devanagari`, `japanese`, `korean` | `latin` |
-| `mode` | `string` | `recognize`, `translate` | `recognize` |
-| `from`, `to` | `string` | See [Supported Languages](#-supported-languages) | `en`, `de` |
+| Option | Type | Values | Default | Description |
+|:-------|:-----|:--------|:---------|:------------|
+| `language` | `string` | `latin`, `chinese`, `devanagari`, `japanese`, `korean` | `latin` | Text recognition language |
+| `mode` | `string` | `recognize`, `translate` | `recognize` | Processing mode |
+| `from`, `to` | `string` | See [Supported Languages](#-supported-languages) | `en`, `de` | Translation languages |
+| `frameSkipThreshold` | `number` | Any positive integer | `10` | Skip frames for better performance (higher = faster) |
+| `useLightweightMode` | `boolean` | `true`, `false` | `true` | Use lightweight processing for better performance |
+
+---
+
+## 🚀 Performance Optimization
+
+For better performance on Android devices, especially mid-range phones, you can adjust these options:
+
+```jsx
+// Higher performance (recommended for real-time scanning)
+const { scanText } = useTextRecognition({
+  language: 'latin',
+  frameSkipThreshold: 10,      // Process every 10th frame
+  useLightweightMode: true    // Skip detailed corner points
+});
+
+// Balanced performance/accuracy
+const { scanText } = useTextRecognition({
+  language: 'latin',
+  frameSkipThreshold: 3,      // Process every 3rd frame
+  useLightweightMode: true
+});
+
+// Maximum accuracy (slower)
+const { scanText } = useTextRecognition({
+  language: 'latin',
+  frameSkipThreshold: 1,      // Process every frame
+  useLightweightMode: false   // Full detailed data
+});
+```
+
+You can also improve the performance by using `runAtTargetFps` in your frame processor:
+```jsx
+const frameProcessor = useFrameProcessor(
+    (frame) => {
+        'worklet';
+        runAtTargetFps(2, () => {
+            const data = scanText(frame);
+        });
+    },
+    [scanText],
+);
+```
+
+Performance may also be better in production builds than in dev.
+
+### Performance Tips:
+- **Higher `frameSkipThreshold`** = better performance, less CPU usage
+- **`useLightweightMode: true`** = faster processing, reduced memory usage
+- These optimizations are especially beneficial on Android devices
 
 ---
 

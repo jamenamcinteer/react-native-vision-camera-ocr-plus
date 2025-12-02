@@ -11,8 +11,14 @@ const LINKING_ERROR = `Can't load plugin scanText.Try cleaning cache or reinstal
 export function createTextRecognitionPlugin(
   options?: TextRecognitionOptions
 ): TextRecognitionPlugin {
-  const plugin = VisionCameraProxy.initFrameProcessorPlugin('scanText', {
+  const defaultOptions = {
+    frameSkipThreshold: 10,
+    useLightweightMode: true,
     ...options,
+  };
+
+  const plugin = VisionCameraProxy.initFrameProcessorPlugin('scanText', {
+    ...defaultOptions,
   });
   if (!plugin) {
     throw new Error(LINKING_ERROR);
