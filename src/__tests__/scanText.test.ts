@@ -31,13 +31,21 @@ describe('createTextRecognitionPlugin', () => {
 
       expect(
         mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenCalledWith('scanText', {});
+      ).toHaveBeenCalledWith('scanText', {
+        frameSkipThreshold: 10,
+        useLightweightMode: true,
+        language: 'latin' as const,
+      });
       expect(plugin).toHaveProperty('scanText');
       expect(typeof plugin.scanText).toBe('function');
     });
 
     it('should create plugin with custom options', () => {
-      const options = { language: 'chinese' as const };
+      const options = {
+        language: 'chinese' as const,
+        frameSkipThreshold: 10,
+        useLightweightMode: true,
+      };
       mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(
         mockPlugin
       );
@@ -64,7 +72,11 @@ describe('createTextRecognitionPlugin', () => {
           mockPlugin
         );
 
-        const options = { language };
+        const options = {
+          language,
+          frameSkipThreshold: 10,
+          useLightweightMode: true,
+        };
         const plugin = createTextRecognitionPlugin(options);
 
         expect(
@@ -179,18 +191,45 @@ describe('createTextRecognitionPlugin', () => {
     it('should create different plugin instances for different options', () => {
       const plugin1 = createTextRecognitionPlugin({ language: 'latin' });
       const plugin2 = createTextRecognitionPlugin({ language: 'chinese' });
+      const plugin3 = createTextRecognitionPlugin({ frameSkipThreshold: 1 });
+      const plugin4 = createTextRecognitionPlugin({
+        useLightweightMode: false,
+      });
 
       expect(
         mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenCalledTimes(2);
+      ).toHaveBeenCalledTimes(4);
       expect(
         mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenNthCalledWith(1, 'scanText', { language: 'latin' });
+      ).toHaveBeenNthCalledWith(1, 'scanText', {
+        language: 'latin',
+        frameSkipThreshold: 10,
+        useLightweightMode: true,
+      });
       expect(
         mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenNthCalledWith(2, 'scanText', { language: 'chinese' });
+      ).toHaveBeenNthCalledWith(2, 'scanText', {
+        language: 'chinese',
+        frameSkipThreshold: 10,
+        useLightweightMode: true,
+      });
+      expect(
+        mockVisionCameraProxy.initFrameProcessorPlugin
+      ).toHaveBeenNthCalledWith(3, 'scanText', {
+        language: 'latin',
+        frameSkipThreshold: 1,
+        useLightweightMode: true,
+      });
+      expect(
+        mockVisionCameraProxy.initFrameProcessorPlugin
+      ).toHaveBeenNthCalledWith(4, 'scanText', {
+        language: 'latin',
+        frameSkipThreshold: 10,
+        useLightweightMode: false,
+      });
 
       expect(plugin1).not.toBe(plugin2);
+      expect(plugin3).not.toBe(plugin4);
     });
 
     it('should maintain plugin state between calls', () => {
