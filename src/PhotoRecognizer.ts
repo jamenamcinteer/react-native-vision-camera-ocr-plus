@@ -32,11 +32,9 @@ export async function PhotoRecognizer(options: PhotoOptions): Promise<Text> {
       orientation || 'portrait'
     );
   } else {
-    // Android: Ensure proper file:// prefix for content URIs and file paths
-    if (
-      !processUri.startsWith('file://') &&
-      !processUri.startsWith('content://')
-    ) {
+    // Android: Ensure proper file:// prefix for absolute file paths without any scheme
+    const hasScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(processUri);
+    if (!hasScheme) {
       processUri = `file://${processUri}`;
     }
     return await PhotoRecognizerModule.process(processUri);
