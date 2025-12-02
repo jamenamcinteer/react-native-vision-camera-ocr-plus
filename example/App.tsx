@@ -42,12 +42,15 @@ export default function App() {
   React.useEffect(() => {
     const readImage = async () => {
       setImageText('');
-      const result = await PhotoRecognizer({
-        uri: image || '',
-        orientation: 'portrait',
-      });
-      console.log('result', result);
-      setImageText(result.resultText || '');
+      try {
+        const result = await PhotoRecognizer({
+          uri: image || '',
+          orientation: 'portrait',
+        });
+        setImageText(result.resultText || '');
+      } catch (error) {
+        Alert.alert('Error reading image', (error as Error).message);
+      }
     };
 
     if (image) {
@@ -125,24 +128,24 @@ export default function App() {
       <View style={styles.buttonContainer}>
         <Button title="Photo Recognizer" onPress={pickImage} />
       </View>
-      {image && (
-        <Modal visible={true} animationType="slide">
-          <View style={styles.modalContainer}>
+      <Modal visible={!!image} animationType="slide">
+        <View style={styles.modalContainer}>
+          {image && (
             <Image
               source={{ uri: image }}
               style={styles.image}
               resizeMode="contain"
             />
-            <View style={styles.overlay}>
-              <Text style={styles.title}>Detected text from image:</Text>
-              <Text style={styles.line}>{imageText}</Text>
-            </View>
-            <View style={styles.buttonContainer}>
-              <Button title="Close" onPress={() => setImage(null)} />
-            </View>
+          )}
+          <View style={styles.overlay}>
+            <Text style={styles.title}>Detected text from image:</Text>
+            <Text style={styles.line}>{imageText}</Text>
           </View>
-        </Modal>
-      )}
+          <View style={styles.buttonContainer}>
+            <Button title="Close" onPress={() => setImage(null)} />
+          </View>
+        </View>
+      </Modal>
     </View>
   );
 }
