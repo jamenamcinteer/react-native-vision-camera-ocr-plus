@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.11](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.0.10...v1.0.11) (2025-12-03)
+
+
+### Bug Fixes
+
+* Improve performance on Android, add configuration options ([#61](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/61)) ([5d894e9](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/5d894e9ed8147d6a90bcefb5948292c283551b57))
+
 ### [1.0.10](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.0.9...v1.0.10) (2025-12-03)
 
 
