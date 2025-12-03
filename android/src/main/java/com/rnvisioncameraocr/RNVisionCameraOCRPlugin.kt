@@ -42,7 +42,7 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
         }
     }
 
-    override fun callback(frame: Frame, arguments: Map<String, Any>?): HashMap<String, Any?>? {
+    override fun callback(frame: Frame, arguments: Map<String, Any>?): Any? {
         val data = WritableNativeMap()
         val mediaImage: Image = frame.image
         val image =
