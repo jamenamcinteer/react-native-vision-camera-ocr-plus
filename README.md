@@ -4,7 +4,7 @@
 [![npm version](https://img.shields.io/npm/v/react-native-vision-camera-ocr-plus.svg)](https://www.npmjs.com/package/react-native-vision-camera-ocr-plus)
 
 <div align="center">
-  <img src="https://raw.githubusercontent.com/jamenamcinteer/react-native-vision-camera-ocr/main/example/assets/icon.png" alt="" width="100" height="100" />
+  <img src="https://raw.githubusercontent.com/jamenamcinteer/react-native-vision-camera-ocr/next-release/example/assets/icon.png" alt="" width="100" height="100" />
 </div>
 
 A **React Native Vision Camera** frame processor for **on-device text recognition (OCR)** and **translation** using **ML Kit**.
