@@ -3,6 +3,10 @@
 [![CI Status](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml/badge.svg)](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/react-native-vision-camera-ocr-plus.svg)](https://www.npmjs.com/package/react-native-vision-camera-ocr-plus)
 
+<div align="center">
+  <img src="https://raw.githubusercontent.com/jamenamcinteer/react-native-vision-camera-ocr/main/example/assets/icon.png" alt="" width="100" height="100" />
+</div>
+
 A **React Native Vision Camera** frame processor for **on-device text recognition (OCR)** and **translation** using **ML Kit**.
 
 ✨ Actively maintained fork of [`react-native-vision-camera-text-recognition`](https://www.npmjs.com/package/react-native-vision-camera-text-recognition), with modern improvements, bug fixes, and support for the latest Vision Camera and React Native versions.
