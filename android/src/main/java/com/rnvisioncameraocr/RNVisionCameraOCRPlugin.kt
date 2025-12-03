@@ -29,9 +29,24 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
     private val devanagariOptions = DevanagariTextRecognizerOptions.Builder().build()
     private val japaneseOptions = JapaneseTextRecognizerOptions.Builder().build()
     private val koreanOptions = KoreanTextRecognizerOptions.Builder().build()
+    
+    // Performance optimization: configurable frame skipping
+    private var frameSkipCount = 0
+    private val frameSkipThreshold: Int
+    private val useLightweightMode: Boolean
+    private var isProcessing = false
+    
+    // Short-term caching for performance
+    private var lastProcessedText = ""
+    private var lastProcessedTime = 0L
+    private var cachedResult: HashMap<String, Any?>? = null
+    private val cacheTimeoutMs = 150L // Cache results for 150ms
 
     init {
         val language = options?.get("language").toString()
+        frameSkipThreshold = (options?.get("frameSkipThreshold") as? Number)?.toInt() ?: 10
+        useLightweightMode = (options?.get("useLightweightMode") as? Boolean) ?: true
+        
         recognizer = when (language) {
             "latin" -> TextRecognition.getClient(latinOptions)
             "chinese" -> TextRecognition.getClient(chineseOptions)
@@ -43,26 +58,86 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
     }
 
     override fun callback(frame: Frame, arguments: Map<String, Any>?): Any? {
-        val data = WritableNativeMap()
-        val mediaImage: Image = frame.image
-        val image =
-            InputImage.fromMediaImage(mediaImage, frame.imageProxy.imageInfo.rotationDegrees)
-        val task: Task<Text> = recognizer.process(image)
-        try {
+        // Performance optimization: skip frames to reduce processing load
+        frameSkipCount++
+        if (frameSkipCount < frameSkipThreshold || isProcessing) {
+            return getCachedResult()
+        }
+        frameSkipCount = 0
+        isProcessing = true
+        
+        return try {
+            val mediaImage: Image = frame.image
+            val image = InputImage.fromMediaImage(mediaImage, frame.imageProxy.imageInfo.rotationDegrees)
+            
+            // Use ML Kit recognition
+            val task: Task<Text> = recognizer.process(image)
             val text: Text = Tasks.await(task)
-            if (text.text.isEmpty()) {
-                return WritableNativeMap().toHashMap()
+            
+            val resultText = text.text
+            val currentTime = System.currentTimeMillis()
+            
+            val result = if (resultText.isEmpty()) {
+                WritableNativeMap().toHashMap()
+            } else {
+                val data = WritableNativeMap().apply {
+                    putString("resultText", resultText)
+                    // Use configurable block processing mode
+                    if (useLightweightMode) {
+                        putArray("blocks", getLightweightBlocks(text.textBlocks))
+                    } else {
+                        putArray("blocks", getBlocks(text.textBlocks))
+                    }
+                }
+                data.toHashMap()
             }
-            data.putString("resultText", text.text)
-            data.putArray("blocks", getBlocks(text.textBlocks))
-            return data.toHashMap()
+            
+            // Update cache
+            updateCache(resultText, currentTime, result)
+            result
+            
         } catch (e: Exception) {
             e.printStackTrace()
-            return null
+            // Return cached result on error, or null if no cache
+            getCachedResult()
+        } finally {
+            isProcessing = false
+        }
+    }
+    
+    private fun updateCache(text: String, time: Long, result: HashMap<String, Any?>) {
+        lastProcessedText = text
+        lastProcessedTime = time
+        cachedResult = if (text.isNotEmpty()) result else null
+    }
+    
+    private fun getCachedResult(): HashMap<String, Any?>? {
+        val currentTime = System.currentTimeMillis()
+        return if (currentTime - lastProcessedTime < cacheTimeoutMs && 
+                  cachedResult != null) {
+            cachedResult
+        } else {
+            null
         }
     }
 
     companion object {
+        // Lightweight version for better performance
+        fun getLightweightBlocks(blocks: MutableList<Text.TextBlock>): WritableNativeArray {
+            val blockArray = WritableNativeArray()
+            blocks.forEach { block ->
+                val blockMap = WritableNativeMap().apply {
+                    putString("blockText", block.text)
+                    putMap("blockFrame", getFrame(block.boundingBox))
+                    // Skip detailed corner points and lines for better performance
+                    putArray("lines", getLightweightLines(block.lines))
+                }
+                blockArray.pushMap(blockMap)
+            }
+            return blockArray
+        }
+        
+        // Original full-featured version (kept for backward compatibility)
         fun getBlocks(blocks: MutableList<Text.TextBlock>): WritableNativeArray {
             val blockArray = WritableNativeArray()
             blocks.forEach { block ->
@@ -77,6 +152,20 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
             return blockArray
         }
 
+        // Lightweight version for performance
+        private fun getLightweightLines(lines: MutableList<Text.Line>): WritableNativeArray {
+            val lineArray = WritableNativeArray()
+            lines.forEach { line ->
+                val lineMap = WritableNativeMap().apply {
+                    putString("lineText", line.text)
+                    putMap("lineFrame", getFrame(line.boundingBox))
+                    // Skip corner points, languages, and elements for better performance
+                }
+                lineArray.pushMap(lineMap)
+            }
+            return lineArray
+        }
+        
         private fun getLines(lines: MutableList<Text.Line>): WritableNativeArray {
             val lineArray = WritableNativeArray()
             lines.forEach { line ->
