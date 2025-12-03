@@ -114,7 +114,7 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
     private fun getCachedResult(): HashMap<String, Any?>? {
         val currentTime = System.currentTimeMillis()
         return if (currentTime - lastProcessedTime < cacheTimeoutMs && 
-                  cachedResult != null && lastProcessedText.isNotEmpty()) {
+                  cachedResult != null) {
             cachedResult
         } else {
             null
