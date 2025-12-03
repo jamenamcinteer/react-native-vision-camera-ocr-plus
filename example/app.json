@@ -1,6 +1,6 @@
 {
   "expo": {
-    "name": "vision-ocr-example",
+    "name": "RNVC OCR+",
     "slug": "vision-ocr-example",
     "version": "1.0.0",
     "orientation": "portrait",
@@ -20,10 +20,6 @@
       "bundleIdentifier": "com.visionocr.example"
     },
     "android": {
-      "adaptiveIcon": {
-        "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
-      },
       "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": [
