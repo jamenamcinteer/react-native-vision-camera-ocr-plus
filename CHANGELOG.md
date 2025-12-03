@@ -2,6 +2,21 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.10](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.0.9...v1.0.10) (2025-12-03)
+
+
+### Bug Fixes
+
+* Change callback return type to fix some build errors in Android ([#63](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/63)) ([ba688f9](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/ba688f9f3d6a26693dff0a2fca4e54f84d5fc1c4))
+
+### [1.0.9](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.0.8...v1.0.9) (2025-12-02)
+
+
+### Bug Fixes
+
+* PhotoRecognizerModule is empty object ([#59](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/59)) ([c273be1](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/c273be1c40abbf6b8ea5ae2553e13f43e18b4f3c))
+* Update repository url in package.json ([#55](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/55)) ([cf97920](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/cf979201d4b5ca2f84918c7a35d545930eafe198))
+
 ### [1.0.8](https://github.com/jamenamcinteer/react-native-vision-camera-ocr/compare/v1.0.7...v1.0.8) (2025-11-19)
 
 

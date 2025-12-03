@@ -57,7 +57,7 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
         }
     }
 
-    override fun callback(frame: Frame, arguments: Map<String, Any>?): HashMap<String, Any?>? {
+    override fun callback(frame: Frame, arguments: Map<String, Any>?): Any? {
         // Performance optimization: skip frames to reduce processing load
         frameSkipCount++
         if (frameSkipCount < frameSkipThreshold || isProcessing) {
