@@ -93,7 +93,7 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
             }
             
             // Update cache
-            updateCache(resultText, currentTime, result)
+            updateCache(resultText, currentTime, result as HashMap<String, Any?>)
             result
             
         } catch (e: Exception) {
@@ -105,10 +105,10 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
         }
     }
     
-    private fun updateCache(text: String, time: Long, result: HashMap<String, Any>) {
+    private fun updateCache(text: String, time: Long, result: HashMap<String, Any?>) {
         lastProcessedText = text
         lastProcessedTime = time
-        cachedResult = if (text.isNotEmpty()) result as HashMap<String, Any?> else null
+        cachedResult = if (text.isNotEmpty()) result else null
     }
     
     private fun getCachedResult(): HashMap<String, Any?>? {
