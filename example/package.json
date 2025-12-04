@@ -10,13 +10,15 @@
     "web": "expo start --web",
     "clean:ios": "rm -rf ios && expo prebuild --platform ios",
     "clean:android": "rm -rf android && expo prebuild --platform android",
-    "postinstall": "patch-package"
+    "postinstall": "patch-package",
+    "check-expo": "expo install --check",
+    "install-rn-0.76": "yarn remove expo babel-preset-expo expo-image-picker react react-native @types/react && yarn add expo@~52.0.47 babel-preset-expo@~12.0.0 expo-image-picker@~16.0.6 react@~18.3.1 react-native@~0.76.9 && yarn add -D @types/react@~18.3.1",
+    "reset-latest": "yarn remove expo babel-preset-expo expo-image-picker react react-native @types/react && yarn add expo@^55.0.0-canary-20251118-8f7ee64 babel-preset-expo@~54.0.7 expo-image-picker@^17.0.8 react@19.1.1 react-native@0.82.1 && yarn add -D @types/react@~19.2.7"
   },
   "dependencies": {
     "babel-preset-expo": "~54.0.7",
     "expo": "^55.0.0-canary-20251118-8f7ee64",
     "expo-image-picker": "^17.0.8",
-    "expo-status-bar": "~3.0.8",
     "react": "19.1.1",
     "react-native": "0.82.1",
     "react-native-vision-camera": "^4.7.3",

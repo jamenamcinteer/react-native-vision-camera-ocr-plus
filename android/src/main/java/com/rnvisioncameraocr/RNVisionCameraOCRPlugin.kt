@@ -93,7 +93,7 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
             }
             
             // Update cache
-            updateCache(resultText, currentTime, result)
+            updateCache(resultText, currentTime, result as HashMap<String, Any?>)
             result
             
         } catch (e: Exception) {
