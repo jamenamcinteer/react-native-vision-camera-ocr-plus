@@ -59,3 +59,19 @@ jobs:
           cd example
           yarn install --frozen-lockfile
           yarn clean:ios
+
+      - name: Test Android Build - Expo 52 (RN 0.76)
+        run: |
+          cd example
+          yarn install --frozen-lockfile
+          yarn install-rn-0.76
+          yarn clean:android
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Test iOS Build - Expo 52 (RN 0.76)
+        run: |
+          cd example
+          yarn install --frozen-lockfile
+          yarn install-rn-0.76
+          yarn clean:ios
