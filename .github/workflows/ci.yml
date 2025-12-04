@@ -61,6 +61,10 @@ jobs:
           yarn clean:ios
 
       - name: Test Android Build - Expo 52 (RN 0.76)
+        if: |
+          (github.event_name == 'pull_request' && github.base_ref == 'main') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+          (github.event_name == 'pull_request' && github.base_ref == 'next-release' && github.event.pull_request.merged == true)
         run: |
           cd example
           yarn install --frozen-lockfile
@@ -70,6 +74,10 @@ jobs:
           ./gradlew assembleDebug
 
       - name: Test iOS Build - Expo 52 (RN 0.76)
+        if: |
+          (github.event_name == 'pull_request' && github.base_ref == 'main') ||
+          (github.event_name == 'push' && github.ref == 'refs/heads/main') ||
+          (github.event_name == 'pull_request' && github.base_ref == 'next-release' && github.event.pull_request.merged == true)
         run: |
           cd example
           yarn install --frozen-lockfile
