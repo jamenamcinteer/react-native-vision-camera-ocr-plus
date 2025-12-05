@@ -22,7 +22,7 @@ function loadConfig() {
 function showAvailableConfigs(config) {
   console.log('\n📋 Available version configurations:');
   console.log('=====================================');
-  
+
   Object.entries(config.configurations).forEach(([name, cfg]) => {
     console.log(`\n🔧 ${name}:`);
     console.log(`   ${cfg.description}`);
@@ -37,7 +37,7 @@ function showAvailableConfigs(config) {
       });
     }
   });
-  
+
   console.log('\n📖 Usage:');
   console.log('  yarn switch-versions <config-name>');
   console.log('  yarn use:rn-0.76');
@@ -48,48 +48,48 @@ function showAvailableConfigs(config) {
 
 function switchVersions(configName, config) {
   const targetConfig = config.configurations[configName];
-  
+
   if (!targetConfig) {
     console.error(`❌ Configuration "${configName}" not found`);
     showAvailableConfigs(config);
     process.exit(1);
   }
-  
+
   console.log(`🚀 Switching to configuration: ${configName}`);
   console.log(`📝 ${targetConfig.description}`);
-  
+
   // Remove managed packages
   const packagesToRemove = config.managedPackages.join(' ');
   console.log(`\n🗑️  Removing managed packages: ${packagesToRemove}`);
-  
+
   try {
     execSync(`yarn remove ${packagesToRemove}`, { stdio: 'inherit' });
   } catch {
     console.log('⚠️  Some packages may not have been installed, continuing...');
   }
-  
+
   // Install new dependencies
   const depsToInstall = Object.entries(targetConfig.dependencies)
     .map(([pkg, version]) => `${pkg}@${version}`)
     .join(' ');
-    
+
   if (depsToInstall) {
     console.log(`\n📦 Installing dependencies: ${depsToInstall}`);
     execSync(`yarn add ${depsToInstall}`, { stdio: 'inherit' });
   }
-  
+
   // Install new dev dependencies
   if (targetConfig.devDependencies) {
     const devDepsToInstall = Object.entries(targetConfig.devDependencies)
       .map(([pkg, version]) => `${pkg}@${version}`)
       .join(' ');
-      
+
     if (devDepsToInstall) {
       console.log(`\n🔧 Installing dev dependencies: ${devDepsToInstall}`);
       execSync(`yarn add -D ${devDepsToInstall}`, { stdio: 'inherit' });
     }
   }
-  
+
   console.log(`\n✅ Successfully switched to ${configName} configuration!`);
   console.log(`\n💡 You may want to run:`);
   console.log(`   • yarn clean:ios && yarn ios`);
