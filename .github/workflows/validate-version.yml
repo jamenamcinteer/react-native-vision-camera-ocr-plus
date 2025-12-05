@@ -1,0 +1,69 @@
+name: Validate Expo/React Native Versions
+
+on:
+  push:
+    branches:
+      - next-release # runs on direct pushes to next-release
+  pull_request:
+    branches:
+      - main # runs on PRs targeting main
+  workflow_dispatch: # Optional: Allow manual trigger
+
+permissions:
+  contents: read # Allows actions/checkout to read the repository
+  pull-requests: read # Required to read PR metadata (e.g., PR title, author)
+
+jobs:
+  lint-and-test:
+    runs-on: macos-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Test Android Build - Latest
+        run: |
+          cd example
+          yarn install --frozen-lockfile
+          yarn clean:android
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Test iOS Build - Latest
+        run: |
+          cd example
+          yarn install --frozen-lockfile
+          yarn clean:ios
+
+      - name: Test Android Build - Expo 52 (RN 0.76)
+        run: |
+          cd example
+          yarn use:rn-0.76
+          yarn clean:android
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Test iOS Build - Expo 52 (RN 0.76)
+        run: |
+          cd example
+          yarn use:rn-0.76
+          yarn clean:ios
+
+      - name: Test Android Build - Next (Canary)
+        run: |
+          cd example
+          yarn use:next
+          yarn clean:android
+          cd android
+          ./gradlew assembleDebug
+
+      - name: Test iOS Build - Next (Canary)
+        run: |
+          cd example
+          yarn use:next
+          yarn clean:ios

@@ -12,15 +12,23 @@
     "clean:android": "rm -rf android && expo prebuild --platform android",
     "postinstall": "patch-package",
     "check-expo": "expo install --check",
-    "install-rn-0.76": "yarn remove expo babel-preset-expo expo-image-picker react react-native @types/react && yarn add expo@~52.0.47 babel-preset-expo@~12.0.0 expo-image-picker@~16.0.6 react@~18.3.1 react-native@~0.76.9 && yarn add -D @types/react@~18.3.1",
-    "reset-latest": "yarn remove expo babel-preset-expo expo-image-picker react react-native @types/react && yarn add expo@^55.0.0-canary-20251118-8f7ee64 babel-preset-expo@~54.0.7 expo-image-picker@^17.0.8 react@19.1.1 react-native@0.82.1 && yarn add -D @types/react@~19.2.7"
+    "switch-versions": "node scripts/switch-versions.js",
+    "use:rn-0.76": "node scripts/switch-versions.js rn-0.76",
+    "use:next": "node scripts/switch-versions.js next",
+    "use:latest": "node scripts/switch-versions.js latest",
+    "test-version:android:rn-0.76": "yarn use:rn-0.76 && yarn clean:android && yarn:android",
+    "test-version:android:next": "yarn use:next && yarn clean:android && yarn:android",
+    "test-version:android:latest": "yarn use:latest && yarn clean:android && yarn:android",
+    "test-version:ios:rn-0.76": "yarn use:rn-0.76 && yarn clean:ios && yarn:ios",
+    "test-version:ios:next": "yarn use:next && yarn clean:ios && yarn:ios",
+    "test-version:ios:latest": "yarn use:latest && yarn clean:ios && yarn:ios"
   },
   "dependencies": {
-    "babel-preset-expo": "~54.0.7",
-    "expo": "^55.0.0-canary-20251118-8f7ee64",
-    "expo-image-picker": "^17.0.8",
-    "react": "19.1.1",
-    "react-native": "0.82.1",
+    "babel-preset-expo": "~12.0.0",
+    "expo": "~54.0.26",
+    "expo-image-picker": "~17.0.8",
+    "react": "~19.1.0",
+    "react-native": "~0.81.5",
     "react-native-vision-camera": "^4.7.3",
     "react-native-vision-camera-ocr": "link:..",
     "react-native-worklets-core": "^1.6.2"
@@ -33,9 +41,9 @@
     "@babel/plugin-transform-shorthand-properties": "^7.27.1",
     "@babel/plugin-transform-template-literals": "^7.27.1",
     "@babel/preset-env": "^7.28.5",
-    "@types/react": "~19.2.7",
+    "@types/react": "~19.1.10",
     "patch-package": "^8.0.1",
-    "typescript": "~5.9.3"
+    "typescript": "~5.3.3"
   },
   "private": true
 }
