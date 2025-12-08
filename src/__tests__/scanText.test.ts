@@ -33,7 +33,7 @@ describe('createTextRecognitionPlugin', () => {
         mockVisionCameraProxy.initFrameProcessorPlugin
       ).toHaveBeenCalledWith('scanText', {
         frameSkipThreshold: 10,
-        useLightweightMode: true,
+        useLightweightMode: false,
         language: 'latin' as const,
       });
       expect(plugin).toHaveProperty('scanText');
@@ -189,9 +189,18 @@ describe('createTextRecognitionPlugin', () => {
 
   describe('Plugin lifecycle', () => {
     it('should create different plugin instances for different options', () => {
-      const plugin1 = createTextRecognitionPlugin({ language: 'latin' });
-      const plugin2 = createTextRecognitionPlugin({ language: 'chinese' });
-      const plugin3 = createTextRecognitionPlugin({ frameSkipThreshold: 1 });
+      const plugin1 = createTextRecognitionPlugin({
+        language: 'latin',
+        useLightweightMode: true,
+      });
+      const plugin2 = createTextRecognitionPlugin({
+        language: 'chinese',
+        useLightweightMode: true,
+      });
+      const plugin3 = createTextRecognitionPlugin({
+        frameSkipThreshold: 1,
+        useLightweightMode: true,
+      });
       const plugin4 = createTextRecognitionPlugin({
         useLightweightMode: false,
       });

@@ -19,14 +19,9 @@ import { Worklets } from 'react-native-worklets-core';
 import {
   PhotoRecognizer,
   useTextRecognition,
+  Text as TextRecognitionResult,
 } from 'react-native-vision-camera-ocr';
 import * as ImagePicker from 'expo-image-picker';
-
-// TODO: Improve types in library
-type TextRecognitionResult = {
-  blocks: unknown;
-  resultText: string;
-};
 
 export default function App() {
   const device = useCameraDevice('back');
