@@ -45,7 +45,7 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
     init {
         val language = options?.get("language").toString()
         frameSkipThreshold = (options?.get("frameSkipThreshold") as? Number)?.toInt() ?: 10
-        useLightweightMode = (options?.get("useLightweightMode") as? Boolean) ?: true
+        useLightweightMode = (options?.get("useLightweightMode") as? Boolean) ?: false
         
         recognizer = when (language) {
             "latin" -> TextRecognition.getClient(latinOptions)
@@ -152,7 +152,7 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
             return blockArray
         }
 
-        // Lightweight version for performance
+        // Lightweight version for performance - skips corner points, languages, and elements
         private fun getLightweightLines(lines: MutableList<Text.Line>): WritableNativeArray {
             val lineArray = WritableNativeArray()
             lines.forEach { line ->

@@ -81,9 +81,10 @@ export type TextRecognitionOptions = {
    */
   frameSkipThreshold?: number;
   /**
-   * Use lightweight processing for better performance
-   * Reduces detailed corner points and element data
-   * @default true
+   * Use lightweight processing for better performance (Android only)
+   * Skips corner points, languages, and element processing for better performance
+   * Has no effect on iOS - iOS always returns full data structure
+   * @default false
    */
   useLightweightMode?: boolean;
 };
@@ -110,19 +111,18 @@ export type TranslatorPlugin = {
 };
 
 export type Text = {
-  blocks: BlocksData;
+  blocks: BlockData[];
   resultText: string;
 };
 
-type BlocksData = [
-  blockFrame: FrameType,
-  blockCornerPoints: CornerPointsType,
-  lines: LinesData,
-  blockLanguages: string[] | [],
-  blockText: string,
-];
+type BlockData = {
+  blockText: string;
+  blockCornerPoints?: CornerPointsType; // Always present on iOS, omitted on Android when useLightweightMode is true
+  blockFrame: FrameType;
+  lines: LineData[];
+};
 
-type CornerPointsType = [{ x: number; y: number }];
+type CornerPointsType = { x: number; y: number }[];
 
 type FrameType = {
   boundingCenterX: number;
@@ -133,19 +133,19 @@ type FrameType = {
   y: number;
 };
 
-type LinesData = [
-  lineCornerPoints: CornerPointsType,
-  elements: ElementsData,
-  lineFrame: FrameType,
-  lineLanguages: string[] | [],
-  lineText: string,
-];
+type LineData = {
+  lineText: string;
+  lineCornerPoints?: CornerPointsType; // Always present on iOS, omitted on Android when useLightweightMode is true
+  lineFrame: FrameType;
+  lineLanguages?: string[]; // Always present on iOS, omitted on Android when useLightweightMode is true
+  elements: ElementData[]; // Always populated on iOS, empty array on Android when useLightweightMode is true
+};
 
-type ElementsData = [
-  elementCornerPoints: CornerPointsType,
-  elementFrame: FrameType,
-  elementText: string,
-];
+type ElementData = {
+  elementText: string;
+  elementCornerPoints?: CornerPointsType; // Always present on iOS, may be present on Android
+  elementFrame: FrameType;
+};
 
 export type PhotoOptions = {
   uri: string;

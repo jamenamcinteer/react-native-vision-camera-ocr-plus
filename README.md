@@ -175,7 +175,7 @@ export default function App() {
 | `mode` | `string` | `recognize`, `translate` | `recognize` | Processing mode |
 | `from`, `to` | `string` | See [Supported Languages](#-supported-languages) | `en`, `de` | Translation languages |
 | `frameSkipThreshold` | `number` | Any positive integer | `10` | Skip frames for better performance (higher = faster) |
-| `useLightweightMode` | `boolean` | `true`, `false` | `true` | Use lightweight processing for better performance |
+| `useLightweightMode` | `boolean` | `true`, `false` | `false` | (Android Only) Use lightweight processing for better performance |
 
 ---
 
@@ -188,7 +188,7 @@ For better performance on Android devices, especially mid-range phones, you can 
 const { scanText } = useTextRecognition({
   language: 'latin',
   frameSkipThreshold: 10,      // Process every 10th frame
-  useLightweightMode: true    // Skip detailed corner points
+  useLightweightMode: true    // Skip detailed corner points and element processing
 });
 
 // Balanced performance/accuracy

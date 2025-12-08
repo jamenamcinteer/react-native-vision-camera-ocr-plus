@@ -13,7 +13,7 @@ export function createTextRecognitionPlugin(
 ): TextRecognitionPlugin {
   const defaultOptions = {
     frameSkipThreshold: 10,
-    useLightweightMode: true,
+    useLightweightMode: false,
     language: 'latin' as const,
     ...options,
   };
