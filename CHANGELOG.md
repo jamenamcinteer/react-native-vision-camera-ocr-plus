@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.0.13](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.0.12...v1.0.13) (2025-12-08)
+
+
+### Bug Fixes
+
+* Backwards compatibility of useLightweightMode ([#72](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/72)) ([099aa53](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/099aa533cb7a92835cc94be0a385c2d28186911b))
+
 ### [1.0.12](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.0.11...v1.0.12) (2025-12-04)
 
 
