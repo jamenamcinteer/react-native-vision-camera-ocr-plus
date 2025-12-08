@@ -11,7 +11,7 @@ All notable changes to this project will be documented in this file. See [standa
 
 ### [1.0.11](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.0.10...v1.0.11) (2025-12-03)
 
-⚠️ **BREAKING CHANGE:** ⚠️ Because of the introduced `useLightweightMode` (default `true`), the data structure is now different, with lowe level of detail. Set to `false` to get the previous structure.
+⚠️ **BREAKING CHANGE:** ⚠️ Because of the introduced `useLightweightMode` (default `true`), the data structure is now different, with low level of detail. Set to `false` to get the previous structure.
 
 ### Bug Fixes
 
