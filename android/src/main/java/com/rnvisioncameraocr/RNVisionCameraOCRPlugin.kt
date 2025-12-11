@@ -18,12 +18,13 @@ import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.mrousavy.camera.frameprocessors.Frame
 import com.mrousavy.camera.frameprocessors.FrameProcessorPlugin
 import com.mrousavy.camera.frameprocessors.VisionCameraProxy
-import java.util.HashMap
+import android.graphics.Bitmap
 
 class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any>?) :
     FrameProcessorPlugin() {
 
     private var recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
+    private var scanRegion: Map<*, *>? = null
     private val latinOptions = TextRecognizerOptions.DEFAULT_OPTIONS
     private val chineseOptions = ChineseTextRecognizerOptions.Builder().build()
     private val devanagariOptions = DevanagariTextRecognizerOptions.Builder().build()
@@ -44,6 +45,7 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
 
     init {
         val language = options?.get("language").toString()
+        scanRegion =  options?.get("scanRegion") as Map<*, *>?
         frameSkipThreshold = (options?.get("frameSkipThreshold") as? Number)?.toInt() ?: 10
         useLightweightMode = (options?.get("useLightweightMode") as? Boolean) ?: false
         
@@ -67,8 +69,28 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
         isProcessing = true
         
         return try {
-            val mediaImage: Image = frame.image
-            val image = InputImage.fromMediaImage(mediaImage, frame.imageProxy.imageInfo.rotationDegrees)
+            var image: InputImage? = null
+            if (scanRegion != null) {
+                var bm: Bitmap? = BitmapUtils.getBitmap(frame)
+                if (bm === null) return null
+                val left = (scanRegion!!["left"] as Double) / 100.0 * bm.width
+                val top = (scanRegion!!["top"] as Double) / 100.0 * bm.height
+                val width = (scanRegion!!["width"] as Double) / 100.0 * bm.width
+                val height = (scanRegion!!["height"] as Double) / 100.0 * bm.height
+                bm = Bitmap.createBitmap(
+                    bm,
+                    left.toInt(),
+                    top.toInt(),
+                    width.toInt(),
+                    height.toInt(),
+                    null,
+                    false
+                )
+                image = InputImage.fromBitmap(bm,frame.imageProxy.imageInfo.rotationDegrees);
+            } else {
+                val mediaImage: Image = frame.image
+                image = InputImage.fromMediaImage(mediaImage, frame.imageProxy.imageInfo.rotationDegrees)
+            }
             
             // Use ML Kit recognition
             val task: Task<Text> = recognizer.process(image)

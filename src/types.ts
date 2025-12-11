@@ -68,12 +68,20 @@ export type Languages =
   | 'vi'
   | 'cy';
 
+export type ScanRegion = {
+  left: number;
+  top: number;
+  width: number;
+  height: number;
+};
+
 export type TextRecognitionOptions = {
   /**
    * Language to recognize
    * @default 'latin'
    */
   language?: 'latin' | 'chinese' | 'devanagari' | 'japanese' | 'korean';
+  scanRegion?: ScanRegion;
   /**
    * Performance optimization: Skip frames to reduce processing load
    * Higher values = better performance, lower accuracy
@@ -103,8 +111,9 @@ export type CameraTypes = {
     | { mode: 'translate'; options: TranslatorOptions }
   );
 
+export type ScanTextConfig = { scanRegion: ScanRegion };
 export type TextRecognitionPlugin = {
-  scanText: (frame: Frame) => Text;
+  scanText: (frame: Frame, config?: ScanTextConfig) => Text;
 };
 export type TranslatorPlugin = {
   translate: (frame: Frame) => string;
