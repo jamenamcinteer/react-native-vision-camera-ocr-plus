@@ -95,7 +95,7 @@ export type TranslatorOptions = {
 };
 
 export type CameraTypes = {
-  callback: (data: string | Text[]) => void;
+  callback: (data: string | Text) => void;
   mode: 'translate' | 'recognize';
 } & CameraProps &
   (
@@ -104,7 +104,7 @@ export type CameraTypes = {
   );
 
 export type TextRecognitionPlugin = {
-  scanText: (frame: Frame) => Text[];
+  scanText: (frame: Frame) => Text;
 };
 export type TranslatorPlugin = {
   translate: (frame: Frame) => string;
