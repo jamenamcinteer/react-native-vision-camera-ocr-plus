@@ -68,12 +68,29 @@ export type Languages =
   | 'vi'
   | 'cy';
 
+/**
+ * Percentage string type (e.g., "0%", "50%", "100%")
+ */
+export type Percentage = `${number}%`;
+
+export type ScanRegion = {
+  left: Percentage;
+  top: Percentage;
+  width: Percentage;
+  height: Percentage;
+};
+
 export type TextRecognitionOptions = {
   /**
    * Language to recognize
    * @default 'latin'
    */
   language?: 'latin' | 'chinese' | 'devanagari' | 'japanese' | 'korean';
+  /**
+   * Scan region within the frame to focus text recognition on
+   * @default undefined
+   */
+  scanRegion?: ScanRegion;
   /**
    * Performance optimization: Skip frames to reduce processing load
    * Higher values = better performance, lower accuracy
@@ -95,7 +112,7 @@ export type TranslatorOptions = {
 };
 
 export type CameraTypes = {
-  callback: (data: string | Text[]) => void;
+  callback: (data: string | Text) => void;
   mode: 'translate' | 'recognize';
 } & CameraProps &
   (
@@ -103,8 +120,9 @@ export type CameraTypes = {
     | { mode: 'translate'; options: TranslatorOptions }
   );
 
+export type ScanTextConfig = { scanRegion: ScanRegion };
 export type TextRecognitionPlugin = {
-  scanText: (frame: Frame) => Text[];
+  scanText: (frame: Frame, config?: ScanTextConfig) => Text;
 };
 export type TranslatorPlugin = {
   translate: (frame: Frame) => string;
