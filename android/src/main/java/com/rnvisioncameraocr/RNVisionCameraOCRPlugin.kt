@@ -71,14 +71,14 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
         return try {
             var image: InputImage? = null
             if (scanRegion != null) {
-                var bm: Bitmap? = BitmapUtils.getBitmap(frame)
-                if (bm === null) return null
-                val left = (scanRegion!!["left"] as Double) / 100.0 * bm.width
-                val top = (scanRegion!!["top"] as Double) / 100.0 * bm.height
-                val width = (scanRegion!!["width"] as Double) / 100.0 * bm.width
-                val height = (scanRegion!!["height"] as Double) / 100.0 * bm.height
-                bm = Bitmap.createBitmap(
-                    bm,
+                var bitmap: Bitmap? = BitmapUtils.getBitmap(frame)
+                if (bitmap === null) return null
+                val left = (scanRegion!!["left"] as Double) / 100.0 * bitmap.width
+                val top = (scanRegion!!["top"] as Double) / 100.0 * bitmap.height
+                val width = (scanRegion!!["width"] as Double) / 100.0 * bitmap.width
+                val height = (scanRegion!!["height"] as Double) / 100.0 * bitmap.height
+                bitmap = Bitmap.createBitmap(
+                    bitmap,
                     left.toInt(),
                     top.toInt(),
                     width.toInt(),
@@ -86,7 +86,7 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
                     null,
                     false
                 )
-                image = InputImage.fromBitmap(bm,frame.imageProxy.imageInfo.rotationDegrees);
+                image = InputImage.fromBitmap(bitmap,frame.imageProxy.imageInfo.rotationDegrees);
             } else {
                 val mediaImage: Image = frame.image
                 image = InputImage.fromMediaImage(mediaImage, frame.imageProxy.imageInfo.rotationDegrees)

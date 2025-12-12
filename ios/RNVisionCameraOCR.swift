@@ -69,7 +69,6 @@ public class RNVisionCameraOCR: FrameProcessorPlugin {
                     }
                     let uiImage = UIImage(cgImage: croppedCGImage)
                     image = VisionImage(image: uiImage)
-                    print("using cropped image")
                 }
             }else{
                 image = VisionImage(buffer: buffer)

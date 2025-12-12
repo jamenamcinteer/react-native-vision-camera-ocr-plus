@@ -128,7 +128,7 @@ object BitmapUtils {
             // Unpack Y.
             unpackPlane(yuv420888planes[0], width, height, out, 0, 1)
             // Unpack U.
-            unpackPlane(yuv420888planes[1], width, height, out, imageSize  +1, 2)
+            unpackPlane(yuv420888planes[1], width, height, out, imageSize +1, 2)
             // Unpack V.
             unpackPlane(yuv420888planes[2], width, height, out, imageSize, 2)
         }
