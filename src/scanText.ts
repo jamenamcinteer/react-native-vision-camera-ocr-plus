@@ -16,6 +16,14 @@ export function createTextRecognitionPlugin(
     useLightweightMode: false,
     language: 'latin' as const,
     ...options,
+    ...(options?.scanRegion && {
+      scanRegion: {
+        left: parseFloat(options.scanRegion.left),
+        top: parseFloat(options.scanRegion.top),
+        width: parseFloat(options.scanRegion.width),
+        height: parseFloat(options.scanRegion.height),
+      },
+    }),
   };
 
   const plugin = VisionCameraProxy.initFrameProcessorPlugin('scanText', {

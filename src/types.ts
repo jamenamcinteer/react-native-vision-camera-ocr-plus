@@ -68,11 +68,16 @@ export type Languages =
   | 'vi'
   | 'cy';
 
+/**
+ * Percentage string type (e.g., "0%", "50%", "100%")
+ */
+export type Percentage = `${number}%`;
+
 export type ScanRegion = {
-  left: number;
-  top: number;
-  width: number;
-  height: number;
+  left: Percentage;
+  top: Percentage;
+  width: Percentage;
+  height: Percentage;
 };
 
 export type TextRecognitionOptions = {
@@ -81,6 +86,10 @@ export type TextRecognitionOptions = {
    * @default 'latin'
    */
   language?: 'latin' | 'chinese' | 'devanagari' | 'japanese' | 'korean';
+  /**
+   * Scan region within the frame to focus text recognition on
+   * @default undefined
+   */
   scanRegion?: ScanRegion;
   /**
    * Performance optimization: Skip frames to reduce processing load

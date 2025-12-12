@@ -174,7 +174,7 @@ export default function App() {
 | `language` | `string` | `latin`, `chinese`, `devanagari`, `japanese`, `korean` | `latin` | Text recognition language |
 | `mode` | `string` | `recognize`, `translate` | `recognize` | Processing mode |
 | `from`, `to` | `string` | See [Supported Languages](#-supported-languages) | `en`, `de` | Translation languages |
-| `scanRegion` | `object` | `{ left, top, width, height }` | `undefined` | Define a specific region to scan (values are percentage proportions 0-100) |
+| `scanRegion` | `object` | `{ left, top, width, height }` | `undefined` | Define a specific region to scan (values are string percentage proportions 0-100) |
 | `frameSkipThreshold` | `number` | Any positive integer | `10` | Skip frames for better performance (higher = faster) |
 | `useLightweightMode` | `boolean` | `true`, `false` | `false` | (Android Only) Use lightweight processing for better performance |
 
@@ -199,10 +199,10 @@ export default function App() {
   const { scanText } = useTextRecognition({
     language: 'latin',
     scanRegion: {
-      left: 5,    // Start 5% from the left edge
-      top: 25,     // Start 25% from the top edge
-      width: 80,   // Span 80% of frame width
-      height: 40   // Span 40% of frame height
+      left: '5%',    // Start 5% from the left edge
+      top: '25%',     // Start 25% from the top edge
+      width: '80%',   // Span 80% of frame width
+      height: '40%'   // Span 40% of frame height
     }
   });
 
@@ -226,10 +226,6 @@ export default function App() {
   );
 }
 ```
-
-This will scan only the center region of the frame, ignoring text near the edges.
-
----
 
 ## 🚀 Performance Optimization
 
