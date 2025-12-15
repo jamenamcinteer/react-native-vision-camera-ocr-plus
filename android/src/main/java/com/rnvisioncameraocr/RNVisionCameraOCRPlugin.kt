@@ -72,7 +72,7 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
             var image: InputImage? = null
             if (scanRegion != null) {
                 var bitmap: Bitmap? = BitmapUtils.getBitmap(frame)
-                if (bitmap === null) return null
+                if (bitmap == null) return null
                 val left = (scanRegion!!["left"] as Double) / 100.0 * bitmap.width
                 val top = (scanRegion!!["top"] as Double) / 100.0 * bitmap.height
                 val width = (scanRegion!!["width"] as Double) / 100.0 * bitmap.width
