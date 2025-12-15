@@ -54,10 +54,10 @@ public class RNVisionCameraOCR: FrameProcessorPlugin {
                 if let cgImage = context.createCGImage(ciImage, from: ciImage.extent) {
                     let imgWidth = Double(cgImage.width)
                     let imgHeight = Double(cgImage.height)
-                    let left:Double = Double(scanRegion?["left"] ?? 0) / 100.0 * imgWidth
-                    let top:Double = Double(scanRegion?["top"] ?? 0) / 100.0 * imgHeight
-                    let width:Double = Double(scanRegion?["width"] ?? 100) / 100.0 * imgWidth
-                    let height:Double = Double(scanRegion?["height"] ?? 100) / 100.0 * imgHeight
+                    let left: Double = Double(scanRegion?["left"] ?? 0) / 100.0 * imgWidth
+                    let top: Double = Double(scanRegion?["top"] ?? 0) / 100.0 * imgHeight
+                    let width: Double = Double(scanRegion?["width"] ?? 100) / 100.0 * imgWidth
+                    let height: Double = Double(scanRegion?["height"] ?? 100) / 100.0 * imgHeight
                     let cropRegion = CGRect(
                         x: left,
                         y: top,
