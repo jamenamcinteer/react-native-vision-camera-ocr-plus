@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.1.0](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.0.13...v1.1.0) (2025-12-15)
+
+
+### Features
+
+* add scan region ([#74](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/74)) ([610a6a6](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/610a6a6be0ee0493da9495da207ad6b4b8c100a2))
+
 ### [1.0.13](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.0.12...v1.0.13) (2025-12-08)
 
 
