@@ -16,16 +16,16 @@
     "use:rn-0.76": "node scripts/switch-versions.js rn-0.76",
     "use:next": "node scripts/switch-versions.js next",
     "use:latest": "node scripts/switch-versions.js latest",
-    "test-version:android:rn-0.76": "yarn use:rn-0.76 && yarn clean:android && yarn:android",
-    "test-version:android:next": "yarn use:next && yarn clean:android && yarn:android",
-    "test-version:android:latest": "yarn use:latest && yarn clean:android && yarn:android",
-    "test-version:ios:rn-0.76": "yarn use:rn-0.76 && yarn clean:ios && yarn:ios",
-    "test-version:ios:next": "yarn use:next && yarn clean:ios && yarn:ios",
-    "test-version:ios:latest": "yarn use:latest && yarn clean:ios && yarn:ios"
+    "test-version:android:rn-0.76": "yarn use:rn-0.76 && yarn clean:android && yarn android",
+    "test-version:android:next": "yarn use:next && yarn clean:android && yarn android",
+    "test-version:android:latest": "yarn use:latest && yarn clean:android && yarn android",
+    "test-version:ios:rn-0.76": "yarn use:rn-0.76 && yarn clean:ios && yarn ios",
+    "test-version:ios:next": "yarn use:next && yarn clean:ios && yarn ios",
+    "test-version:ios:latest": "yarn use:latest && yarn clean:ios && yarn ios"
   },
   "dependencies": {
     "babel-preset-expo": "~54.0.0",
-    "expo": "~54.0.27",
+    "expo": "~54.0.29",
     "expo-image-picker": "~17.0.9",
     "react": "19.1.0",
     "react-native": "~0.81.5",

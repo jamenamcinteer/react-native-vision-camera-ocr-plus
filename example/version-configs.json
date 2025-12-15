@@ -29,7 +29,7 @@
         "latest": {
             "description": "Latest stable versions",
             "dependencies": {
-                "expo": "~54.0.27",
+                "expo": "~54.0.29",
                 "babel-preset-expo": "~54.0.0",
                 "expo-image-picker": "~17.0.9",
                 "react": "19.1.0",
