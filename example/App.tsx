@@ -18,10 +18,17 @@ import {
 import { Worklets } from 'react-native-worklets-core';
 import {
   PhotoRecognizer,
+  ScanRegion,
   useTextRecognition,
-  Text as TextRecognitionResult,
 } from 'react-native-vision-camera-ocr';
 import * as ImagePicker from 'expo-image-picker';
+
+const scanRegion = {
+  left: '25%',
+  top: '30%',
+  width: '50%',
+  height: '23%',
+} as ScanRegion;
 
 export default function App() {
   const device = useCameraDevice('back');
@@ -61,12 +68,14 @@ export default function App() {
     []
   );
 
-  const { scanText } = useTextRecognition();
+  const { scanText } = useTextRecognition({
+    scanRegion,
+  });
 
   const frameProcessor = useFrameProcessor(
     (frame) => {
       'worklet';
-      const scannedText = scanText(frame) as unknown as TextRecognitionResult;
+      const scannedText = scanText(frame);
       if (scannedText?.resultText) {
         onText(scannedText.resultText);
       }
@@ -116,6 +125,7 @@ export default function App() {
         isActive
         frameProcessor={frameProcessor}
       />
+      <View style={styles.scanRegion} />
       <View style={styles.overlay}>
         <Text style={styles.title}>Detected text:</Text>
         <Text style={styles.line}>{detectedText}</Text>
@@ -148,6 +158,12 @@ export default function App() {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   center: { flex: 1, alignItems: 'center', justifyContent: 'center' },
+  scanRegion: {
+    ...scanRegion,
+    position: 'absolute',
+    borderWidth: 1,
+    borderColor: 'red',
+  },
   overlay: {
     position: 'absolute',
     left: 16,
