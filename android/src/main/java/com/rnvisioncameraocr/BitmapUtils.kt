@@ -192,10 +192,10 @@ object BitmapUtils {
             var inputPos = rowStart
             for (col in 0 until numCol) {
                 out[outputPos] = buffer[inputPos]
-                outputPos = pixelStride
-                inputPos = plane.pixelStride
+                outputPos += pixelStride
+                inputPos += plane.pixelStride
             }
-            rowStart = plane.rowStride
+            rowStart += plane.rowStride
         }
     }
 }
