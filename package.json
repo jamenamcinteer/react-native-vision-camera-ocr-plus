@@ -1,6 +1,6 @@
 {
   "name": "react-native-vision-camera-ocr-plus",
-  "version": "1.1.0",
+  "version": "1.1.1",
   "description": "React Native Vision Camera plugin for on-device text recognition (OCR) and translation using ML Kit. Maintained fork of react-native-vision-camera-text-recognition",
   "main": "lib/commonjs/index",
   "module": "lib/module/index",
