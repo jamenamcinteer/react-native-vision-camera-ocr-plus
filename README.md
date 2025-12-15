@@ -174,10 +174,58 @@ export default function App() {
 | `language` | `string` | `latin`, `chinese`, `devanagari`, `japanese`, `korean` | `latin` | Text recognition language |
 | `mode` | `string` | `recognize`, `translate` | `recognize` | Processing mode |
 | `from`, `to` | `string` | See [Supported Languages](#-supported-languages) | `en`, `de` | Translation languages |
+| `scanRegion` | `object` | `{ left, top, width, height }` | `undefined` | Define a specific region to scan (values are string percentage proportions 0-100) |
 | `frameSkipThreshold` | `number` | Any positive integer | `10` | Skip frames for better performance (higher = faster) |
 | `useLightweightMode` | `boolean` | `true`, `false` | `false` | (Android Only) Use lightweight processing for better performance |
 
 ---
+
+## 🎯 Scan Region
+
+You can specify a specific region of the camera frame to scan for text. This is useful for improving performance, focusing on specific areas, or reducing false positives from background text.
+
+**Important:** All `scanRegion` values are **percentage proportions** from 0 to 100
+
+### Example
+
+```jsx
+import React from 'react';
+import { StyleSheet } from 'react-native';
+import { Camera, useCameraDevice, useFrameProcessor } from 'react-native-vision-camera';
+import { useTextRecognition } from 'react-native-vision-camera-ocr-plus';
+
+export default function App() {
+  const device = useCameraDevice('back');
+  const { scanText } = useTextRecognition({
+    language: 'latin',
+    scanRegion: {
+      left: '5%',    // Start 5% from the left edge
+      top: '25%',     // Start 25% from the top edge
+      width: '80%',   // Span 80% of frame width
+      height: '40%'   // Span 40% of frame height
+    }
+  });
+
+  const frameProcessor = useFrameProcessor((frame) => {
+    'worklet';
+    const data = scanText(frame);
+    console.log('Detected text in region:', data);
+  }, []);
+
+  return (
+    <>
+      {!!device && (
+        <Camera
+          style={StyleSheet.absoluteFill}
+          device={device}
+          isActive
+          frameProcessor={frameProcessor}
+        />
+      )}
+    </>
+  );
+}
+```
 
 ## 🚀 Performance Optimization
 

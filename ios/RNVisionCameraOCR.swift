@@ -12,6 +12,7 @@ import MLKitCommon
 public class RNVisionCameraOCR: FrameProcessorPlugin {
 
     private var textRecognizer = TextRecognizer()
+    private var scanRegion: [String: Int]? = nil
     private static let latinOptions = TextRecognizerOptions()
     private static let chineseOptions = ChineseTextRecognizerOptions()
     private static let devanagariOptions = DevanagariTextRecognizerOptions()
@@ -22,6 +23,7 @@ public class RNVisionCameraOCR: FrameProcessorPlugin {
 
     public override init(proxy: VisionCameraProxyHolder, options: [AnyHashable: Any]! = [:]) {
         super.init(proxy: proxy, options: options)
+        scanRegion = options["scanRegion"] as? [String: Int]
         let language = options["language"] as? String ?? "latin"
         switch language {
         case "chinese":
@@ -40,11 +42,39 @@ public class RNVisionCameraOCR: FrameProcessorPlugin {
 
     public override func callback(_ frame: Frame, withArguments arguments: [AnyHashable: Any]?) -> Any {
         let buffer = frame.buffer
-        let image = VisionImage(buffer: buffer)
-        image.orientation = getOrientation(orientation: frame.orientation)
+        var image: VisionImage?
 
         do {
-            let result = try self.textRecognizer.results(in: image)
+            if scanRegion != nil {
+                guard let pixelBuffer = CMSampleBufferGetImageBuffer(buffer) else {
+                    return [:]
+                }
+                let ciImage = CIImage(cvPixelBuffer: pixelBuffer).oriented(.right)
+                let context = CIContext(options: nil)
+                if let cgImage = context.createCGImage(ciImage, from: ciImage.extent) {
+                    let imgWidth = Double(cgImage.width)
+                    let imgHeight = Double(cgImage.height)
+                    let left:Double = Double(scanRegion?["left"] ?? 0) / 100.0 * imgWidth
+                    let top:Double = Double(scanRegion?["top"] ?? 0) / 100.0 * imgHeight
+                    let width:Double = Double(scanRegion?["width"] ?? 100) / 100.0 * imgWidth
+                    let height:Double = Double(scanRegion?["height"] ?? 100) / 100.0 * imgHeight
+                    let cropRegion = CGRect(
+                        x: left,
+                        y: top,
+                        width: width,
+                        height: height
+                    )
+                    guard let croppedCGImage = cgImage.cropping(to: cropRegion) else {
+                        return [:]
+                    }
+                    let uiImage = UIImage(cgImage: croppedCGImage)
+                    image = VisionImage(image: uiImage)
+                }
+            }else{
+                image = VisionImage(buffer: buffer)
+                image!.orientation = getOrientation(orientation: frame.orientation)
+            }
+            let result = try self.textRecognizer.results(in: image!)
             let blocks = RNVisionCameraOCR.processBlocks(blocks: result.blocks)
             data["resultText"] = result.text
             data["blocks"] = blocks

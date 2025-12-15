@@ -16,6 +16,14 @@ export function createTextRecognitionPlugin(
     useLightweightMode: false,
     language: 'latin' as const,
     ...options,
+    ...(options?.scanRegion && {
+      scanRegion: {
+        left: parseFloat(options.scanRegion.left),
+        top: parseFloat(options.scanRegion.top),
+        width: parseFloat(options.scanRegion.width),
+        height: parseFloat(options.scanRegion.height),
+      },
+    }),
   };
 
   const plugin = VisionCameraProxy.initFrameProcessorPlugin('scanText', {
@@ -25,10 +33,10 @@ export function createTextRecognitionPlugin(
     throw new Error(LINKING_ERROR);
   }
   return {
-    scanText: (frame: Frame): Text[] => {
+    scanText: (frame: Frame): Text => {
       'worklet';
       // @ts-ignore
-      return plugin.call(frame) as Text[];
+      return plugin.call(frame) as Text;
     },
   };
 }
