@@ -23,23 +23,22 @@ export const Camera = forwardRef(function Camera(
 ) {
   const { device, callback, options, mode, ...p } = props;
 
-  let plugin: TranslatorPlugin['translate'] | TextRecognitionPlugin['scanText'];
-  if (mode === 'translate') {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { translate } = useTranslate(options);
+  const { scanText } = useTextRecognition(
+    mode === 'recognize' ? options : undefined
+  );
+  const { translate } = useTranslate(mode === 'translate' ? options : undefined);
 
-    plugin = translate;
-  } else {
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    const { scanText } = useTextRecognition(options);
-    plugin = scanText;
-  }
+  const plugin: TranslatorPlugin['translate'] | TextRecognitionPlugin['scanText'] =
+    useMemo(
+      () => (mode === 'translate' ? translate : scanText),
+      [mode, scanText, translate]
+    );
 
   const runOnJS = useRunOnJS(
     (data): void => {
       callback(data);
     },
-    [options]
+    [callback]
   );
   const frameProcessor: ReadonlyFrameProcessor = useFrameProcessor(
     (frame: Frame) => {
@@ -47,7 +46,7 @@ export const Camera = forwardRef(function Camera(
       const data: Text | string = plugin(frame);
       runOnJS(data);
     },
-    []
+    [plugin, runOnJS, mode, options]
   );
   return (
     <>
