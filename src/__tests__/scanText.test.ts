@@ -90,7 +90,7 @@ describe('createTextRecognitionPlugin', () => {
       mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(null);
 
       expect(() => createTextRecognitionPlugin()).toThrow(
-        "Can't load plugin scanText.Try cleaning cache or reinstall plugin."
+        "Can't load plugin scanText. Try cleaning cache or reinstall plugin."
       );
     });
 
@@ -98,7 +98,7 @@ describe('createTextRecognitionPlugin', () => {
       mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(undefined);
 
       expect(() => createTextRecognitionPlugin()).toThrow(
-        "Can't load plugin scanText.Try cleaning cache or reinstall plugin."
+        "Can't load plugin scanText. Try cleaning cache or reinstall plugin."
       );
     });
   });

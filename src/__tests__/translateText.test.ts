@@ -54,7 +54,7 @@ describe('createTranslatorPlugin', () => {
       mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(null);
 
       expect(() => createTranslatorPlugin()).toThrow(
-        "Can't load plugin translate.Try cleaning cache or reinstall plugin."
+        "Can't load plugin translate. Try cleaning cache or reinstall plugin."
       );
     });
 
@@ -62,7 +62,7 @@ describe('createTranslatorPlugin', () => {
       mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(undefined);
 
       expect(() => createTranslatorPlugin()).toThrow(
-        "Can't load plugin translate.Try cleaning cache or reinstall plugin."
+        "Can't load plugin translate. Try cleaning cache or reinstall plugin."
       );
     });
   });
