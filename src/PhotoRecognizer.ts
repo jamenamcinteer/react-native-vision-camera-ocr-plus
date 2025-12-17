@@ -15,9 +15,9 @@ export async function PhotoRecognizer(options: PhotoOptions): Promise<Text> {
     typeof PhotoRecognizerModule.process !== 'function'
   ) {
     throw new Error(
-      'PhotoRecognizerModule is not properly linked. Please ensure react-native-vision-camera-ocr is correctly installed and linked. ' +
-        'For React Native 0.60+, try running "npx react-native clean" and "npx react-native run-android" (or run-ios). ' +
-        'For older versions, check if the module is manually linked.'
+      'PhotoRecognizerModule is not properly linked. Please ensure react-native-vision-camera-ocr-plus is correctly installed and linked. ' +
+        'For React Native 0.60+, try running "npx react-native clean" followed by "npx react-native run-android" (or "npx react-native run-ios") to reinstall the native modules. ' +
+        'For older versions, verify the module is manually linked.'
     );
   }
 
