@@ -6,7 +6,7 @@ import type {
   Text,
 } from './types';
 
-const LINKING_ERROR = `Can't load plugin scanText.Try cleaning cache or reinstall plugin.`;
+const LINKING_ERROR = `Can't load plugin scanText. Try cleaning cache or reinstall plugin.`;
 
 export function createTextRecognitionPlugin(
   options?: TextRecognitionOptions
