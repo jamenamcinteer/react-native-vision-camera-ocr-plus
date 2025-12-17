@@ -86,6 +86,38 @@ describe('createTextRecognitionPlugin', () => {
       });
     });
 
+    it('should parse scanRegion percentage strings into numeric values', () => {
+      mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(
+        mockPlugin
+      );
+
+      const options = {
+        scanRegion: {
+          left: '25%',
+          top: '50%',
+          width: '12.5%',
+          height: '100%',
+        },
+      } as const;
+
+      const plugin = createTextRecognitionPlugin(options);
+
+      expect(
+        mockVisionCameraProxy.initFrameProcessorPlugin
+      ).toHaveBeenCalledWith('scanText', {
+        frameSkipThreshold: 10,
+        useLightweightMode: false,
+        language: 'latin',
+        scanRegion: {
+          left: 25,
+          top: 50,
+          width: 12.5,
+          height: 100,
+        },
+      });
+      expect(plugin).toHaveProperty('scanText');
+    });
+
     it('should throw error when plugin initialization fails', () => {
       mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(null);
 
