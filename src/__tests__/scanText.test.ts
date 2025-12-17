@@ -102,20 +102,19 @@ describe('createTextRecognitionPlugin', () => {
 
       const plugin = createTextRecognitionPlugin(options);
 
-      expect(mockVisionCameraProxy.initFrameProcessorPlugin).toHaveBeenCalledWith(
-        'scanText',
-        {
-          frameSkipThreshold: 10,
-          useLightweightMode: false,
-          language: 'latin',
-          scanRegion: {
-            left: 25,
-            top: 50,
-            width: 12.5,
-            height: 100,
-          },
-        }
-      );
+      expect(
+        mockVisionCameraProxy.initFrameProcessorPlugin
+      ).toHaveBeenCalledWith('scanText', {
+        frameSkipThreshold: 10,
+        useLightweightMode: false,
+        language: 'latin',
+        scanRegion: {
+          left: 25,
+          top: 50,
+          width: 12.5,
+          height: 100,
+        },
+      });
       expect(plugin).toHaveProperty('scanText');
     });
 
