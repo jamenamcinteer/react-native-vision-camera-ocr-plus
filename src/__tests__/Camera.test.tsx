@@ -4,7 +4,10 @@ const resetMemoIndex = (): void => {
   memoIndex = 0;
 };
 
-const useMemoMock = <T>(factory: () => T, deps?: ReadonlyArray<unknown>): T => {
+const useMemoMock = <T,>(
+  factory: () => T,
+  deps?: ReadonlyArray<unknown>
+): T => {
   const index = memoIndex++;
   const previous = memoStore[index];
 
@@ -103,7 +106,10 @@ describe('Camera Module Tests', () => {
     lastFrameProcessorDeps = undefined;
 
     mockUseFrameProcessor.mockImplementation(
-      (processor: (frame: unknown) => unknown, deps?: ReadonlyArray<unknown>) => {
+      (
+        processor: (frame: unknown) => unknown,
+        deps?: ReadonlyArray<unknown>
+      ) => {
         lastFrameProcessor = processor;
         lastFrameProcessorDeps = deps;
         return processor;
@@ -345,10 +351,9 @@ describe('Camera Module Tests', () => {
       lastFrameProcessor?.(frame);
 
       expect(firstCallback).toHaveBeenCalledWith('scanned again');
-      expect(mockUseRunOnJS).toHaveBeenLastCalledWith(
-        expect.any(Function),
-        [firstCallback]
-      );
+      expect(mockUseRunOnJS).toHaveBeenLastCalledWith(expect.any(Function), [
+        firstCallback,
+      ]);
 
       Camera({
         device: {},
@@ -361,10 +366,9 @@ describe('Camera Module Tests', () => {
 
       expect(secondCallback).toHaveBeenCalledWith('scanned again');
       expect(firstCallback).toHaveBeenCalledTimes(1);
-      expect(mockUseRunOnJS).toHaveBeenLastCalledWith(
-        expect.any(Function),
-        [secondCallback]
-      );
+      expect(mockUseRunOnJS).toHaveBeenLastCalledWith(expect.any(Function), [
+        secondCallback,
+      ]);
       expect(lastFrameProcessorDeps).toEqual(
         expect.arrayContaining([
           expect.any(Function),

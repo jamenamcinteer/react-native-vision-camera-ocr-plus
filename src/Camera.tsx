@@ -26,13 +26,16 @@ export const Camera = forwardRef(function Camera(
   const { scanText } = useTextRecognition(
     mode === 'recognize' ? options : undefined
   );
-  const { translate } = useTranslate(mode === 'translate' ? options : undefined);
+  const { translate } = useTranslate(
+    mode === 'translate' ? options : undefined
+  );
 
-  const plugin: TranslatorPlugin['translate'] | TextRecognitionPlugin['scanText'] =
-    useMemo(
-      () => (mode === 'translate' ? translate : scanText),
-      [mode, scanText, translate]
-    );
+  const plugin:
+    | TranslatorPlugin['translate']
+    | TextRecognitionPlugin['scanText'] = useMemo(
+    () => (mode === 'translate' ? translate : scanText),
+    [mode, scanText, translate]
+  );
 
   const runOnJS = useRunOnJS(
     (data): void => {
