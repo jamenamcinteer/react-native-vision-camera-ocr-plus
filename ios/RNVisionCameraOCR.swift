@@ -19,11 +19,22 @@ public class RNVisionCameraOCR: FrameProcessorPlugin {
     private static let japaneseOptions = JapaneseTextRecognizerOptions()
     private static let koreanOptions = KoreanTextRecognizerOptions()
     private var data: [String: Any] = [:]
-
+    
+    // Performance optimization: configurable frame skipping
+    private var frameSkipCount = 0
+    private var frameSkipThreshold: Int = 10
+    private var isProcessing = false
+    
+    // Short-term caching for performance
+    private var lastProcessedText = ""
+    private var lastProcessedTime: TimeInterval = 0
+    private var cachedResult: [String: Any]? = nil
+    private let cacheTimeoutMs: TimeInterval = 0.150 // Cache results for 150ms
 
     public override init(proxy: VisionCameraProxyHolder, options: [AnyHashable: Any]! = [:]) {
         super.init(proxy: proxy, options: options)
         scanRegion = options["scanRegion"] as? [String: Int]
+        frameSkipThreshold = (options["frameSkipThreshold"] as? Int) ?? 10
         let language = options["language"] as? String ?? "latin"
         switch language {
         case "chinese":
@@ -41,6 +52,18 @@ public class RNVisionCameraOCR: FrameProcessorPlugin {
 
 
     public override func callback(_ frame: Frame, withArguments arguments: [AnyHashable: Any]?) -> Any {
+        // Performance optimization: skip frames to reduce processing load
+        frameSkipCount += 1
+        if frameSkipCount < frameSkipThreshold || isProcessing {
+            return getCachedResult()
+        }
+        frameSkipCount = 0
+        isProcessing = true
+        
+        defer {
+            isProcessing = false
+        }
+        
         let buffer = frame.buffer
         var image: VisionImage?
 
@@ -78,15 +101,35 @@ public class RNVisionCameraOCR: FrameProcessorPlugin {
             let blocks = RNVisionCameraOCR.processBlocks(blocks: result.blocks)
             data["resultText"] = result.text
             data["blocks"] = blocks
+            
+            let resultText = result.text
+            let currentTime = Date().timeIntervalSince1970
+            
             if result.text.isEmpty {
+                updateCache(text: "", time: currentTime, result: [:])
                 return [:]
             }else{
+                updateCache(text: resultText, time: currentTime, result: data)
                 return data
             }
         } catch {
             print("Failed to recognize text: \(error.localizedDescription).")
-            return [:]
+            return getCachedResult()
         }
+    }
+
+    private func updateCache(text: String, time: TimeInterval, result: [String: Any]) {
+        lastProcessedText = text
+        lastProcessedTime = time
+        cachedResult = text.isEmpty ? nil : result
+    }
+    
+    private func getCachedResult() -> [String: Any] {
+        let currentTime = Date().timeIntervalSince1970
+        if currentTime - lastProcessedTime < cacheTimeoutMs && cachedResult != nil {
+            return cachedResult ?? [:]
+        }
+        return [:]
     }
 
       static func processBlocks(blocks:[TextBlock]) -> Array<Any> {
