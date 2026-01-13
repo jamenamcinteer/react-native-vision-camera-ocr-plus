@@ -126,8 +126,9 @@ public class RNVisionCameraOCR: FrameProcessorPlugin {
     
     private func getCachedResult() -> [String: Any] {
         let currentTime = Date().timeIntervalSince1970
-        if currentTime - lastProcessedTime < cacheTimeoutMs && cachedResult != nil {
-            return cachedResult ?? [:]
+        if currentTime - lastProcessedTime < cacheTimeoutMs,
+           let cachedResult {
+            return cachedResult
         }
         return [:]
     }
