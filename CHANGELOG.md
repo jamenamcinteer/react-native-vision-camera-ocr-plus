@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+## [1.2.0](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.1.2...v1.2.0) (2026-01-13)
+
+
+### Features
+
+* **RNVisionCameraOCR:** add frameSkipThreshold option to iOS implementation ([#86](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/86)) ([3c6e268](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/3c6e2686057b948f6e4cd372d59565d15217bab5))
+
 ### [1.1.2](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.1.1...v1.1.2) (2025-12-29)
 
 
