@@ -106,7 +106,7 @@ public class RNVisionCameraOCR: FrameProcessorPlugin {
             let currentTime = Date().timeIntervalSince1970
             
             if result.text.isEmpty {
-                updateCache(text: "", time: currentTime, result: [:])
+                updateCache(text: "", time: currentTime, result: nil)
                 return [:]
             }else{
                 updateCache(text: resultText, time: currentTime, result: data)
@@ -118,10 +118,10 @@ public class RNVisionCameraOCR: FrameProcessorPlugin {
         }
     }
 
-    private func updateCache(text: String, time: TimeInterval, result: [String: Any]) {
+    private func updateCache(text: String, time: TimeInterval, result: [String: Any]?) {
         lastProcessedText = text
         lastProcessedTime = time
-        cachedResult = text.isEmpty ? nil : result
+        cachedResult = result
     }
     
     private func getCachedResult() -> [String: Any] {
