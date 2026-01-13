@@ -99,20 +99,20 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
             val resultText = text.text
             val currentTime = System.currentTimeMillis()
             
-            val result = if (resultText.isEmpty()) {
-                WritableNativeMap().toHashMap()
-            } else {
-                val data = WritableNativeMap().apply {
-                    putString("resultText", resultText)
-                    // Use configurable block processing mode
-                    if (useLightweightMode) {
-                        putArray("blocks", getLightweightBlocks(text.textBlocks))
-                    } else {
-                        putArray("blocks", getBlocks(text.textBlocks))
-                    }
-                }
-                data.toHashMap()
+            if (resultText.isEmpty()) {
+                updateCache(resultText, currentTime, null)
+                return null
             }
+            
+            val result = WritableNativeMap().apply {
+                putString("resultText", resultText)
+                // Use configurable block processing mode
+                if (useLightweightMode) {
+                    putArray("blocks", getLightweightBlocks(text.textBlocks))
+                } else {
+                    putArray("blocks", getBlocks(text.textBlocks))
+                }
+            }.toHashMap()
             
             // Update cache
             updateCache(resultText, currentTime, result as HashMap<String, Any?>)
@@ -127,10 +127,10 @@ class RNVisionCameraOCRPlugin(proxy: VisionCameraProxy, options: Map<String, Any
         }
     }
     
-    private fun updateCache(text: String, time: Long, result: HashMap<String, Any?>) {
+    private fun updateCache(text: String, time: Long, result: HashMap<String, Any?>?) {
         lastProcessedText = text
         lastProcessedTime = time
-        cachedResult = if (text.isNotEmpty()) result else null
+        cachedResult = result
     }
     
     private fun getCachedResult(): HashMap<String, Any?>? {
