@@ -54,6 +54,15 @@ yarn add react-native-vision-camera-ocr-plus
 ### 🔥 Firebase Compatibility
 If you have Firebase in your project, you will need to set your iOS Deployment Target to at least 16.0.
 
+### ⚠️ iOS Simulator (Apple Silicon) – Heads-up
+
+On Apple Silicon Macs, building for the **iOS Simulator (arm64)** may fail after installing this package.
+
+This is a **known limitation of Google ML Kit**, which does not currently ship an `arm64-simulator` slice for some iOS frameworks.  
+The library works correctly on **physical iOS devices** and on the **iOS Simulator when running under Rosetta**.
+
+👉 [Full context and discussion](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/91#issuecomment-3768407842)
+
 ---
 
 ## 🔄 Migration
