@@ -41,7 +41,7 @@
     "@babel/plugin-transform-shorthand-properties": "^7.27.1",
     "@babel/plugin-transform-template-literals": "^7.27.1",
     "@babel/preset-env": "^7.28.6",
-    "@types/react": "~19.2.10",
+    "@types/react": "~19.1.17",
     "patch-package": "^8.0.1",
     "typescript": "~5.9.2"
   },
