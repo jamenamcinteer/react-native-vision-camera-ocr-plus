@@ -1,4 +1,4 @@
-name: Lint and Test
+name: CI
 
 on:
   pull_request:
@@ -42,16 +42,50 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Test Android Build
+  build-android:
+    runs-on: macos-latest
+    needs: lint-and-test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install example dependencies
         run: |
           cd example
           yarn install --frozen-lockfile
+
+      - name: Build Android
+        run: |
+          cd example
           yarn clean:android
           cd android
           ./gradlew assembleDebug
 
-      - name: Test iOS Build
+  build-ios:
+    runs-on: macos-latest
+    needs: lint-and-test
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Install example dependencies
         run: |
           cd example
           yarn install --frozen-lockfile
+
+      - name: Build iOS
+        run: |
+          cd example
           yarn clean:ios
