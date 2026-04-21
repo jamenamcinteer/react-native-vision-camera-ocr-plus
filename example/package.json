@@ -24,7 +24,7 @@
     "test-version:ios:latest": "yarn use:latest && yarn clean:ios && yarn ios"
   },
   "dependencies": {
-    "babel-preset-expo": "~55.0.16",
+    "babel-preset-expo": "~55.0.18",
     "expo": "~55.0.16",
     "expo-image-picker": "~55.0.12",
     "react": "19.2.0",

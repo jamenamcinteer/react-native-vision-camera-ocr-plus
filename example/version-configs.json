@@ -30,7 +30,7 @@
             "description": "Latest stable versions",
             "dependencies": {
                 "expo": "~55.0.16",
-                "babel-preset-expo": "~55.0.16",
+                "babel-preset-expo": "~55.0.18",
                 "expo-image-picker": "~55.0.12",
                 "react": "19.2.0",
                 "react-native": "0.83.6",

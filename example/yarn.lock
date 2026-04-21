@@ -2027,7 +2027,7 @@ babel-preset-current-node-syntax@^1.0.0:
     "@babel/plugin-syntax-private-property-in-object" "^7.14.5"
     "@babel/plugin-syntax-top-level-await" "^7.14.5"
 
-babel-preset-expo@~55.0.16, babel-preset-expo@~55.0.18:
+babel-preset-expo@~55.0.18:
   version "55.0.18"
   resolved "https://registry.yarnpkg.com/babel-preset-expo/-/babel-preset-expo-55.0.18.tgz#f78ca05cc8e1c729705477ec7e41ba3361d42dc3"
   integrity sha512-zmDwKxCFBTe4e/jQXuITRUZlbl8HTZOhsUlwcHGjwEUB0lKQfRdaSYXZckQ+jMOBC34MrOl3Cs7/6F6vNbj5Pw==
