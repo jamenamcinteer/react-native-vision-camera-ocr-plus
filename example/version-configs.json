@@ -29,11 +29,11 @@
         "latest": {
             "description": "Latest stable versions",
             "dependencies": {
-                "expo": "~55.0.6",
-                "babel-preset-expo": "~55.0.11",
+                "expo": "~55.0.16",
+                "babel-preset-expo": "~55.0.16",
                 "expo-image-picker": "~55.0.12",
                 "react": "19.2.0",
-                "react-native": "0.83.2",
+                "react-native": "0.83.6",
                 "typescript": "~5.9.2"
             },
             "devDependencies": {
