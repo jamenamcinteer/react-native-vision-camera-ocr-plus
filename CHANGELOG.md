@@ -2,6 +2,8 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [1.2.8](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.2.7...v1.2.8) (2026-05-13)
+
 ### [1.2.7](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.2.6...v1.2.7) (2026-05-13)
 
 ### [1.2.6](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v1.2.5...v1.2.6) (2026-05-13)
