@@ -18,7 +18,7 @@ export const Camera = forwardRef(function Camera(
   props: CameraTypes,
   ref: ForwardedRef<any>
 ) {
-  const VisionCameraComponent = (VisionCameraModule as any).Camera;
+  const CameraComponent = (VisionCameraModule as any).Camera;
   const createFrameProcessor = (VisionCameraModule as any).useFrameProcessor as
     | ((
         processor: (frame: Frame) => void,
@@ -56,6 +56,7 @@ export const Camera = forwardRef(function Camera(
     'worklet';
     const data: Text | string = plugin(frame);
     runOnJS(data);
+    (frame as any).dispose?.();
   };
 
   const frameProcessor = createFrameProcessor?.(processFrame, [
@@ -68,8 +69,6 @@ export const Camera = forwardRef(function Camera(
   const frameOutput = useFrameOutputHook?.({
     onFrame: (frame: Frame) => {
       processFrame(frame);
-      // VisionCamera v5 exposes dispose(); call it when available to release frame buffers.
-      (frame as any).dispose?.();
     },
   });
 
@@ -80,7 +79,7 @@ export const Camera = forwardRef(function Camera(
   return (
     <>
       {!!device && (
-        <VisionCameraComponent
+        <CameraComponent
           pixelFormat="yuv"
           ref={ref}
           device={device}

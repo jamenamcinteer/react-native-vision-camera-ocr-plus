@@ -98,10 +98,7 @@ export default function App() {
     });
 
     if (!result.canceled) {
-      const firstAsset = result.assets[0];
-      if (firstAsset) {
-        setImage(firstAsset.uri);
-      }
+      setImage(result.assets[0]!.uri);
     }
   };
 
