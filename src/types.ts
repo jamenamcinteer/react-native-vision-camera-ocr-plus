@@ -1,13 +1,14 @@
 export type {
   Frame,
-  ReadonlyFrameProcessor,
-  FrameProcessorPlugin,
-  FrameInternal,
   CameraProps,
   CameraDevice,
 } from 'react-native-vision-camera';
 export type { ForwardedRef } from 'react';
 import type { CameraProps, Frame } from 'react-native-vision-camera';
+
+export type ReadonlyFrameProcessor = (frame: Frame) => void;
+export type FrameProcessorPlugin = { call: (frame: Frame) => unknown };
+export type FrameInternal = Frame;
 
 export type Languages =
   | 'af'

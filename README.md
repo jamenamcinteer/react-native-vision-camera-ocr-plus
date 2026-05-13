@@ -18,7 +18,7 @@ A **React Native Vision Camera** frame processor for **on-device text recognitio
 The original packages are **no longer actively maintained**.  
 This fork provides:
 
-- ✅ Ongoing maintenance and compatibility with **React Native 0.76+** and **Vision Camera v4+**  
+- ✅ Ongoing maintenance and compatibility with **React Native 0.76+** and **Vision Camera v5+**  
 - 🧠 **Translation support** (not just OCR) powered by ML Kit  
 - 🛠 **Improved stability and error handling**  
 - 🚀 **Faster processing** and frame optimization  
@@ -43,7 +43,7 @@ This fork provides:
 ## 💻 Installation
 
 > **Peer dependencies:**  
-> You must have `react-native-vision-camera` and `react-native-worklets-core` installed.
+> You must have `react-native-vision-camera` and a supported worklets runtime installed (`react-native-worklets-core` or `react-native-worklets`/`react-native-vision-camera-worklets`).
 
 ```bash
 npm install react-native-vision-camera-ocr-plus

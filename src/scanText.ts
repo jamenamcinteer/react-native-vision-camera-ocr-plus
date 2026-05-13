@@ -1,10 +1,10 @@
-import { VisionCameraProxy } from 'react-native-vision-camera';
 import type {
   Frame,
   TextRecognitionPlugin,
   TextRecognitionOptions,
   Text,
 } from './types';
+import { getVisionCameraProxy } from './visionCameraProxy';
 
 const LINKING_ERROR = `Can't load plugin scanText. Try cleaning cache or reinstall plugin.`;
 
@@ -26,7 +26,7 @@ export function createTextRecognitionPlugin(
     }),
   };
 
-  const plugin = VisionCameraProxy.initFrameProcessorPlugin('scanText', {
+  const plugin = getVisionCameraProxy().initFrameProcessorPlugin('scanText', {
     ...defaultOptions,
   });
   if (!plugin) {
