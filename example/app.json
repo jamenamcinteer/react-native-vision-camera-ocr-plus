@@ -31,7 +31,6 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "react-native-vision-camera",
       "expo-image-picker"
     ]
   }
