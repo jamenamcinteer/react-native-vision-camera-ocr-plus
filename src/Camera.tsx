@@ -25,7 +25,7 @@ export const Camera = forwardRef(function Camera(
         deps?: ReadonlyArray<unknown>
       ) => ReadonlyFrameProcessor)
     | undefined;
-  const createFrameOutput = (VisionCameraModule as any).useFrameOutput as
+  const useFrameOutputHook = (VisionCameraModule as any).useFrameOutput as
     | ((props: { onFrame: (frame: Frame) => void }) => unknown)
     | undefined;
 
@@ -60,11 +60,12 @@ export const Camera = forwardRef(function Camera(
     [plugin, runOnJS, mode, options]
   ) as ReadonlyFrameProcessor | undefined;
 
-  const frameOutput = createFrameOutput?.({
+  const frameOutput = useFrameOutputHook?.({
     onFrame: (frame: Frame) => {
       'worklet';
       const data: Text | string = plugin(frame);
       runOnJS(data);
+      // VisionCamera v5 frames require dispose(); v4 frames don't expose it.
       (frame as any).dispose?.();
     },
   });
