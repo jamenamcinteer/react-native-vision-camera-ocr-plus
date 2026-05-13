@@ -73,7 +73,7 @@ export default function App() {
       if (scannedText?.resultText) {
         onText(scannedText.resultText);
       }
-      // VisionCamera v5 frames should be disposed after processing.
+      // Dispose when available (required in v5, safely ignored in v4 via optional chaining).
       (frame as any).dispose?.();
     },
   });

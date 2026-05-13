@@ -18,7 +18,7 @@ export const Camera = forwardRef(function Camera(
   props: CameraTypes,
   ref: ForwardedRef<any>
 ) {
-  const CameraComponent = (VisionCameraModule as any).Camera;
+  const NativeCamera = (VisionCameraModule as any).Camera;
   const createFrameProcessor = (VisionCameraModule as any).useFrameProcessor as
     | ((
         processor: (frame: Frame) => void,
@@ -26,7 +26,7 @@ export const Camera = forwardRef(function Camera(
       ) => ReadonlyFrameProcessor)
     | undefined;
   const useFrameOutputHook = (VisionCameraModule as any).useFrameOutput as
-    | ((props: { onFrame: (frame: Frame) => void }) => unknown)
+    | ((props: { onFrame: (frame: Frame) => void }) => Record<string, unknown>)
     | undefined;
 
   const { device, callback, options, mode, ...p } = props;
@@ -72,6 +72,12 @@ export const Camera = forwardRef(function Camera(
     },
   });
 
+  if (!frameOutput && !frameProcessor) {
+    throw new Error(
+      'No compatible VisionCamera frame processing API was found. Ensure a supported VisionCamera version is installed.'
+    );
+  }
+
   const cameraProcessingProps = frameOutput
     ? { outputs: [frameOutput] }
     : { frameProcessor };
@@ -79,7 +85,7 @@ export const Camera = forwardRef(function Camera(
   return (
     <>
       {!!device && (
-        <CameraComponent
+        <NativeCamera
           pixelFormat="yuv"
           ref={ref}
           device={device}
