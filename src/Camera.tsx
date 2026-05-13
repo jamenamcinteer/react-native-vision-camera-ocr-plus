@@ -19,8 +19,7 @@ export const Camera = forwardRef(function Camera(
   ref: ForwardedRef<any>
 ) {
   const VisionCamera = (VisionCameraModule as any).Camera;
-  const createFrameProcessor = (VisionCameraModule as any)
-    .useFrameProcessor as
+  const createFrameProcessor = (VisionCameraModule as any).useFrameProcessor as
     | ((
         processor: (frame: Frame) => void,
         deps?: ReadonlyArray<unknown>

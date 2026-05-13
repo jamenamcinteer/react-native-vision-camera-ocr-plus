@@ -13,14 +13,14 @@ import {
   Camera,
   useCameraDevice,
   useCameraPermission,
-  useFrameProcessor,
+  useFrameOutput,
 } from 'react-native-vision-camera';
-import { Worklets } from 'react-native-worklets-core';
+import { runOnJS } from 'react-native-worklets';
 import {
   PhotoRecognizer,
-  ScanRegion,
   useTextRecognition,
 } from 'react-native-vision-camera-ocr';
+import type { ScanRegion } from 'react-native-vision-camera-ocr';
 import * as ImagePicker from 'expo-image-picker';
 
 const scanRegion = {
@@ -60,28 +60,22 @@ export default function App() {
     }
   }, [image]);
 
-  const onText = React.useMemo(
-    () =>
-      Worklets.createRunOnJS((items: string) => {
-        setDetectedText(items);
-      }),
-    []
-  );
+  const onText = React.useMemo(() => runOnJS(setDetectedText), []);
 
   const { scanText } = useTextRecognition({
     scanRegion,
   });
 
-  const frameProcessor = useFrameProcessor(
-    (frame) => {
+  const frameOutput = useFrameOutput({
+    onFrame: (frame) => {
       'worklet';
       const scannedText = scanText(frame);
       if (scannedText?.resultText) {
         onText(scannedText.resultText);
       }
+      (frame as any).dispose?.();
     },
-    [scanText, onText]
-  );
+  });
 
   const pickImage = async () => {
     const permissionResult =
@@ -103,7 +97,10 @@ export default function App() {
     });
 
     if (!result.canceled) {
-      setImage(result.assets[0].uri);
+      const firstAsset = result.assets[0];
+      if (firstAsset) {
+        setImage(firstAsset.uri);
+      }
     }
   };
 
@@ -123,7 +120,7 @@ export default function App() {
         style={StyleSheet.absoluteFill}
         device={device}
         isActive
-        frameProcessor={frameProcessor}
+        outputs={[frameOutput]}
       />
       <View style={styles.scanRegion} />
       <View style={styles.overlay}>

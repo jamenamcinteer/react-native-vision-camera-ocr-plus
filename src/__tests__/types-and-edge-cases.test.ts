@@ -135,7 +135,7 @@ describe('Type Definitions and Edge Cases', () => {
       expect(mockResult.blocks[0]).toHaveLength(5);
 
       // Validate frame structure
-      const frame = mockResult.blocks[0][0];
+      const frame = mockResult.blocks[0]![0];
       expect(frame).toHaveProperty('boundingCenterX');
       expect(frame).toHaveProperty('boundingCenterY');
       expect(frame).toHaveProperty('height');
@@ -144,13 +144,13 @@ describe('Type Definitions and Edge Cases', () => {
       expect(frame).toHaveProperty('y');
 
       // Validate corner points
-      expect(Array.isArray(mockResult.blocks[0][1])).toBe(true);
+      expect(Array.isArray(mockResult.blocks[0]![1])).toBe(true);
 
       // Validate languages array
-      expect(Array.isArray(mockResult.blocks[0][3])).toBe(true);
+      expect(Array.isArray(mockResult.blocks[0]![3])).toBe(true);
 
       // Validate text
-      expect(typeof mockResult.blocks[0][4]).toBe('string');
+      expect(typeof mockResult.blocks[0]![4]).toBe('string');
     });
 
     it('should validate photo options structure', () => {
@@ -335,7 +335,7 @@ describe('Type Definitions and Edge Cases', () => {
 
       expect(Array.isArray(nestedArray)).toBe(true);
       expect(Array.isArray(nestedArray[0])).toBe(true);
-      expect(Array.isArray(nestedArray[0][0])).toBe(true);
+      expect(Array.isArray(nestedArray[0]![0])).toBe(true);
     });
 
     it('should handle mixed data types in arrays', () => {
