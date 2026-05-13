@@ -18,7 +18,7 @@ export const Camera = forwardRef(function Camera(
   props: CameraTypes,
   ref: ForwardedRef<any>
 ) {
-  const VisionCamera = (VisionCameraModule as any).Camera;
+  const VisionCameraComponent = (VisionCameraModule as any).Camera;
   const createFrameProcessor = (VisionCameraModule as any).useFrameProcessor as
     | ((
         processor: (frame: Frame) => void,
@@ -51,21 +51,24 @@ export const Camera = forwardRef(function Camera(
     },
     [callback]
   );
-  const frameProcessor = createFrameProcessor?.(
-    (frame: Frame) => {
-      'worklet';
-      const data: Text | string = plugin(frame);
-      runOnJS(data);
-    },
-    [plugin, runOnJS, mode, options]
-  ) as ReadonlyFrameProcessor | undefined;
+
+  const processFrame = (frame: Frame): void => {
+    'worklet';
+    const data: Text | string = plugin(frame);
+    runOnJS(data);
+  };
+
+  const frameProcessor = createFrameProcessor?.(processFrame, [
+    plugin,
+    runOnJS,
+    mode,
+    options,
+  ]) as ReadonlyFrameProcessor | undefined;
 
   const frameOutput = useFrameOutputHook?.({
     onFrame: (frame: Frame) => {
-      'worklet';
-      const data: Text | string = plugin(frame);
-      runOnJS(data);
-      // VisionCamera v5 frames require dispose(); v4 frames don't expose it.
+      processFrame(frame);
+      // VisionCamera v5 exposes dispose(); call it when available to release frame buffers.
       (frame as any).dispose?.();
     },
   });
@@ -77,7 +80,7 @@ export const Camera = forwardRef(function Camera(
   return (
     <>
       {!!device && (
-        <VisionCamera
+        <VisionCameraComponent
           pixelFormat="yuv"
           ref={ref}
           device={device}
