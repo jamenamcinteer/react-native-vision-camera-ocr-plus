@@ -19,6 +19,10 @@ On-device OCR and text translation for React Native, powered by [VisionCamera](h
 - Optional scan-region cropping to focus recognition on a sub-area of the frame
 - Configurable frame skipping for performance tuning
 
+## Migration from v1.x
+
+Upgrading from v1? See the **[Migration Guide](MIGRATION.md)** for a full list of breaking changes and step-by-step instructions.
+
 ## Installation
 
 ```sh
