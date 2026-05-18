@@ -2,8 +2,6 @@ import type { Frame } from '../types';
 
 const mockScanFrame = jest.fn();
 const mockConfigure = jest.fn();
-const mockTranslate = jest.fn();
-
 const mockRecognizer = {
   scanFrame: mockScanFrame,
   configure: mockConfigure,
