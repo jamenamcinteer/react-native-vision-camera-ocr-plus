@@ -65,6 +65,7 @@ export default function App() {
   });
 
   const frameOutput = useFrameOutput({
+    pixelFormat: 'rgb',
     onFrame: (frame) => {
       'worklet';
       const scannedText = scanText(frame);
