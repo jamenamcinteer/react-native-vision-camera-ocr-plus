@@ -1,0 +1,28 @@
+{
+  "$schema": "https://nitro.margelo.com/nitro.schema.json",
+  "cxxNamespace": [
+    "visioncameraocrplus"
+  ],
+  "ios": {
+    "iosModuleName": "NitroVisionCameraOcrPlus"
+  },
+  "android": {
+    "androidNamespace": [
+      "visioncameraocrplus"
+    ],
+    "androidCxxLibName": "NitroVisionCameraOcrPlus"
+  },
+  "autolinking": {
+    "TextRecognizer": {
+      "swift": "HybridTextRecognizer",
+      "kotlin": "HybridTextRecognizer"
+    },
+    "Translator": {
+      "swift": "HybridTranslator",
+      "kotlin": "HybridTranslator"
+    }
+  },
+  "ignorePaths": [
+    "**/node_modules"
+  ]
+}

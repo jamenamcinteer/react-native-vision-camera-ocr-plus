@@ -1,42 +1,37 @@
-import { NativeModules, Platform } from 'react-native';
-import type { PhotoOptions, Text } from './types';
+import { NitroModules } from 'react-native-nitro-modules'
+import { Platform as RNPlatform } from 'react-native'
+import type { TextRecognizer } from './specs/TextRecognizer.nitro'
+import type { PhotoOptions, Text } from './types'
 
+/**
+ * Recognize text in a still photo.
+ *
+ * Uses the Nitro TextRecognizer HybridObject for efficient native OCR via ML Kit.
+ *
+ * @example
+ * const result = await PhotoRecognizer({ uri: 'file:///path/to/photo.jpg' });
+ * console.log(result.resultText);
+ */
 export async function PhotoRecognizer(options: PhotoOptions): Promise<Text> {
-  const { PhotoRecognizerModule } = NativeModules;
-  const { uri, orientation } = options;
+  const { uri, orientation = 'portrait' } = options
 
   if (!uri) {
-    throw new Error("Can't resolve img uri");
+    throw new Error("Can't resolve img uri")
   }
 
-  // Check if the native module is properly linked
-  if (
-    !PhotoRecognizerModule ||
-    typeof PhotoRecognizerModule.process !== 'function'
-  ) {
-    throw new Error(
-      'PhotoRecognizerModule is not properly linked. Please ensure react-native-vision-camera-ocr-plus is correctly installed and linked. ' +
-        'For React Native 0.60+, try running "npx react-native clean" followed by "npx react-native run-android" (or "npx react-native run-ios") to reinstall the native modules. ' +
-        'For older versions, verify the module is manually linked.'
-    );
-  }
+  const recognizer =
+    NitroModules.createHybridObject<TextRecognizer>('TextRecognizer')
 
-  // Normalize the URI for different platforms
-  let processUri = uri;
-
-  if (Platform.OS === 'ios') {
-    // iOS: Remove file:// prefix if present
-    processUri = uri.replace('file://', '');
-    return await PhotoRecognizerModule.process(
-      processUri,
-      orientation || 'portrait'
-    );
+  // Normalize URI per platform
+  let processUri = uri
+  if (RNPlatform.OS === 'ios') {
+    processUri = uri.replace('file://', '')
   } else {
-    // Android: Ensure proper file:// prefix for absolute file paths without any scheme
-    const hasScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(processUri);
+    const hasScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(processUri)
     if (!hasScheme) {
-      processUri = `file://${processUri}`;
+      processUri = `file://${processUri}`
     }
-    return await PhotoRecognizerModule.process(processUri);
   }
+
+  return recognizer.recognizePhoto(processUri, orientation) as Promise<Text>
 }

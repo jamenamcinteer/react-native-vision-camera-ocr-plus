@@ -1,51 +1,70 @@
-import type { Languages } from '../types';
+import type { Languages } from '../types'
 
-// Mock the native modules
-const mockRemoveLanguageModel = {
-  remove: jest.fn(),
-};
+// Mock react-native-nitro-modules
+const mockRemoveLanguageModel = jest.fn()
 
-jest.mock('react-native', () => ({
-  NativeModules: {
-    RemoveLanguageModel: mockRemoveLanguageModel,
+const mockTranslator = {
+  translate: jest.fn(),
+  removeLanguageModel: mockRemoveLanguageModel,
+}
+
+jest.mock('react-native-nitro-modules', () => ({
+  NitroModules: {
+    createHybridObject: jest.fn((name: string) => {
+      if (name === 'Translator') return mockTranslator
+      throw new Error(`Unknown HybridObject: ${name}`)
+    }),
   },
-}));
+}))
 
 // Import after mocking
-const { RemoveLanguageModel } = require('../RemoveLanguageModel');
+const { RemoveLanguageModel } = require('../RemoveLanguageModel')
+const { NitroModules } = require('react-native-nitro-modules')
 
 describe('RemoveLanguageModel', () => {
   beforeEach(() => {
-    jest.clearAllMocks();
-  });
+    jest.clearAllMocks()
+  })
 
   describe('Basic functionality', () => {
-    it('should call native remove method with correct language code', async () => {
-      mockRemoveLanguageModel.remove.mockResolvedValue(true);
+    it('should create a Translator HybridObject', async () => {
+      mockRemoveLanguageModel.mockResolvedValue(true)
 
-      const result = await RemoveLanguageModel('en');
+      await RemoveLanguageModel('en')
 
-      expect(mockRemoveLanguageModel.remove).toHaveBeenCalledWith('en');
-      expect(result).toBe(true);
-    });
+      expect(NitroModules.createHybridObject).toHaveBeenCalledWith('Translator')
+    })
 
-    it('should return false when removal fails', async () => {
-      mockRemoveLanguageModel.remove.mockResolvedValue(false);
+    it('should call removeLanguageModel with the correct language code', async () => {
+      mockRemoveLanguageModel.mockResolvedValue(true)
 
-      const result = await RemoveLanguageModel('fr');
+      await RemoveLanguageModel('en')
 
-      expect(mockRemoveLanguageModel.remove).toHaveBeenCalledWith('fr');
-      expect(result).toBe(false);
-    });
+      expect(mockRemoveLanguageModel).toHaveBeenCalledWith('en')
+    })
 
-    it('should handle native module errors', async () => {
-      const errorMessage = 'Native module error';
-      mockRemoveLanguageModel.remove.mockRejectedValue(new Error(errorMessage));
+    it('should return true on successful removal', async () => {
+      mockRemoveLanguageModel.mockResolvedValue(true)
 
-      await expect(RemoveLanguageModel('de')).rejects.toThrow(errorMessage);
-      expect(mockRemoveLanguageModel.remove).toHaveBeenCalledWith('de');
-    });
-  });
+      const result = await RemoveLanguageModel('fr')
+
+      expect(result).toBe(true)
+    })
+
+    it('should return false when model is not found', async () => {
+      mockRemoveLanguageModel.mockResolvedValue(false)
+
+      const result = await RemoveLanguageModel('de')
+
+      expect(result).toBe(false)
+    })
+
+    it('should propagate errors from the native module', async () => {
+      mockRemoveLanguageModel.mockRejectedValue(new Error('Model not found'))
+
+      await expect(RemoveLanguageModel('ja')).rejects.toThrow('Model not found')
+    })
+  })
 
   describe('Language code validation', () => {
     const validLanguageCodes: Languages[] = [
@@ -106,111 +125,21 @@ describe('RemoveLanguageModel', () => {
       'ur',
       'vi',
       'cy',
-    ];
+    ]
 
-    validLanguageCodes.forEach((languageCode) => {
-      it(`should accept valid language code: ${languageCode}`, async () => {
-        mockRemoveLanguageModel.remove.mockResolvedValue(true);
+    it('should support all 57 defined language codes', () => {
+      expect(validLanguageCodes).toHaveLength(57)
+    })
 
-        await RemoveLanguageModel(languageCode);
+    validLanguageCodes.forEach((code) => {
+      it(`should accept language code "${code}"`, async () => {
+        mockRemoveLanguageModel.mockResolvedValue(true)
 
-        expect(mockRemoveLanguageModel.remove).toHaveBeenCalledWith(
-          languageCode
-        );
-      });
-    });
-  });
+        const result = await RemoveLanguageModel(code)
 
-  describe('Common language codes', () => {
-    const commonLanguages = [
-      { code: 'en' as Languages, name: 'English' },
-      { code: 'es' as Languages, name: 'Spanish' },
-      { code: 'fr' as Languages, name: 'French' },
-      { code: 'de' as Languages, name: 'German' },
-      { code: 'it' as Languages, name: 'Italian' },
-      { code: 'pt' as Languages, name: 'Portuguese' },
-      { code: 'ru' as Languages, name: 'Russian' },
-      { code: 'ja' as Languages, name: 'Japanese' },
-      { code: 'ko' as Languages, name: 'Korean' },
-      { code: 'zh' as Languages, name: 'Chinese' },
-      { code: 'ar' as Languages, name: 'Arabic' },
-      { code: 'hi' as Languages, name: 'Hindi' },
-    ];
-
-    commonLanguages.forEach(({ code, name }) => {
-      it(`should handle ${name} (${code}) language removal`, async () => {
-        mockRemoveLanguageModel.remove.mockResolvedValue(true);
-
-        const result = await RemoveLanguageModel(code);
-
-        expect(mockRemoveLanguageModel.remove).toHaveBeenCalledWith(code);
-        expect(result).toBe(true);
-      });
-    });
-  });
-
-  describe('Error scenarios', () => {
-    it('should handle timeout errors', async () => {
-      const timeoutError = new Error('Operation timed out');
-      mockRemoveLanguageModel.remove.mockRejectedValue(timeoutError);
-
-      await expect(RemoveLanguageModel('en')).rejects.toThrow(
-        'Operation timed out'
-      );
-    });
-
-    it('should handle network errors', async () => {
-      const networkError = new Error('Network connection failed');
-      mockRemoveLanguageModel.remove.mockRejectedValue(networkError);
-
-      await expect(RemoveLanguageModel('fr')).rejects.toThrow(
-        'Network connection failed'
-      );
-    });
-
-    it('should handle language model not found', async () => {
-      const notFoundError = new Error('Language model not found');
-      mockRemoveLanguageModel.remove.mockRejectedValue(notFoundError);
-
-      await expect(RemoveLanguageModel('cy')).rejects.toThrow(
-        'Language model not found'
-      );
-    });
-  });
-
-  describe('Async behavior', () => {
-    it('should handle multiple concurrent removals', async () => {
-      mockRemoveLanguageModel.remove
-        .mockResolvedValueOnce(true)
-        .mockResolvedValueOnce(false)
-        .mockResolvedValueOnce(true);
-
-      const promises = [
-        RemoveLanguageModel('en'),
-        RemoveLanguageModel('fr'),
-        RemoveLanguageModel('de'),
-      ];
-
-      const results = await Promise.all(promises);
-
-      expect(results).toEqual([true, false, true]);
-      expect(mockRemoveLanguageModel.remove).toHaveBeenCalledTimes(3);
-    });
-
-    it('should handle slow operations', async () => {
-      mockRemoveLanguageModel.remove.mockImplementation(
-        () =>
-          new Promise((resolve) => {
-            setTimeout(() => resolve(true), 100);
-          })
-      );
-
-      const startTime = Date.now();
-      const result = await RemoveLanguageModel('en');
-      const endTime = Date.now();
-
-      expect(result).toBe(true);
-      expect(endTime - startTime).toBeGreaterThanOrEqual(100);
-    });
-  });
-});
+        expect(mockRemoveLanguageModel).toHaveBeenCalledWith(code)
+        expect(typeof result).toBe('boolean')
+      })
+    })
+  })
+})

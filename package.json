@@ -1,113 +1,113 @@
 {
   "name": "react-native-vision-camera-ocr-plus",
-  "version": "1.2.9",
-  "description": "React Native Vision Camera plugin for on-device text recognition (OCR) and translation using ML Kit. Maintained fork of react-native-vision-camera-text-recognition",
-  "main": "lib/commonjs/index",
-  "module": "lib/module/index",
-  "types": "lib/typescript/src/index.d.ts",
+  "version": "0.0.1",
+  "description": "react-native-vision-camera-ocr-plus",
+  "main": "lib/index",
+  "module": "lib/index",
+  "types": "lib/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
   "files": [
     "src",
+    "react-native.config.js",
     "lib",
-    "android",
-    "ios",
+    "nitrogen",
+    "android/build.gradle",
+    "android/gradle.properties",
+    "android/fix-prefab.gradle",
+    "android/CMakeLists.txt",
+    "android/src",
     "cpp",
+    "ios/**/*.h",
+    "ios/**/*.m",
+    "ios/**/*.mm",
+    "ios/**/*.cpp",
+    "ios/**/*.swift",
+    "app.plugin.js",
+    "nitro.json",
     "*.podspec",
-    "!ios/build",
-    "!android/build",
-    "!android/gradle",
-    "!android/gradlew",
-    "!android/gradlew.bat",
-    "!android/local.properties",
-    "!**/__tests__",
-    "!**/__fixtures__",
-    "!**/__mocks__",
-    "!**/.*"
+    "README.md"
   ],
   "scripts": {
     "test": "jest",
     "test:coverage": "jest --coverage",
     "typecheck": "tsc --noEmit",
-    "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
-    "prepare": "bob build",
-    "release": "standard-version"
+    "clean": "rm -rf android/build node_modules/**/android/build lib",
+    "lint": "eslint \"**/*.{js,ts,tsx}\" --fix",
+    "lint-ci": "eslint \"**/*.{js,ts,tsx}\" -f @jamesacarr/github-actions",
+    "typescript": "tsc",
+    "specs": "tsc --noEmit false && nitrogen --logLevel=\"debug\""
   },
   "keywords": [
     "react-native",
-    "ios",
-    "android",
-    "camera",
-    "mlkit",
-    "ML Kit",
-    "react-native-vision-camera",
-    "vision-camera",
-    "text-recognition",
-    "text",
-    "ocr",
-    "text",
-    "text-detector",
-    "text-recognizer",
-    "mlkit",
-    "google-mlkit",
-    "machine-learning",
-    "image-processing",
-    "react-native-camera",
-    "react-native-ocr",
-    "vision-camera-ocr",
-    "react-native-vision-camera-text-recognition"
+    "nitro"
   ],
   "repository": {
     "type": "git",
-    "url": "https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus"
+    "url": "git+https://github.com/mrousavy/nitro.git"
   },
-  "author": "Jamena McInteer <hello@jamena.dev> (https://github.com/jamenamcinteer)",
+  "author": "Marc Rousavy <me@mrousavy.com> (https://github.com/mrousavy)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues"
+    "url": "https://github.com/mrousavy/nitro/issues"
   },
-  "homepage": "https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus#readme",
+  "homepage": "https://github.com/mrousavy/nitro#readme",
   "publishConfig": {
     "registry": "https://registry.npmjs.org/"
   },
   "devDependencies": {
-    "@commitlint/config-conventional": "^20.5.0",
-    "@eslint/eslintrc": "^3.3.5",
-    "@eslint/js": "^10.0.1",
-    "@react-native/babel-preset": "^0.85.1",
-    "@react-native/eslint-config": "^0.85.1",
-    "@react-native/jest-preset": "^0.85.1",
-    "@types/jest": "^30.0.0",
-    "@types/react": "^19.2.14",
-    "commitlint": "^20.5.0",
-    "del-cli": "^7.0.0",
-    "eslint": "^9.39.4",
-    "eslint-config-prettier": "^10.1.8",
-    "eslint-plugin-ft-flow": "^3.0.11",
-    "eslint-plugin-prettier": "^5.5.5",
-    "jest": "^30.3.0",
-    "prettier": "^3.8.2",
-    "react": "19.2.5",
-    "react-native": "^0.85.1",
-    "react-native-builder-bob": "^0.41.0",
-    "react-native-vision-camera": "^5.0.9",
-    "react-native-vision-camera-worklets": "^5.0.9",
-    "react-native-worklets": "^0.8.3",
-    "react-native-worklets-core": "^1.6.3",
-    "standard-version": "^9.5.0",
-    "typescript": "^6.0.2"
-  },
-  "resolutions": {
-    "@types/react": "^19.1.0"
+    "@react-native/eslint-config": "0.83.0",
+    "@react-native/jest-preset": "0.83.0",
+    "@types/jest": "^29.5.14",
+    "@types/react": "^19.1.03",
+    "eslint": "^8.57.0",
+    "eslint-config-prettier": "^9.1.0",
+    "eslint-plugin-prettier": "^5.2.1",
+    "jest": "^29.7.0",
+    "nitrogen": "*",
+    "prettier": "^3.3.3",
+    "react": "19.2.0",
+    "react-native": "0.83.0",
+    "react-native-nitro-modules": "*",
+    "typescript": "^5.8.3"
   },
   "peerDependencies": {
-    "react": "*"
+    "react": "*",
+    "react-native": "*",
+    "react-native-nitro-modules": "*",
+    "react-native-vision-camera": ">=5.0.0",
+    "react-native-vision-camera-worklets": "*",
+    "react-native-worklets": "*"
   },
+  "eslintConfig": {
+    "root": true,
+    "extends": [
+      "@react-native",
+      "prettier"
+    ],
+    "plugins": [
+      "prettier"
+    ],
+    "rules": {
+      "prettier/prettier": [
+        "warn",
+        {
+          "quoteProps": "consistent",
+          "singleQuote": true,
+          "tabWidth": 2,
+          "trailingComma": "es5",
+          "useTabs": false
+        }
+      ]
+    }
+  },
+  "eslintIgnore": [
+    "node_modules/",
+    "lib/"
+  ],
   "jest": {
     "preset": "@react-native/jest-preset",
     "modulePathIgnorePatterns": [
-      "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
     ],
     "testMatch": [
@@ -127,28 +127,15 @@
     ],
     "testEnvironment": "node",
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|@react-native|react-native-vision-camera|react-native-worklets-core)/)"
+      "node_modules/(?!(react-native|@react-native|react-native-vision-camera|react-native-worklets|react-native-vision-camera-worklets|react-native-nitro-modules)/)"
     ]
   },
-  "commitlint": {
-    "extends": [
-      "@commitlint/config-conventional"
-    ]
-  },
-  "react-native-builder-bob": {
-    "source": "src",
-    "output": "lib",
-    "targets": [
-      "commonjs",
-      "module",
-      [
-        "typescript",
-        {
-          "project": "tsconfig.build.json"
-        }
-      ]
-    ]
-  },
-  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72",
-  "dependencies": {}
+  "prettier": {
+    "quoteProps": "consistent",
+    "singleQuote": true,
+    "tabWidth": 2,
+    "trailingComma": "es5",
+    "useTabs": false,
+    "semi": false
+  }
 }

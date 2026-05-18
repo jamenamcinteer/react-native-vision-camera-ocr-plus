@@ -2,13 +2,11 @@ export type {
   Frame,
   CameraProps,
   CameraDevice,
-} from 'react-native-vision-camera';
-export type { ForwardedRef } from 'react';
-import type { CameraProps, Frame } from 'react-native-vision-camera';
+} from 'react-native-vision-camera'
+export type { ForwardedRef } from 'react'
+import type { CameraProps, Frame } from 'react-native-vision-camera'
 
-export type ReadonlyFrameProcessor = (frame: Frame) => void;
-export type FrameProcessorPlugin = { call: (frame: Frame) => unknown };
-export type FrameInternal = Frame;
+export type ReadonlyFrameProcessor = (frame: Frame) => void
 
 export type Languages =
   | 'af'
@@ -67,110 +65,113 @@ export type Languages =
   | 'uk'
   | 'ur'
   | 'vi'
-  | 'cy';
+  | 'cy'
 
 /**
  * Percentage string type (e.g., "0%", "50%", "100%")
  */
-export type Percentage = `${number}%`;
+export type Percentage = `${number}%`
 
 export type ScanRegion = {
-  left: Percentage;
-  top: Percentage;
-  width: Percentage;
-  height: Percentage;
-};
+  left: Percentage
+  top: Percentage
+  width: Percentage
+  height: Percentage
+}
 
 export type TextRecognitionOptions = {
   /**
    * Language to recognize
    * @default 'latin'
    */
-  language?: 'latin' | 'chinese' | 'devanagari' | 'japanese' | 'korean';
+  language?: 'latin' | 'chinese' | 'devanagari' | 'japanese' | 'korean'
   /**
    * Scan region within the frame to focus text recognition on
    * @default undefined
    */
-  scanRegion?: ScanRegion;
+  scanRegion?: ScanRegion
   /**
    * Performance optimization: Skip frames to reduce processing load
    * Higher values = better performance, lower accuracy
    * @default 10
    */
-  frameSkipThreshold?: number;
+  frameSkipThreshold?: number
   /**
    * Use lightweight processing for better performance (Android only)
    * Skips corner points, languages, and element processing for better performance
    * Has no effect on iOS - iOS always returns full data structure
    * @default false
    */
-  useLightweightMode?: boolean;
-};
+  useLightweightMode?: boolean
+}
 
 export type TranslatorOptions = {
-  from: Languages;
-  to: Languages;
-};
+  from: Languages
+  to: Languages
+}
 
 export type CameraTypes = {
-  callback: (data: string | Text) => void;
-  mode: 'translate' | 'recognize';
+  callback: (data: string | Text) => void
+  mode: 'translate' | 'recognize'
 } & CameraProps &
   (
     | { mode: 'recognize'; options: TextRecognitionOptions }
     | { mode: 'translate'; options: TranslatorOptions }
-  );
+  )
 
-export type ScanTextConfig = { scanRegion: ScanRegion };
+export type ScanTextConfig = { scanRegion: ScanRegion }
 export type TextRecognitionPlugin = {
-  scanText: (frame: Frame, config?: ScanTextConfig) => Text;
-};
+  scanText: (frame: Frame, config?: ScanTextConfig) => Text
+}
 export type TranslatorPlugin = {
-  translate: (frame: Frame) => string;
-};
+  /** Synchronous OCR of a frame — safe to call from worklets. */
+  scanText: (frame: Frame) => Text
+  /** Async translation of a text string — runs on the JS thread. */
+  translate: (text: string) => Promise<string>
+}
 
 export type Text = {
-  blocks: BlockData[];
-  resultText: string;
-};
+  blocks: BlockData[]
+  resultText: string
+}
 
-type BlockData = {
-  blockText: string;
-  blockCornerPoints?: CornerPointsType; // Always present on iOS, omitted on Android when useLightweightMode is true
-  blockFrame: FrameType;
-  lines: LineData[];
-};
+export type BlockData = {
+  blockText: string
+  blockCornerPoints?: CornerPointsType
+  blockFrame: FrameType
+  lines: LineData[]
+}
 
-type CornerPointsType = { x: number; y: number }[];
+export type CornerPointsType = { x: number; y: number }[]
 
-type FrameType = {
-  boundingCenterX: number;
-  boundingCenterY: number;
-  height: number;
-  width: number;
-  x: number;
-  y: number;
-};
+export type FrameType = {
+  boundingCenterX: number
+  boundingCenterY: number
+  height: number
+  width: number
+  x: number
+  y: number
+}
 
-type LineData = {
-  lineText: string;
-  lineCornerPoints?: CornerPointsType; // Always present on iOS, omitted on Android when useLightweightMode is true
-  lineFrame: FrameType;
-  lineLanguages?: string[]; // Always present on iOS, omitted on Android when useLightweightMode is true
-  elements: ElementData[]; // Always populated on iOS, empty array on Android when useLightweightMode is true
-};
+export type LineData = {
+  lineText: string
+  lineCornerPoints?: CornerPointsType
+  lineFrame: FrameType
+  lineLanguages?: string[]
+  elements: ElementData[]
+}
 
-type ElementData = {
-  elementText: string;
-  elementCornerPoints?: CornerPointsType; // Always present on iOS, may be present on Android
-  elementFrame: FrameType;
-};
+export type ElementData = {
+  elementText: string
+  elementCornerPoints?: CornerPointsType
+  elementFrame: FrameType
+}
 
 export type PhotoOptions = {
-  uri: string;
+  uri: string
   orientation?:
     | 'landscapeRight'
     | 'portrait'
     | 'portraitUpsideDown'
-    | 'landscapeLeft';
-};
+    | 'landscapeLeft'
+}

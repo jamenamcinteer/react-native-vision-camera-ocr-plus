@@ -6,7 +6,7 @@ module.exports = function (api) {
       ['@babel/preset-env', { targets: { node: 'current' } }],
     ],
     plugins: [
-      ['react-native-worklets-core/plugin'], // required for Frame Processors
+      ['react-native-worklets/plugin'], // required for worklet support
     ],
   };
 };

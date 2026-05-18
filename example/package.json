@@ -26,6 +26,7 @@
   "dependencies": {
     "babel-preset-expo": "~55.0.18",
     "expo": "~55.0.16",
+    "expo-build-properties": "~55.0.14",
     "expo-image-picker": "~55.0.12",
     "react": "19.2.0",
     "react-native": "0.83.6",
@@ -34,8 +35,7 @@
     "react-native-vision-camera": "^5.0.9",
     "react-native-vision-camera-ocr": "link:..",
     "react-native-vision-camera-worklets": "^5.0.9",
-    "react-native-worklets": "^0.8.3",
-    "react-native-worklets-core": "^1.6.3"
+    "react-native-worklets": "^0.8.3"
   },
   "devDependencies": {
     "@babel/core": "^7.29.0",

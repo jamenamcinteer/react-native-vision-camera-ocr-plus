@@ -15,7 +15,7 @@ import {
   useCameraPermission,
   useFrameOutput,
 } from 'react-native-vision-camera';
-import { runOnJS } from 'react-native-worklets';
+import { scheduleOnRN } from 'react-native-worklets';
 import {
   PhotoRecognizer,
   useTextRecognition,
@@ -60,8 +60,6 @@ export default function App() {
     }
   }, [image]);
 
-  const onText = React.useMemo(() => runOnJS(setDetectedText), []);
-
   const { scanText } = useTextRecognition({
     scanRegion,
   });
@@ -71,10 +69,9 @@ export default function App() {
       'worklet';
       const scannedText = scanText(frame);
       if (scannedText?.resultText) {
-        onText(scannedText.resultText);
+        scheduleOnRN(setDetectedText, scannedText.resultText);
       }
-      // Dispose when available (required in v5, safely ignored in v4 via optional chaining).
-      (frame as any).dispose?.();
+      frame.dispose();
     },
   });
 

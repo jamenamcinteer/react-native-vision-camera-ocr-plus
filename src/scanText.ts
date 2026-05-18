@@ -1,21 +1,31 @@
+import { NitroModules } from 'react-native-nitro-modules'
+import type { TextRecognizer } from './specs/TextRecognizer.nitro'
 import type {
-  Frame,
   TextRecognitionPlugin,
   TextRecognitionOptions,
   Text,
-} from './types';
-import { getVisionCameraProxy } from './visionCameraProxy';
+  Frame,
+} from './types'
 
-const LINKING_ERROR = `Can't load plugin scanText. Try cleaning cache or reinstall plugin.`;
+export type TextRecognitionHandle = TextRecognitionPlugin & {
+  /** The raw Nitro HybridObject - safe to capture directly in worklets. */
+  recognizer: TextRecognizer
+}
 
+/**
+ * Creates a plugin that synchronously recognizes text in a VisionCamera v5 frame.
+ *
+ * The returned `scanText` function has the 'worklet' directive so it can be
+ * captured and called synchronously from any worklet closure.
+ * The `recognizer` HybridObject is also exposed for direct inline use.
+ */
 export function createTextRecognitionPlugin(
   options?: TextRecognitionOptions
-): TextRecognitionPlugin {
-  const defaultOptions = {
-    frameSkipThreshold: 10,
-    useLightweightMode: false,
-    language: 'latin' as const,
-    ...options,
+): TextRecognitionHandle {
+  const config = {
+    language: options?.language ?? 'latin',
+    frameSkipThreshold: options?.frameSkipThreshold ?? 1,
+    useLightweightMode: options?.useLightweightMode ?? false,
     ...(options?.scanRegion && {
       scanRegion: {
         left: parseFloat(options.scanRegion.left),
@@ -24,19 +34,31 @@ export function createTextRecognitionPlugin(
         height: parseFloat(options.scanRegion.height),
       },
     }),
-  };
-
-  const plugin = getVisionCameraProxy().initFrameProcessorPlugin('scanText', {
-    ...defaultOptions,
-  });
-  if (!plugin) {
-    throw new Error(LINKING_ERROR);
   }
+
+  const recognizer =
+    NitroModules.createHybridObject<TextRecognizer>('TextRecognizer')
+  recognizer.configure(config)
+
   return {
+    recognizer,
     scanText: (frame: Frame): Text => {
-      'worklet';
-      // @ts-ignore
-      return plugin.call(frame) as Text;
+      'worklet'
+      const nb = (frame as any).getNativeBuffer() as {
+        pointer: bigint
+        release: () => void
+      }
+      const orientation: string = (frame as any).orientation ?? 'up'
+      let result: Text | undefined | null
+      try {
+        result = (recognizer as any).scanFrame(nb.pointer, orientation) as
+          | Text
+          | undefined
+          | null
+      } finally {
+        nb.release()
+      }
+      return result ?? ({ resultText: '', blocks: [] } as unknown as Text)
     },
-  };
+  }
 }

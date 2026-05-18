@@ -6,6 +6,7 @@
                 "expo": "~52.0.47",
                 "babel-preset-expo": "~12.0.0",
                 "expo-image-picker": "~16.0.6",
+                "expo-build-properties": "~0.12.0",
                 "react": "~18.3.1",
                 "react-native": "~0.76.9"
             },
@@ -19,6 +20,7 @@
                 "expo": "^55.0.0-canary-20251127-587bc53",
                 "babel-preset-expo": "~54.0.7",
                 "expo-image-picker": "^17.0.8",
+                "expo-build-properties": "~55.0.14",
                 "react": "19.2.0",
                 "react-native": "0.83.0-rc.3"
             },
@@ -32,6 +34,7 @@
                 "expo": "~55.0.16",
                 "babel-preset-expo": "~55.0.18",
                 "expo-image-picker": "~55.0.12",
+                "expo-build-properties": "~55.0.14",
                 "react": "19.2.0",
                 "react-native": "0.83.6",
                 "typescript": "~5.9.2"
@@ -45,6 +48,7 @@
         "expo",
         "babel-preset-expo",
         "expo-image-picker",
+        "expo-build-properties",
         "react",
         "react-native",
         "@types/react"
