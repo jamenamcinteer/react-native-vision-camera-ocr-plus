@@ -1,18 +1,18 @@
-import { NitroModules } from 'react-native-nitro-modules'
-import type { TextRecognizer } from './specs/TextRecognizer.nitro'
-import type { Translator } from './specs/Translator.nitro'
-import type { TranslatorPlugin, TranslatorOptions, Text, Frame } from './types'
+import { NitroModules } from 'react-native-nitro-modules';
+import type { TextRecognizer } from './specs/TextRecognizer.nitro';
+import type { Translator } from './specs/Translator.nitro';
+import type { TranslatorPlugin, TranslatorOptions, Text, Frame } from './types';
 
 export type TranslatorHandle = TranslatorPlugin & {
   /** Nitro TextRecognizer HybridObject - safe to capture directly in worklets. */
-  recognizer: TextRecognizer
+  recognizer: TextRecognizer;
   /** Nitro Translator HybridObject - call translate() on the JS thread. */
-  translator: Translator
+  translator: Translator;
   /** BCP-47 source language. */
-  from: string
+  from: string;
   /** BCP-47 target language. */
-  to: string
-}
+  to: string;
+};
 
 /**
  * Creates a plugin for live frame OCR + translation.
@@ -28,16 +28,16 @@ export function createTranslatorPlugin(
     language: 'latin',
     frameSkipThreshold: 1,
     useLightweightMode: false,
-  }
+  };
 
   const recognizer =
-    NitroModules.createHybridObject<TextRecognizer>('TextRecognizer')
-  recognizer.configure(recognizerConfig)
+    NitroModules.createHybridObject<TextRecognizer>('TextRecognizer');
+  recognizer.configure(recognizerConfig);
 
-  const translator = NitroModules.createHybridObject<Translator>('Translator')
+  const translator = NitroModules.createHybridObject<Translator>('Translator');
 
-  const from: string = options?.from ?? 'en'
-  const to: string = options?.to ?? 'en'
+  const from: string = options?.from ?? 'en';
+  const to: string = options?.to ?? 'en';
 
   return {
     recognizer,
@@ -46,27 +46,27 @@ export function createTranslatorPlugin(
     to,
 
     scanText: (frame: Frame): Text => {
-      'worklet'
+      'worklet';
       const nb = (frame as any).getNativeBuffer() as {
-        pointer: bigint
-        release: () => void
-      }
-      const orientation: string = (frame as any).orientation ?? 'up'
-      let result: Text | undefined | null
+        pointer: bigint;
+        release: () => void;
+      };
+      const orientation: string = (frame as any).orientation ?? 'up';
+      let result: Text | undefined | null;
       try {
         result = (recognizer as any).scanFrame(nb.pointer, orientation) as
           | Text
           | undefined
-          | null
+          | null;
       } finally {
-        nb.release()
+        nb.release();
       }
-      return result ?? ({ resultText: '', blocks: [] } as unknown as Text)
+      return result ?? ({ resultText: '', blocks: [] } as unknown as Text);
     },
 
     translate: (text: string): Promise<string> => {
-      if (!text) return Promise.resolve('')
-      return (translator as any).translate(text, from, to) as Promise<string>
+      if (!text) return Promise.resolve('');
+      return (translator as any).translate(text, from, to) as Promise<string>;
     },
-  }
+  };
 }

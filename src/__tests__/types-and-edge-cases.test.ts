@@ -59,27 +59,27 @@ describe('Type definitions and edge cases', () => {
         'ur',
         'vi',
         'cy',
-      ]
+      ];
 
-      expect(supportedLanguages).toHaveLength(57)
-      expect(supportedLanguages).toContain('en')
-      expect(supportedLanguages).toContain('zh')
-      expect(supportedLanguages).toContain('ja')
-      expect(supportedLanguages).toContain('ko')
-      expect(supportedLanguages).toContain('ar')
-    })
-  })
+      expect(supportedLanguages).toHaveLength(57);
+      expect(supportedLanguages).toContain('en');
+      expect(supportedLanguages).toContain('zh');
+      expect(supportedLanguages).toContain('ja');
+      expect(supportedLanguages).toContain('ko');
+      expect(supportedLanguages).toContain('ar');
+    });
+  });
 
   describe('TextRecognitionOptions script languages', () => {
     it('should support all five recognition scripts', () => {
-      const scripts = ['latin', 'chinese', 'devanagari', 'japanese', 'korean']
+      const scripts = ['latin', 'chinese', 'devanagari', 'japanese', 'korean'];
 
-      expect(scripts).toHaveLength(5)
+      expect(scripts).toHaveLength(5);
       scripts.forEach((script) => {
-        expect(typeof script).toBe('string')
-      })
-    })
-  })
+        expect(typeof script).toBe('string');
+      });
+    });
+  });
 
   describe('ScanRegion percentage strings', () => {
     it('should construct valid ScanRegion objects', () => {
@@ -88,13 +88,13 @@ describe('Type definitions and edge cases', () => {
         top: '20%' as const,
         width: '80%' as const,
         height: '30%' as const,
-      }
+      };
 
-      expect(region.left).toBe('10%')
-      expect(region.top).toBe('20%')
-      expect(region.width).toBe('80%')
-      expect(region.height).toBe('30%')
-    })
+      expect(region.left).toBe('10%');
+      expect(region.top).toBe('20%');
+      expect(region.width).toBe('80%');
+      expect(region.height).toBe('30%');
+    });
 
     it('should support 0% boundary value', () => {
       const region = {
@@ -102,12 +102,12 @@ describe('Type definitions and edge cases', () => {
         top: '0%' as const,
         width: '100%' as const,
         height: '100%' as const,
-      }
+      };
 
-      expect(region.left).toBe('0%')
-      expect(region.width).toBe('100%')
-    })
-  })
+      expect(region.left).toBe('0%');
+      expect(region.width).toBe('100%');
+    });
+  });
 
   describe('Text result shape', () => {
     it('should match the expected Text structure', () => {
@@ -161,23 +161,23 @@ describe('Type definitions and edge cases', () => {
             ],
           },
         ],
-      }
+      };
 
-      expect(text).toHaveProperty('resultText', 'Hello World')
-      expect(text.blocks).toHaveLength(1)
-      expect(text.blocks[0]).toHaveProperty('blockText', 'Hello World')
-      expect(text.blocks[0]!.lines).toHaveLength(1)
-      expect(text.blocks[0]!.lines[0]!.elements).toHaveLength(1)
-      expect(text.blocks[0]!.lines[0]!.elements[0]!.elementText).toBe('Hello')
-    })
+      expect(text).toHaveProperty('resultText', 'Hello World');
+      expect(text.blocks).toHaveLength(1);
+      expect(text.blocks[0]).toHaveProperty('blockText', 'Hello World');
+      expect(text.blocks[0]!.lines).toHaveLength(1);
+      expect(text.blocks[0]!.lines[0]!.elements).toHaveLength(1);
+      expect(text.blocks[0]!.lines[0]!.elements[0]!.elementText).toBe('Hello');
+    });
 
     it('should handle empty text result', () => {
-      const emptyText = { resultText: '', blocks: [] }
+      const emptyText = { resultText: '', blocks: [] };
 
-      expect(emptyText.resultText).toBe('')
-      expect(emptyText.blocks).toHaveLength(0)
-    })
-  })
+      expect(emptyText.resultText).toBe('');
+      expect(emptyText.blocks).toHaveLength(0);
+    });
+  });
 
   describe('PhotoOptions', () => {
     it('should accept all valid orientation values', () => {
@@ -186,21 +186,21 @@ describe('Type definitions and edge cases', () => {
         'portraitUpsideDown',
         'landscapeLeft',
         'landscapeRight',
-      ]
+      ];
 
       orientations.forEach((orientation) => {
-        const options = { uri: 'file:///test.jpg', orientation }
-        expect(options.orientation).toBe(orientation)
-      })
-    })
+        const options = { uri: 'file:///test.jpg', orientation };
+        expect(options.orientation).toBe(orientation);
+      });
+    });
 
     it('should accept options with only a URI', () => {
-      const options = { uri: 'file:///test.jpg' }
+      const options = { uri: 'file:///test.jpg' };
 
-      expect(options.uri).toBe('file:///test.jpg')
-      expect(options).not.toHaveProperty('orientation')
-    })
-  })
+      expect(options.uri).toBe('file:///test.jpg');
+      expect(options).not.toHaveProperty('orientation');
+    });
+  });
 
   describe('Nitro TextRecognitionConfig', () => {
     it('should construct a valid config object', () => {
@@ -208,12 +208,12 @@ describe('Type definitions and edge cases', () => {
         language: 'latin',
         frameSkipThreshold: 10,
         useLightweightMode: false,
-      }
+      };
 
-      expect(config.language).toBe('latin')
-      expect(config.frameSkipThreshold).toBe(10)
-      expect(config.useLightweightMode).toBe(false)
-    })
+      expect(config.language).toBe('latin');
+      expect(config.frameSkipThreshold).toBe(10);
+      expect(config.useLightweightMode).toBe(false);
+    });
 
     it('should support a scanRegion in the config', () => {
       const config = {
@@ -221,16 +221,16 @@ describe('Type definitions and edge cases', () => {
         frameSkipThreshold: 10,
         useLightweightMode: false,
         scanRegion: { left: 10, top: 20, width: 80, height: 30 },
-      }
+      };
 
       expect(config.scanRegion).toEqual({
         left: 10,
         top: 20,
         width: 80,
         height: 30,
-      })
-    })
-  })
+      });
+    });
+  });
 
   describe('Nitro RecognizedText shape', () => {
     it('should match the HybridObject result structure', () => {
@@ -251,10 +251,10 @@ describe('Type definitions and edge cases', () => {
             lines: [],
           },
         ],
-      }
+      };
 
-      expect(result.resultText).toBe('OCR output')
-      expect(result.blocks[0]!.blockFrame.width).toBe(200)
-    })
-  })
-})
+      expect(result.resultText).toBe('OCR output');
+      expect(result.blocks[0]!.blockFrame.width).toBe(200);
+    });
+  });
+});

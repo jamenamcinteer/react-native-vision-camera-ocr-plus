@@ -8,5 +8,5 @@ export type {
   CornerPoint,
   ScanRegion,
   TextRecognitionConfig,
-} from './TextRecognizer.nitro'
-export type { Translator } from './Translator.nitro'
+} from './TextRecognizer.nitro';
+export type { Translator } from './Translator.nitro';

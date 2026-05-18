@@ -1,57 +1,57 @@
-import type { HybridObject, UInt64 } from 'react-native-nitro-modules'
+import type { HybridObject, UInt64 } from 'react-native-nitro-modules';
 
 export interface CornerPoint {
-  x: number
-  y: number
+  x: number;
+  y: number;
 }
 
 export interface BoundingFrame {
-  boundingCenterX: number
-  boundingCenterY: number
-  height: number
-  width: number
-  x: number
-  y: number
+  boundingCenterX: number;
+  boundingCenterY: number;
+  height: number;
+  width: number;
+  x: number;
+  y: number;
 }
 
 export interface TextElement {
-  elementText: string
-  elementFrame: BoundingFrame
-  elementCornerPoints: CornerPoint[]
+  elementText: string;
+  elementFrame: BoundingFrame;
+  elementCornerPoints: CornerPoint[];
 }
 
 export interface TextLine {
-  lineText: string
-  lineFrame: BoundingFrame
-  lineCornerPoints: CornerPoint[]
-  lineLanguages: string[]
-  elements: TextElement[]
+  lineText: string;
+  lineFrame: BoundingFrame;
+  lineCornerPoints: CornerPoint[];
+  lineLanguages: string[];
+  elements: TextElement[];
 }
 
 export interface TextBlock {
-  blockText: string
-  blockFrame: BoundingFrame
-  blockCornerPoints: CornerPoint[]
-  lines: TextLine[]
+  blockText: string;
+  blockFrame: BoundingFrame;
+  blockCornerPoints: CornerPoint[];
+  lines: TextLine[];
 }
 
 export interface RecognizedText {
-  resultText: string
-  blocks: TextBlock[]
+  resultText: string;
+  blocks: TextBlock[];
 }
 
 export interface ScanRegion {
-  left: number
-  top: number
-  width: number
-  height: number
+  left: number;
+  top: number;
+  width: number;
+  height: number;
 }
 
 export interface TextRecognitionConfig {
-  language: string
-  scanRegion?: ScanRegion
-  frameSkipThreshold: number
-  useLightweightMode: boolean
+  language: string;
+  scanRegion?: ScanRegion;
+  frameSkipThreshold: number;
+  useLightweightMode: boolean;
 }
 
 /**
@@ -59,13 +59,13 @@ export interface TextRecognitionConfig {
  * Handles both still-photo recognition and live-frame processing.
  */
 export interface TextRecognizer extends HybridObject<{
-  ios: 'swift'
-  android: 'kotlin'
+  ios: 'swift';
+  android: 'kotlin';
 }> {
   /**
    * Recognize text in a still photo by URI.
    */
-  recognizePhoto(uri: string, orientation: string): Promise<RecognizedText>
+  recognizePhoto(uri: string, orientation: string): Promise<RecognizedText>;
 
   /**
    * Synchronously recognize text in a live camera frame.
@@ -76,10 +76,10 @@ export interface TextRecognizer extends HybridObject<{
   scanFrame(
     nativeBufferPointer: UInt64,
     orientation: string
-  ): RecognizedText | undefined
+  ): RecognizedText | undefined;
 
   /**
    * Configure the recognizer (language, scan region, etc.).
    */
-  configure(config: TextRecognitionConfig): void
+  configure(config: TextRecognitionConfig): void;
 }

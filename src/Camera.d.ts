@@ -32,8 +32,12 @@ export declare const Camera: React.ForwardRefExoticComponent<any>;
 /**
  * React hook that creates and memoizes a text recognition handle.
  */
-export declare function useTextRecognition(options?: TextRecognitionOptions): TextRecognitionHandle;
+export declare function useTextRecognition(
+  options?: TextRecognitionOptions
+): TextRecognitionHandle;
 /**
  * React hook that creates and memoizes a translator handle.
  */
-export declare function useTranslate(options?: TranslatorOptions): TranslatorHandle;
+export declare function useTranslate(
+  options?: TranslatorOptions
+): TranslatorHandle;

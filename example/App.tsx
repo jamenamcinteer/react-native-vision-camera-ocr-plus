@@ -19,8 +19,8 @@ import { scheduleOnRN } from 'react-native-worklets';
 import {
   PhotoRecognizer,
   useTextRecognition,
-} from 'react-native-vision-camera-ocr';
-import type { ScanRegion } from 'react-native-vision-camera-ocr';
+} from 'react-native-vision-camera-ocr-plus';
+import type { ScanRegion } from 'react-native-vision-camera-ocr-plus';
 import * as ImagePicker from 'expo-image-picker';
 
 const scanRegion = {

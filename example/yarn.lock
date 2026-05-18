@@ -3974,7 +3974,7 @@ react-native-nitro-modules@^0.35.6:
   resolved "https://registry.yarnpkg.com/react-native-nitro-modules/-/react-native-nitro-modules-0.35.6.tgz#717a890fa033083f91765a586d433dd60492ac8b"
   integrity sha512-3Cb7s+O5tpZ6RdIiPOB/wi3IMfBxD6tl6VDF8gJ5zvM/BEGTWxwMMLjzmWmsYPKekdbYBznF6qp2d2SxixPy8g==
 
-"react-native-vision-camera-ocr@link:..":
+"react-native-vision-camera-ocr-plus@link:..":
   version "0.0.0"
   uid ""
 

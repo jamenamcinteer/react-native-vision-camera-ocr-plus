@@ -11,7 +11,7 @@ Pod::Spec.new do |s|
   s.authors      = package["author"]
 
   s.platforms    = { :ios => min_ios_version_supported, :visionos => 1.0 }
-  s.source       = { :git => "https://github.com/mrousavy/nitro.git", :tag => "#{s.version}" }
+  s.source       = { :git => "https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus.git", :tag => "#{s.version}" }
 
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
@@ -32,11 +32,6 @@ Pod::Spec.new do |s|
 
   s.dependency 'React-jsi'
   s.dependency 'React-callinvoker'
-  # s.dependency 'GoogleMLKit/TextRecognitionChinese', '~> 7.0'
-  # s.dependency 'GoogleMLKit/TextRecognitionDevanagari', '~> 7.0'
-  # s.dependency 'GoogleMLKit/TextRecognitionJapanese', '~> 7.0'
-  # s.dependency 'GoogleMLKit/TextRecognitionKorean', '~> 7.0'
-  # s.dependency 'GoogleMLKit/Translate', '~> 7.0'
 
   if min_ios_version_supported.to_f >= 16.0
     s.dependency "GoogleMLKit/TextRecognition", '>= 8.0.0'
