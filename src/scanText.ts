@@ -24,7 +24,7 @@ export function createTextRecognitionPlugin(
 ): TextRecognitionHandle {
   const config = {
     language: options?.language ?? 'latin',
-    frameSkipThreshold: options?.frameSkipThreshold ?? 1,
+    frameSkipThreshold: options?.frameSkipThreshold ?? 10,
     useLightweightMode: options?.useLightweightMode ?? false,
     ...(options?.scanRegion && {
       scanRegion: {

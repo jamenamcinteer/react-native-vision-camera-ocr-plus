@@ -9,7 +9,7 @@ import { NitroModules } from 'react-native-nitro-modules';
 export function createTextRecognitionPlugin(options) {
   const config = {
     language: options?.language ?? 'latin',
-    frameSkipThreshold: options?.frameSkipThreshold ?? 1,
+    frameSkipThreshold: options?.frameSkipThreshold ?? 10,
     useLightweightMode: options?.useLightweightMode ?? false,
     ...(options?.scanRegion && {
       scanRegion: {
