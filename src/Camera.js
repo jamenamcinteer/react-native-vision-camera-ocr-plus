@@ -73,10 +73,14 @@ export const Camera = forwardRef(function Camera(props, ref) {
         .translate(text, fromLang, toLang)
         .then((translated) => {
           if (requestId === translationState.requestId) {
+            translationState.lastRequestedText = text;
             callback(translated);
           }
         })
         .catch((error) => {
+          if (requestId === translationState.requestId) {
+            translationState.lastRequestedText = '';
+          }
           console.warn(
             '[react-native-vision-camera-ocr-plus] Translation failed',
             error
@@ -124,11 +128,11 @@ export const Camera = forwardRef(function Camera(props, ref) {
     null,
     !!device &&
       React.createElement(NativeCamera, {
+        ...p,
         pixelFormat: Platform.OS === 'android' ? 'rgb' : 'yuv',
         ref: ref,
         device: device,
         frameProcessor: frameProcessor,
-        ...p,
       })
   );
 });

@@ -351,7 +351,7 @@ describe('Camera module', () => {
       const scanFrame = jest
         .fn()
         .mockReturnValueOnce({ resultText: 'hello', blocks: [] })
-        .mockReturnValueOnce({ resultText: 'bonjour', blocks: [] });
+        .mockReturnValueOnce({ resultText: 'hello', blocks: [] });
       const translate = jest
         .fn()
         .mockRejectedValueOnce(translationError)
@@ -400,8 +400,36 @@ describe('Camera module', () => {
 
       frameProcessor(makeFrame());
       expect(translate).toHaveBeenCalledTimes(2);
+      expect(translate).toHaveBeenLastCalledWith('hello', 'en', 'fr');
 
       warnSpy.mockRestore();
+    });
+
+    it('should not allow consumer props to override frameProcessor or pixelFormat', () => {
+      const { Platform } = require('react-native');
+      Platform.OS = 'android';
+      const { Camera } = require('../Camera');
+      const mockDevice = { id: 'back', name: 'Back Camera' };
+      const mockCallback = jest.fn();
+      const externalFrameProcessor = jest.fn();
+
+      const result = Camera({
+        device: mockDevice,
+        isActive: true,
+        mode: 'recognize' as const,
+        options: { language: 'latin' as const },
+        callback: mockCallback,
+        frameProcessor: externalFrameProcessor,
+        pixelFormat: 'yuv',
+      });
+
+      const child = Array.isArray(result.props.children)
+        ? result.props.children[0]
+        : result.props.children;
+
+      expect(child.props.pixelFormat).toBe('rgb');
+      expect(child.props.frameProcessor).not.toBe(externalFrameProcessor);
+      expect(typeof child.props.frameProcessor).toBe('function');
     });
 
     it('should return null children when device is not provided', () => {

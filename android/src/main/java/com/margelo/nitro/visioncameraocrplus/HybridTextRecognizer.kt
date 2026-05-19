@@ -3,6 +3,7 @@ package com.margelo.nitro.visioncameraocrplus
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
+import android.net.Uri
 import android.util.Log
 import androidx.annotation.Keep
 import com.facebook.proguard.annotations.DoNotStrip
@@ -82,9 +83,8 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
 
   override fun recognizePhoto(uri: String, orientation: String): Promise<RecognizedText> {
     return Promise.async {
-      // Decode the image from the file URI
-      val cleanPath = if (uri.startsWith("file://")) uri.removePrefix("file://") else uri
-      val bitmap = BitmapFactory.decodeFile(cleanPath)
+      // Decode the image from URI/path
+      val bitmap = decodeBitmapFromUri(uri)
         ?: throw RuntimeException("Cannot decode image at URI: $uri")
 
       val croppedBitmap = applyScanRegion(bitmap)
@@ -162,6 +162,31 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
   // ---------------------------------------------------------------------------
   // Private helpers
   // ---------------------------------------------------------------------------
+
+  private fun decodeBitmapFromUri(uri: String): Bitmap? {
+    return when {
+      uri.startsWith("content://") -> {
+        val appContext = getApplicationContextOrNull()
+          ?: throw RuntimeException("Cannot decode content URI without application context: $uri")
+        appContext.contentResolver.openInputStream(Uri.parse(uri)).use { input ->
+          BitmapFactory.decodeStream(input)
+        }
+      }
+      uri.startsWith("file://") -> BitmapFactory.decodeFile(uri.removePrefix("file://"))
+      uri.contains("://") -> throw RuntimeException("Unsupported URI scheme for photo recognition: $uri")
+      else -> BitmapFactory.decodeFile(uri)
+    }
+  }
+
+  private fun getApplicationContextOrNull(): android.content.Context? {
+    return try {
+      val activityThread = Class.forName("android.app.ActivityThread")
+      val currentApplicationMethod = activityThread.getMethod("currentApplication")
+      currentApplicationMethod.invoke(null) as? android.app.Application
+    } catch (_: Exception) {
+      null
+    }
+  }
 
   private fun applyScanRegion(bitmap: Bitmap): Bitmap {
     val region = scanRegion ?: return bitmap

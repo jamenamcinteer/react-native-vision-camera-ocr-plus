@@ -102,10 +102,14 @@ export const Camera = forwardRef(function Camera(
         .translate(text, fromLang, toLang)
         .then((translated: string) => {
           if (requestId === translationState.requestId) {
+            translationState.lastRequestedText = text;
             callback(translated);
           }
         })
         .catch((error: unknown) => {
+          if (requestId === translationState.requestId) {
+            translationState.lastRequestedText = '';
+          }
           console.warn(
             '[react-native-vision-camera-ocr-plus] Translation failed',
             error
@@ -161,11 +165,11 @@ export const Camera = forwardRef(function Camera(
     <>
       {!!device && (
         <NativeCamera
+          {...p}
           pixelFormat={Platform.OS === 'android' ? 'rgb' : 'yuv'}
           ref={ref}
           device={device}
           frameProcessor={frameProcessor}
-          {...p}
         />
       )}
     </>

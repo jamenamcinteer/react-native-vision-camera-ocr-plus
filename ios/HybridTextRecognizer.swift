@@ -145,7 +145,7 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
       guard let self = self else { return }
       // capturedImage is already normalised to .up — no orientation hint needed.
       let visionImage = VisionImage(image: capturedImage)
-      visionImage.orientation = .up
+      visionImage.orientation = uiOrientation(from: orientation)
       if let result = try? recognizer.results(in: visionImage) {
         let recognized = self.buildRecognizedText(from: result)
         self.setLastResult(recognized)
