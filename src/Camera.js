@@ -1,4 +1,5 @@
 import React, { forwardRef, useMemo } from 'react';
+import { Platform } from 'react-native';
 import * as VisionCameraModule from 'react-native-vision-camera';
 import { createTextRecognitionPlugin } from './scanText';
 import { createTranslatorPlugin } from './translateText';
@@ -52,16 +53,36 @@ export const Camera = forwardRef(function Camera(props, ref) {
   // JS-thread handler for recognize mode
   const runData = useMemo(() => runOnJS((data) => callback(data)), [callback]);
   // JS-thread handler for translate mode
-  const runTranslate = useMemo(
-    () =>
-      runOnJS((text) => {
-        if (!text) return;
-        translator
-          .translate(text, fromLang, toLang)
-          .then((translated) => callback(translated));
-      }),
-    [translator, fromLang, toLang, callback]
-  );
+  const runTranslate = useMemo(() => {
+    const translationState = {
+      inFlight: false,
+      lastRequestedText: '',
+      requestId: 0,
+    };
+    return runOnJS((text) => {
+      if (!text) return;
+      if (
+        translationState.inFlight ||
+        text === translationState.lastRequestedText
+      )
+        return;
+      translationState.inFlight = true;
+      translationState.lastRequestedText = text;
+      const requestId = ++translationState.requestId;
+      translator
+        .translate(text, fromLang, toLang)
+        .then((translated) => {
+          if (requestId === translationState.requestId) {
+            callback(translated);
+          }
+        })
+        .finally(() => {
+          if (requestId === translationState.requestId) {
+            translationState.inFlight = false;
+          }
+        });
+    });
+  }, [translator, fromLang, toLang, callback]);
   const processFrame = (frame) => {
     'worklet';
     // Call the Nitro HybridObject directly — no wrapper function involved.
@@ -97,7 +118,7 @@ export const Camera = forwardRef(function Camera(props, ref) {
     null,
     !!device &&
       React.createElement(NativeCamera, {
-        pixelFormat: 'yuv',
+        pixelFormat: Platform.OS === 'android' ? 'rgb' : 'yuv',
         ref: ref,
         device: device,
         frameProcessor: frameProcessor,

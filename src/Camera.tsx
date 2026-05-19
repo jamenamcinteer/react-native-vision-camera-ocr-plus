@@ -1,4 +1,5 @@
 import React, { forwardRef, type ForwardedRef, useMemo } from 'react';
+import { Platform } from 'react-native';
 import * as VisionCameraModule from 'react-native-vision-camera';
 import {
   createTextRecognitionPlugin,
@@ -78,16 +79,39 @@ export const Camera = forwardRef(function Camera(
   );
 
   // JS-thread handler for translate mode
-  const runTranslate = useMemo(
-    () =>
-      runOnJS((text: string) => {
-        if (!text) return;
-        (translator as any)
-          .translate(text, fromLang, toLang)
-          .then((translated: string) => callback(translated));
-      }),
-    [translator, fromLang, toLang, callback]
-  );
+  const runTranslate = useMemo(() => {
+    const translationState = {
+      inFlight: false,
+      lastRequestedText: '',
+      requestId: 0,
+    };
+
+    return runOnJS((text: string) => {
+      if (!text) return;
+      if (
+        translationState.inFlight ||
+        text === translationState.lastRequestedText
+      )
+        return;
+
+      translationState.inFlight = true;
+      translationState.lastRequestedText = text;
+      const requestId = ++translationState.requestId;
+
+      (translator as any)
+        .translate(text, fromLang, toLang)
+        .then((translated: string) => {
+          if (requestId === translationState.requestId) {
+            callback(translated);
+          }
+        })
+        .finally(() => {
+          if (requestId === translationState.requestId) {
+            translationState.inFlight = false;
+          }
+        });
+    });
+  }, [translator, fromLang, toLang, callback]);
 
   const processFrame = (frame: Frame): void => {
     'worklet';
@@ -131,7 +155,7 @@ export const Camera = forwardRef(function Camera(
     <>
       {!!device && (
         <NativeCamera
-          pixelFormat="yuv"
+          pixelFormat={Platform.OS === 'android' ? 'rgb' : 'yuv'}
           ref={ref}
           device={device}
           frameProcessor={frameProcessor}

@@ -56,10 +56,27 @@ jest.mock('react/jsx-runtime', () => ({
 
 const mockCreateTextRecognitionPlugin = jest.fn(() => ({
   scanText: jest.fn(),
+  recognizer: {
+    scanFrame: jest.fn(),
+  },
 }));
-const mockCreateTranslatorPlugin = jest.fn(() => ({ translate: jest.fn() }));
+const mockCreateTranslatorPlugin = jest.fn(() => ({
+  translate: jest.fn(),
+  recognizer: {
+    scanFrame: jest.fn(),
+  },
+  translator: {
+    translate: jest.fn(),
+  },
+  from: 'en',
+  to: 'fr',
+}));
 const mockUseFrameProcessor = jest.fn();
 const mockUseRunOnJS = jest.fn();
+
+jest.mock('react-native', () => ({
+  Platform: { OS: 'ios' },
+}));
 
 jest.mock('react-native-vision-camera', () => ({
   Camera: jest.fn(),
@@ -82,6 +99,8 @@ describe('Camera module', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (require('react') as any).__reset?.();
+    const { Platform } = require('react-native');
+    Platform.OS = 'ios';
 
     mockUseFrameProcessor.mockImplementation(
       (
@@ -236,6 +255,89 @@ describe('Camera module', () => {
       });
 
       expect(result).toBeDefined();
+    });
+
+    it('should use rgb pixel format on Android', () => {
+      const { Platform } = require('react-native');
+      Platform.OS = 'android';
+      const { Camera } = require('../Camera');
+      const mockDevice = { id: 'back', name: 'Back Camera' };
+      const mockCallback = jest.fn();
+
+      const result = Camera({
+        device: mockDevice,
+        isActive: true,
+        mode: 'recognize' as const,
+        options: { language: 'latin' as const },
+        callback: mockCallback,
+      });
+
+      const child = Array.isArray(result.props.children)
+        ? result.props.children[0]
+        : result.props.children;
+      expect(child.props.pixelFormat).toBe('rgb');
+    });
+
+    it('should drop translate requests while one is in-flight', async () => {
+      const { Camera } = require('../Camera');
+      const mockDevice = { id: 'back', name: 'Back Camera' };
+      const mockCallback = jest.fn();
+      let resolveTranslation!: (value: string) => void;
+      const pendingTranslation = new Promise<string>((resolve) => {
+        resolveTranslation = resolve;
+      });
+
+      const scanFrame = jest
+        .fn()
+        .mockReturnValueOnce({ resultText: 'hello', blocks: [] })
+        .mockReturnValueOnce({ resultText: 'bonjour', blocks: [] })
+        .mockReturnValueOnce({ resultText: 'bonjour', blocks: [] });
+      const translate = jest
+        .fn()
+        .mockReturnValueOnce(pendingTranslation)
+        .mockResolvedValueOnce('salut');
+
+      mockCreateTranslatorPlugin.mockReturnValueOnce({
+        recognizer: { scanFrame },
+        translator: { translate },
+        from: 'en',
+        to: 'fr',
+        translate: jest.fn(),
+      });
+
+      const result = Camera({
+        device: mockDevice,
+        isActive: true,
+        mode: 'translate' as const,
+        options: { from: 'en' as const, to: 'fr' as const },
+        callback: mockCallback,
+      });
+
+      const child = Array.isArray(result.props.children)
+        ? result.props.children[0]
+        : result.props.children;
+      const frameProcessor = child.props.frameProcessor;
+      const makeFrame = () => {
+        const release = jest.fn();
+        return {
+          getNativeBuffer: () => ({ pointer: BigInt(1), release }),
+          orientation: 'up',
+          dispose: jest.fn(),
+        };
+      };
+
+      frameProcessor(makeFrame());
+      frameProcessor(makeFrame());
+      expect(translate).toHaveBeenCalledTimes(1);
+      expect(translate).toHaveBeenCalledWith('hello', 'en', 'fr');
+
+      resolveTranslation('bonjour');
+      await pendingTranslation;
+      await Promise.resolve();
+
+      frameProcessor(makeFrame());
+      expect(translate).toHaveBeenCalledTimes(2);
+      expect(translate).toHaveBeenLastCalledWith('bonjour', 'en', 'fr');
     });
 
     it('should return null children when device is not provided', () => {

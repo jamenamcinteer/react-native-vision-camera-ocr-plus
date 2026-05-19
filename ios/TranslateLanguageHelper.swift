@@ -7,15 +7,15 @@ func translateLanguage(from language: String) -> TranslateLanguage? {
   case "sq": return .albanian
   case "ar": return .arabic
   case "be": return .belarusian
-  case "bg": return .bengali
-  case "bn": return .bulgarian
+  case "bg": return .bulgarian
+  case "bn": return .bengali
   case "ca": return .catalan
   case "zh": return .chinese
   case "cs": return .czech
   case "da": return .danish
   case "nl": return .dutch
   case "en": return .english
-  case "eo": return .eperanto
+  case "eo": return .esperanto
   case "et": return .estonian
   case "fi": return .finnish
   case "fr": return .french

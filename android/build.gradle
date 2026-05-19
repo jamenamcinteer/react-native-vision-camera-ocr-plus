@@ -1,4 +1,8 @@
 buildscript {
+  def kotlinVersion = rootProject.ext.has("kotlinVersion")
+    ? rootProject.ext.get("kotlinVersion")
+    : project.properties["NitroVisionCameraOcrPlus_kotlinVersion"]
+
   repositories {
     google()
     mavenCentral()
@@ -6,6 +10,7 @@ buildscript {
 
   dependencies {
     classpath "com.android.tools.build:gradle:9.2.1"
+    classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
   }
 }
 
@@ -133,4 +138,3 @@ dependencies {
   // ML Kit Translation
   implementation "com.google.mlkit:translate:17.0.3"
 }
-
