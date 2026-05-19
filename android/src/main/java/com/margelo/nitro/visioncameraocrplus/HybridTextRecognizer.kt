@@ -140,10 +140,27 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
 
   private fun applyScanRegion(bitmap: Bitmap): Bitmap {
     val region = scanRegion ?: return bitmap
-    val left = (region.left / 100.0 * bitmap.width).toInt()
-    val top = (region.top / 100.0 * bitmap.height).toInt()
-    val width = (region.width / 100.0 * bitmap.width).toInt()
-    val height = (region.height / 100.0 * bitmap.height).toInt()
+
+    val bitmapWidth = bitmap.width
+    val bitmapHeight = bitmap.height
+
+    val requestedLeft = (region.left / 100.0 * bitmapWidth).toInt()
+    val requestedTop = (region.top / 100.0 * bitmapHeight).toInt()
+    val requestedWidth = (region.width / 100.0 * bitmapWidth).toInt()
+    val requestedHeight = (region.height / 100.0 * bitmapHeight).toInt()
+
+    val left = requestedLeft.coerceIn(0, bitmapWidth)
+    val top = requestedTop.coerceIn(0, bitmapHeight)
+    val right = (requestedLeft + requestedWidth).coerceIn(left, bitmapWidth)
+    val bottom = (requestedTop + requestedHeight).coerceIn(top, bitmapHeight)
+
+    val width = right - left
+    val height = bottom - top
+
+    if (width <= 0 || height <= 0) {
+      return bitmap
+    }
+
     return Bitmap.createBitmap(bitmap, left, top, width, height)
   }
 
