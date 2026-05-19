@@ -65,7 +65,7 @@ jobs:
           cd example
           yarn clean:android
           cd android
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
   build-ios:
     runs-on: macos-latest
