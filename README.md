@@ -96,7 +96,7 @@ export default function App() {
       mode="recognize"
       options={{
         language: 'latin',         // 'latin' | 'chinese' | 'devanagari' | 'japanese' | 'korean'
-        frameSkipThreshold: 10,    // process every Nth frame (default: 1)
+        frameSkipThreshold: 10,    // process every Nth frame (default: 10)
         useLightweightMode: false, // Android only — skip corner points, languages, element data
         // scanRegion: { left: '10%', top: '20%', width: '80%', height: '30%' },
       }}
@@ -317,7 +317,7 @@ type ScanRegion = {
 type TextRecognitionOptions = {
   language?: 'latin' | 'chinese' | 'devanagari' | 'japanese' | 'korean'
   scanRegion?: ScanRegion
-  frameSkipThreshold?: number   // default: 1
+  frameSkipThreshold?: number   // default: 10
   useLightweightMode?: boolean  // Android only — skips corner points, languages, and element data; default: false
 }
 
