@@ -4,8 +4,8 @@
 [![npm version](https://img.shields.io/npm/v/react-native-vision-camera-ocr-plus.svg)](https://www.npmjs.com/package/react-native-vision-camera-ocr-plus)
 
 <table>
-<tr>
-<td valign="top">
+<tr style="border: 0;">
+<td valign="top" style="border: 0;">
 
 On-device OCR and text translation for React Native, powered by [VisionCamera](https://github.com/mrousavy/react-native-vision-camera) and [Nitro Modules](https://github.com/mrousavy/nitro). Uses Google ML Kit under the hood for both text recognition and on-device translation.
 
@@ -20,8 +20,8 @@ On-device OCR and text translation for React Native, powered by [VisionCamera](h
 - Configurable frame skipping for performance tuning
 
 </td>
-<td valign="top">
-  <video src="demo.mp4" controls width="360" />
+<td valign="top" style="border: 0;">
+  <img src="demo.gif" width="360" />
 </td>
 </tr>
 </table>
@@ -35,7 +35,7 @@ On-device OCR and text translation for React Native, powered by [VisionCamera](h
 | Android Minimum SDK | 26 |
 | Android Target SDK | 36 |
 | react-native-vision-camera | 5.0.0 |
-| react-native-worklets | 6.0.0 |
+| react-native-worklets | 0.8.x |
 | Expo (if used) | 54 |
 
 ## Migration from v1.x

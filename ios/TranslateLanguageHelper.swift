@@ -15,7 +15,7 @@ func translateLanguage(from language: String) -> TranslateLanguage? {
   case "da": return .danish
   case "nl": return .dutch
   case "en": return .english
-  case "eo": return .esperanto
+  case "eo": return .eperanto
   case "et": return .estonian
   case "fi": return .finnish
   case "fr": return .french

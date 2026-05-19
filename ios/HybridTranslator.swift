@@ -6,68 +6,86 @@ import MLKitTranslate
 /// Downloads language models on demand and caches the translator for a given language pair.
 class HybridTranslator: HybridTranslatorSpec {
 
-  private let conditions = ModelDownloadConditions(
-    allowsCellularAccess: false,
-    allowsBackgroundDownloading: true
-  )
-
   // MARK: - HybridTranslatorSpec
 
   func translate(text: String, from: String, to: String) throws -> Promise<String> {
-    return Promise.async {
-      guard let sourceLanguage = translateLanguage(from: from),
-            let targetLanguage = translateLanguage(from: to) else {
-        throw NSError(domain: "HybridTranslator", code: 1,
-                      userInfo: [NSLocalizedDescriptionKey: "Unsupported language pair: '\(from)' → '\(to)'"])
+    guard let sourceLanguage = translateLanguage(from: from),
+          let targetLanguage = translateLanguage(from: to) else {
+      return Promise.rejected(withError: NSError(
+        domain: "HybridTranslator", code: 1,
+        userInfo: [NSLocalizedDescriptionKey: "Unsupported language pair: '\(from)' → '\(to)'"]))
+    }
+
+    let options = TranslatorOptions(sourceLanguage: sourceLanguage, targetLanguage: targetLanguage)
+    let translator = Translator.translator(options: options)
+    let sourceModel = TranslateRemoteModel.translateRemoteModel(language: sourceLanguage)
+    let targetModel = TranslateRemoteModel.translateRemoteModel(language: targetLanguage)
+    let promise = Promise<String>()
+
+    // Download models if needed, then translate.
+    // If translate returns code 13 (model files not found / corrupted), follow
+    // ML Kit's own recovery advice: delete both models and re-download once.
+    translator.downloadModelIfNeeded { error in
+      if let error = error {
+        promise.reject(withError: error)
+        return
       }
 
-      let options = TranslatorOptions(sourceLanguage: sourceLanguage, targetLanguage: targetLanguage)
-      let translator = Translator.translator(options: options)
-
-      // Download the model if needed (no-op when already present)
-      try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Void, Error>) in
-        translator.downloadModelIfNeeded(with: self.conditions) { error in
-          if let error = error {
-            continuation.resume(throwing: error)
+      translator.translate(text) { translatedText, translateError in
+        if let translateError = translateError {
+          let nsError = translateError as NSError
+          if nsError.domain == "com.google.mlkit" && nsError.code == 13 {
+            // Model files missing/stale — delete and re-download once, then retry.
+            let mm = ModelManager.modelManager()
+            mm.deleteDownloadedModel(sourceModel) { _ in
+              mm.deleteDownloadedModel(targetModel) { _ in
+                translator.downloadModelIfNeeded { retryDownloadError in
+                  if let retryDownloadError = retryDownloadError {
+                    promise.reject(withError: retryDownloadError)
+                    return
+                  }
+                  translator.translate(text) { retryText, retryError in
+                    if let retryError = retryError {
+                      promise.reject(withError: retryError)
+                    } else {
+                      promise.resolve(withResult: retryText ?? "")
+                    }
+                  }
+                }
+              }
+            }
           } else {
-            continuation.resume()
+            promise.reject(withError: translateError)
           }
-        }
-      } as Void
-
-      return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<String, Error>) in
-        translator.translate(text) { translatedText, error in
-          if let error = error {
-            continuation.resume(throwing: error)
-          } else {
-            continuation.resume(returning: translatedText ?? "")
-          }
+        } else {
+          promise.resolve(withResult: translatedText ?? "")
         }
       }
     }
+
+    return promise
   }
 
   func removeLanguageModel(languageCode: String) throws -> Promise<Bool> {
-    return Promise.async {
-      guard let language = translateLanguage(from: languageCode) else {
-        return false
-      }
-      let model = TranslateRemoteModel.translateRemoteModel(language: language)
-      let modelManager = ModelManager.modelManager()
+    guard let language = translateLanguage(from: languageCode) else {
+      return Promise.resolved(withResult: false)
+    }
 
-      guard modelManager.isModelDownloaded(model) else {
-        return false
-      }
+    let model = TranslateRemoteModel.translateRemoteModel(language: language)
+    let modelManager = ModelManager.modelManager()
 
-      return try await withCheckedThrowingContinuation { (continuation: CheckedContinuation<Bool, Error>) in
-        modelManager.deleteDownloadedModel(model) { error in
-          if let error = error {
-            continuation.resume(throwing: error)
-          } else {
-            continuation.resume(returning: true)
-          }
-        }
+    guard modelManager.isModelDownloaded(model) else {
+      return Promise.resolved(withResult: false)
+    }
+
+    let promise = Promise<Bool>()
+    modelManager.deleteDownloadedModel(model) { error in
+      if let error = error {
+        promise.reject(withError: error)
+      } else {
+        promise.resolve(withResult: true)
       }
     }
+    return promise
   }
 }
