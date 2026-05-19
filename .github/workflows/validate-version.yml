@@ -60,7 +60,7 @@ jobs:
           cd example
           yarn clean:ios
 
-  build-android-rn-076:
+  build-android-expo-54:
     runs-on: macos-latest
 
     steps:
@@ -77,15 +77,15 @@ jobs:
           cd example
           yarn install --frozen-lockfile
 
-      - name: Build Android - Expo 52 (RN 0.76)
+      - name: Build Android - Expo 54
         run: |
           cd example
-          yarn use:rn-0.76
+          yarn use:expo-54
           yarn clean:android
           cd android
           ./gradlew assembleDebug
 
-  build-ios-rn-076:
+  build-ios-expo-54:
     runs-on: macos-latest
 
     steps:
@@ -102,10 +102,10 @@ jobs:
           cd example
           yarn install --frozen-lockfile
 
-      - name: Build iOS - Expo 52 (RN 0.76)
+      - name: Build iOS - Expo 54
         run: |
           cd example
-          yarn use:rn-0.76
+          yarn use:expo-54
           yarn clean:ios
 
   build-android-next:
