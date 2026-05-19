@@ -102,10 +102,13 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
     // This is the key fix: we never block the frame thread waiting for ML Kit.
     if (isBusy) return lastResult
 
-    val bitmap = nativeCreateBitmapFromHardwareBuffer(nativeBufferPointer.toLong())
+    val sourceBitmap = nativeCreateBitmapFromHardwareBuffer(nativeBufferPointer.toLong())
       ?: return lastResult
 
-    val croppedBitmap = applyScanRegion(bitmap)
+    val softwareBitmap = copyToSoftwareBitmap(sourceBitmap)
+      ?: return lastResult
+
+    val croppedBitmap = applyScanRegion(softwareBitmap)
     val rotationDegrees = orientationToDegrees(orientation)
     val inputImage = InputImage.fromBitmap(croppedBitmap, rotationDegrees)
 
@@ -119,6 +122,12 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
       } catch (_: Exception) {
         // Ignore ML Kit errors on individual frames
       } finally {
+        if (!croppedBitmap.isRecycled) {
+          croppedBitmap.recycle()
+        }
+        if (croppedBitmap !== softwareBitmap && !softwareBitmap.isRecycled) {
+          softwareBitmap.recycle()
+        }
         isBusy = false
       }
     }
@@ -162,6 +171,10 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
     }
 
     return Bitmap.createBitmap(bitmap, left, top, width, height)
+  }
+
+  private fun copyToSoftwareBitmap(bitmap: Bitmap): Bitmap? {
+    return bitmap.copy(Bitmap.Config.ARGB_8888, false)
   }
 
   private fun buildRecognizedText(result: Text): RecognizedText {

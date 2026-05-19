@@ -32,6 +32,7 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
   // scanFrame returns the last completed result immediately and enqueues a new OCR
   // job only when the queue is idle (isBusy == false).
   private let ocrQueue = DispatchQueue(label: "com.rnvcocr.ocr", qos: .userInitiated)
+  private let stateLock = NSLock()
   private var isBusy: Bool = false
   private var lastResult: RecognizedText? = nil
 
@@ -74,18 +75,19 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
     // Apply frame-skip for performance
     frameCounter += 1
     if frameCounter % max(1, frameSkipThreshold) != 0 {
-      return lastResult
+      return getLastResult()
     }
 
     // If the OCR queue is still processing the previous frame, skip this one.
     // This is the key fix: we never block the frame thread waiting for MLKit.
-    guard !isBusy else {
-      return lastResult
+    guard startOCRIfIdle() else {
+      return getLastResult()
     }
 
     // Reconstruct CVPixelBuffer from the pointer (retain count +1 from caller)
     guard let rawPtr = UnsafeRawPointer(bitPattern: UInt(nativeBufferPointer)) else {
-      return lastResult
+      finishOCR()
+      return getLastResult()
     }
     let pixelBuffer: CVPixelBuffer = Unmanaged<CVPixelBuffer>.fromOpaque(rawPtr).takeUnretainedValue()
 
@@ -102,7 +104,8 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
       colorSpace: CGColorSpaceCreateDeviceRGB()
     ) else {
       CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
-      return lastResult
+      finishOCR()
+      return getLastResult()
     }
     CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
 
@@ -137,7 +140,6 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
     }
 
     // --- Slow path: run MLKit OCR off the frame thread.
-    isBusy = true
     let recognizer = textRecognizer
     ocrQueue.async { [weak self] in
       guard let self = self else { return }
@@ -146,13 +148,13 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
       visionImage.orientation = .up
       if let result = try? recognizer.results(in: visionImage) {
         let recognized = self.buildRecognizedText(from: result)
-        self.lastResult = recognized
+        self.setLastResult(recognized)
       }
-      self.isBusy = false
+      self.finishOCR()
     }
 
     // Return the last completed result immediately — the frame thread is never blocked.
-    return lastResult
+    return getLastResult()
   }
 
   func recognizePhoto(uri: String, orientation: String) throws -> Promise<RecognizedText> {
@@ -246,6 +248,34 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
     return nsValues.compactMap { $0.cgPointValue }.map {
       CornerPoint(x: Double($0.x), y: Double($0.y))
     }
+  }
+
+  private func getLastResult() -> RecognizedText? {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    return lastResult
+  }
+
+  private func setLastResult(_ result: RecognizedText) {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    lastResult = result
+  }
+
+  private func startOCRIfIdle() -> Bool {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    guard !isBusy else {
+      return false
+    }
+    isBusy = true
+    return true
+  }
+
+  private func finishOCR() {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    isBusy = false
   }
 
   private func uiOrientation(from string: String) -> UIImage.Orientation {

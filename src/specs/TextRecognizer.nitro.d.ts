@@ -58,7 +58,9 @@ export interface TextRecognizer extends HybridObject<{
    */
   recognizePhoto(uri: string, orientation: string): Promise<RecognizedText>;
   /**
-   * Synchronously recognize text in a live camera frame.
+   * Schedule OCR for a live camera frame and return the last completed result.
+   * This method is non-blocking: native code enqueues OCR work on a background
+   * queue and immediately returns the most recently completed recognition output.
    * On iOS the pointer is a CVPixelBufferRef with retain count +1;
    * callers must call NativeBuffer.release() after this returns.
    * On Android the pointer is an AHardwareBuffer*.

@@ -5,10 +5,12 @@ export type TextRecognitionHandle = TextRecognitionPlugin & {
   recognizer: TextRecognizer;
 };
 /**
- * Creates a plugin that synchronously recognizes text in a VisionCamera v5 frame.
+ * Creates a plugin that schedules OCR for VisionCamera v5 frames.
  *
  * The returned `scanText` function has the 'worklet' directive so it can be
- * captured and called synchronously from any worklet closure.
+ * captured and called from any worklet closure.
+ * `scanText` is non-blocking and returns the last completed OCR result while
+ * the current frame is processed on a native background queue.
  * The `recognizer` HybridObject is also exposed for direct inline use.
  */
 export declare function createTextRecognitionPlugin(
