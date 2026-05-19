@@ -32,6 +32,7 @@
     "react-native": "0.83.6",
     "react-native-nitro-image": "^0.14.0",
     "react-native-nitro-modules": "^0.35.6",
+    "react-native-safe-area-context": "^5.8.0",
     "react-native-vision-camera": "^5.0.9",
     "react-native-vision-camera-ocr-plus": "link:..",
     "react-native-vision-camera-worklets": "^5.0.9",
