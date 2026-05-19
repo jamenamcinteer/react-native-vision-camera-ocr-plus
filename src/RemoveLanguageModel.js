@@ -7,6 +7,6 @@ import { NitroModules } from 'react-native-nitro-modules';
  * @param code BCP-47 language code, e.g. 'fr', 'de', 'zh'
  */
 export async function RemoveLanguageModel(code) {
-    const translator = NitroModules.createHybridObject('Translator');
-    return translator.removeLanguageModel(code);
+  const translator = NitroModules.createHybridObject('Translator');
+  return translator.removeLanguageModel(code);
 }

@@ -7,23 +7,43 @@ v2.0.0 is a full rewrite of the native layer. The JavaScript API is mostly compa
 ## Table of Contents
 
 1. [What changed](#what-changed)
-2. [Dependencies](#dependencies)
-3. [VisionCamera v4 → v5](#visioncamera-v4--v5)
-4. [Hooks — return type changes](#hooks--return-type-changes)
-5. [Frame processors — custom integrations](#frame-processors--custom-integrations)
-6. [TranslatorPlugin — `translate` signature changed](#translatorplugin--translate-signature-changed)
-7. [PhotoRecognizer — no behavioral change, but new backing](#photorecognizer--no-behavioral-change-but-new-backing)
-8. [RemoveLanguageModel — no behavioral change, but new backing](#removelanguagemodel--no-behavioral-change-but-new-backing)
-9. [Worklets package change](#worklets-package-change)
-10. [Type exports — now public](#type-exports--now-public)
-11. [iOS Simulator caveat](#ios-simulator-caveat)
-12. [Quick checklist](#quick-checklist)
+2. [Platform & environment requirements](#platform--environment-requirements)
+3. [Dependencies](#dependencies)
+4. [VisionCamera v4 → v5](#visioncamera-v4--v5)
+5. [Hooks — return type changes](#hooks--return-type-changes)
+6. [Frame processors — custom integrations](#frame-processors--custom-integrations)
+7. [TranslatorPlugin — `translate` signature changed](#translatorplugin--translate-signature-changed)
+8. [PhotoRecognizer — no behavioral change, but new backing](#photorecognizer--no-behavioral-change-but-new-backing)
+9. [RemoveLanguageModel — no behavioral change, but new backing](#removelanguagemodel--no-behavioral-change-but-new-backing)
+10. [Worklets package change](#worklets-package-change)
+11. [Type exports — now public](#type-exports--now-public)
+12. [iOS Simulator caveat](#ios-simulator-caveat)
+13. [Quick checklist](#quick-checklist)
 
 ---
 
 ## What changed
 
 The v1 implementation used VisionCamera's `VisionCameraProxy.initFrameProcessorPlugin` API along with `NativeModules` for photo OCR and model management. v2 replaces all of this with **[Nitro Modules](https://github.com/mrousavy/nitro)** — a JSI-based native module system that exposes `TextRecognizer` and `Translator` as first-class HybridObjects. This eliminates the old frame processor plugin registration and the separate `NativeModules` bridge for `PhotoRecognizer` / `RemoveLanguageModel`.
+
+---
+
+## Platform & environment requirements
+
+v2 raises the minimum supported versions across the board. Ensure your project meets these before upgrading:
+
+| Requirement | Minimum version |
+|---|---|
+| React Native | 0.78 |
+| iOS | 15.1 |
+| Android Minimum SDK | 26 |
+| Android Target SDK | 36 |
+| react-native-vision-camera | 5.0.0 |
+| Expo (if used) | 54 |
+
+If your project targets Android SDK < 26 or iOS < 15.1, you will need to raise those targets before upgrading. In your `android/build.gradle` set `minSdkVersion = 26`; in your iOS Podfile ensure `platform :ios, '15.1'` (or higher).
+
+> **Firebase users:** If your project includes Firebase, you must set the iOS Deployment Target to **at least 16.0**.
 
 ---
 
@@ -274,6 +294,7 @@ If you have Firebase in your project, set your iOS Deployment Target to **at lea
 
 ## Quick checklist
 
+- [ ] Verify minimum platform versions: React Native ≥ 0.78, iOS ≥ 15.1, Android `minSdkVersion` ≥ 26 (targetSdkVersion ≥ 36), Expo ≥ 54 (if used)
 - [ ] Remove `react-native-worklets-core`, add `react-native-nitro-modules`, `react-native-vision-camera-worklets`, and `react-native-worklets`
 - [ ] Upgrade `react-native-vision-camera` to `>=5.0.0`
 - [ ] Run `cd ios && pod install`

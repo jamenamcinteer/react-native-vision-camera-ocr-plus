@@ -10,21 +10,20 @@ import { Platform as RNPlatform } from 'react-native';
  * console.log(result.resultText);
  */
 export async function PhotoRecognizer(options) {
-    const { uri, orientation = 'portrait' } = options;
-    if (!uri) {
-        throw new Error("Can't resolve img uri");
+  const { uri, orientation = 'portrait' } = options;
+  if (!uri) {
+    throw new Error("Can't resolve img uri");
+  }
+  const recognizer = NitroModules.createHybridObject('TextRecognizer');
+  // Normalize URI per platform
+  let processUri = uri;
+  if (RNPlatform.OS === 'ios') {
+    processUri = uri.replace('file://', '');
+  } else {
+    const hasScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(processUri);
+    if (!hasScheme) {
+      processUri = `file://${processUri}`;
     }
-    const recognizer = NitroModules.createHybridObject('TextRecognizer');
-    // Normalize URI per platform
-    let processUri = uri;
-    if (RNPlatform.OS === 'ios') {
-        processUri = uri.replace('file://', '');
-    }
-    else {
-        const hasScheme = /^[a-zA-Z][a-zA-Z0-9+.-]*:\/\//.test(processUri);
-        if (!hasScheme) {
-            processUri = `file://${processUri}`;
-        }
-    }
-    return recognizer.recognizePhoto(processUri, orientation);
+  }
+  return recognizer.recognizePhoto(processUri, orientation);
 }

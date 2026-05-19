@@ -1,7 +1,7 @@
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import App from './App';
 
-const AppProvider = ({ children }: { children: React.ReactNode }) => {
+const AppProvider = () => {
   return (
     <SafeAreaProvider>
       <App />

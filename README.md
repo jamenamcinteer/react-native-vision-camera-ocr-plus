@@ -19,6 +19,17 @@ On-device OCR and text translation for React Native, powered by [VisionCamera](h
 - Optional scan-region cropping to focus recognition on a sub-area of the frame
 - Configurable frame skipping for performance tuning
 
+## Requirements
+
+| Requirement | Minimum version |
+|---|---|
+| React Native | 0.78 |
+| iOS | 15.1 |
+| Android Minimum SDK | 26 |
+| Android Target SDK | 36 |
+| react-native-vision-camera | 5.0.0 |
+| Expo (if used) | 54 |
+
 ## Migration from v1.x
 
 Upgrading from v1? See the **[Migration Guide](MIGRATION.md)** for a full list of breaking changes and step-by-step instructions.
