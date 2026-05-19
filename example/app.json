@@ -17,7 +17,8 @@
       "infoPlist": {
         "NSCameraUsageDescription": "Allow $(PRODUCT_NAME) to access your camera"
       },
-      "bundleIdentifier": "com.visionocr.example"
+      "bundleIdentifier": "com.visionocr.example",
+      "appleTeamId": "A4F5M3L535"
     },
     "android": {
       "predictiveBackGestureEnabled": false,
