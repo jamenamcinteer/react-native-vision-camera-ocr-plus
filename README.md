@@ -3,13 +3,13 @@
 [![CI Status](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml/badge.svg)](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/react-native-vision-camera-ocr-plus.svg)](https://www.npmjs.com/package/react-native-vision-camera-ocr-plus)
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/jamenamcinteer/react-native-vision-camera-ocr/next-release/example/assets/icon.png" alt="" width="100" height="100" />
-</div>
+<table>
+<tr>
+<td valign="top">
 
 On-device OCR and text translation for React Native, powered by [VisionCamera](https://github.com/mrousavy/react-native-vision-camera) and [Nitro Modules](https://github.com/mrousavy/nitro). Uses Google ML Kit under the hood for both text recognition and on-device translation.
 
-## Features
+### Features
 
 - **Live OCR** — read text from every camera frame via a VisionCamera frame processor
 - **Live translation** — recognize and translate camera frame text in real time
@@ -18,6 +18,13 @@ On-device OCR and text translation for React Native, powered by [VisionCamera](h
 - Supports Latin, Chinese, Devanagari, Japanese, and Korean scripts
 - Optional scan-region cropping to focus recognition on a sub-area of the frame
 - Configurable frame skipping for performance tuning
+
+</td>
+<td valign="top">
+  <video src="demo.mp4" controls width="360" />
+</td>
+</tr>
+</table>
 
 ## Requirements
 
@@ -38,7 +45,7 @@ Upgrading from v1? See the **[Migration Guide](MIGRATION.md)** for a full list o
 ## Installation
 
 ```sh
-npm install react-native-vision-camera-ocr-plus react-native-nitro-modules
+npm install react-native-vision-camera-ocr-plus react-native-nitro-modules react-native-vision-camera-worklets react-native-worklets
 ```
 
 ### Peer dependencies
@@ -48,7 +55,7 @@ npm install react-native-vision-camera-ocr-plus react-native-nitro-modules
 | `react-native-vision-camera` | `>=5.0.0` |
 | `react-native-nitro-modules` | `*` |
 | `react-native-vision-camera-worklets` | `*` |
-| `react-native-worklets` | `*` |
+| `react-native-worklets` | `>=6.0.0` |
 
 ### 🔥 Firebase Compatibility
 If you have Firebase in your project, you will need to set your iOS Deployment Target to at least 16.0.
