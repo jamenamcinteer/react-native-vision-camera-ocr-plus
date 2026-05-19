@@ -51,14 +51,22 @@ android {
         cppFlags "-frtti -fexceptions -Wall -Wextra -fstack-protector-all"
         arguments "-DANDROID_STL=c++_shared", "-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON"
         abiFilters (*reactNativeArchitectures())
+      }
+    }
+  }
 
-        buildTypes {
-          debug {
-            cppFlags "-O1 -g"
-          }
-          release {
-            cppFlags "-O2"
-          }
+  buildTypes {
+    debug {
+      externalNativeBuild {
+        cmake {
+          cppFlags "-O1 -g"
+        }
+      }
+    }
+    release {
+      externalNativeBuild {
+        cmake {
+          cppFlags "-O2"
         }
       }
     }
