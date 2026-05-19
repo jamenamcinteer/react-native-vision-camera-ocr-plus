@@ -334,10 +334,74 @@ describe('Camera module', () => {
       resolveTranslation('bonjour');
       await pendingTranslation;
       await Promise.resolve();
+      await Promise.resolve();
 
       frameProcessor(makeFrame());
       expect(translate).toHaveBeenCalledTimes(2);
       expect(translate).toHaveBeenLastCalledWith('bonjour', 'en', 'fr');
+    });
+
+    it('should handle translate promise rejections and allow retry', async () => {
+      const { Camera } = require('../Camera');
+      const mockDevice = { id: 'back', name: 'Back Camera' };
+      const mockCallback = jest.fn();
+      const translationError = new Error('download failed');
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const scanFrame = jest
+        .fn()
+        .mockReturnValueOnce({ resultText: 'hello', blocks: [] })
+        .mockReturnValueOnce({ resultText: 'bonjour', blocks: [] });
+      const translate = jest
+        .fn()
+        .mockRejectedValueOnce(translationError)
+        .mockResolvedValueOnce('salut');
+
+      mockCreateTranslatorPlugin.mockReturnValueOnce({
+        recognizer: { scanFrame },
+        translator: { translate },
+        from: 'en',
+        to: 'fr',
+        translate: jest.fn(),
+      });
+
+      const result = Camera({
+        device: mockDevice,
+        isActive: true,
+        mode: 'translate' as const,
+        options: { from: 'en' as const, to: 'fr' as const },
+        callback: mockCallback,
+      });
+
+      const child = Array.isArray(result.props.children)
+        ? result.props.children[0]
+        : result.props.children;
+      const frameProcessor = child.props.frameProcessor;
+      const makeFrame = () => {
+        const release = jest.fn();
+        return {
+          getNativeBuffer: () => ({ pointer: BigInt(1), release }),
+          orientation: 'up',
+          dispose: jest.fn(),
+        };
+      };
+
+      frameProcessor(makeFrame());
+      expect(translate).toHaveBeenCalledTimes(1);
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[react-native-vision-camera-ocr-plus] Translation failed',
+        translationError
+      );
+
+      frameProcessor(makeFrame());
+      expect(translate).toHaveBeenCalledTimes(2);
+
+      warnSpy.mockRestore();
     });
 
     it('should return null children when device is not provided', () => {

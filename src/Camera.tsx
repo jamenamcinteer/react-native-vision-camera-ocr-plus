@@ -105,6 +105,12 @@ export const Camera = forwardRef(function Camera(
             callback(translated);
           }
         })
+        .catch((error: unknown) => {
+          console.warn(
+            '[react-native-vision-camera-ocr-plus] Translation failed',
+            error
+          );
+        })
         .finally(() => {
           if (requestId === translationState.requestId) {
             translationState.inFlight = false;
