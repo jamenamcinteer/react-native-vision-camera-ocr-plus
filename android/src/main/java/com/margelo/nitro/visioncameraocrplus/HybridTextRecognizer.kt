@@ -2,6 +2,8 @@ package com.margelo.nitro.visioncameraocrplus
 
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.graphics.Matrix
+import android.util.Log
 import androidx.annotation.Keep
 import com.facebook.proguard.annotations.DoNotStrip
 import com.google.android.gms.tasks.Tasks
@@ -62,6 +64,7 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
     frameSkipThreshold = maxOf(1, config.frameSkipThreshold.toInt())
     useLightweightMode = config.useLightweightMode
     scanRegion = config.scanRegion
+    Log.d("VisionCameraOCR", "configure: scanRegion=$scanRegion frameSkipThreshold=$frameSkipThreshold")
 
     if (useLightweightMode) {
       recognizer = TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
@@ -106,11 +109,15 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
       ?: return lastResult
 
     val softwareBitmap = copyToSoftwareBitmap(sourceBitmap)
-      ?: return lastResult
+    sourceBitmap.recycle()
+    softwareBitmap ?: return lastResult
 
-    val croppedBitmap = applyScanRegion(softwareBitmap)
     val rotationDegrees = orientationToDegrees(orientation)
-    val inputImage = InputImage.fromBitmap(croppedBitmap, rotationDegrees)
+    Log.d("VisionCameraOCR", "scanFrame: orientation=$orientation rotationDegrees=$rotationDegrees bitmapSize=${softwareBitmap.width}x${softwareBitmap.height} scanRegion=$scanRegion")
+    val rotatedBitmap = if (rotationDegrees != 0) rotateBitmap(softwareBitmap, rotationDegrees) else softwareBitmap
+    if (rotatedBitmap !== softwareBitmap && !softwareBitmap.isRecycled) softwareBitmap.recycle()
+    val croppedBitmap = applyScanRegion(rotatedBitmap)
+    val inputImage = InputImage.fromBitmap(croppedBitmap, 0)
 
     // Run ML Kit off the frame thread.
     isBusy = true
@@ -125,8 +132,8 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
         if (!croppedBitmap.isRecycled) {
           croppedBitmap.recycle()
         }
-        if (croppedBitmap !== softwareBitmap && !softwareBitmap.isRecycled) {
-          softwareBitmap.recycle()
+        if (croppedBitmap !== rotatedBitmap && !rotatedBitmap.isRecycled) {
+          rotatedBitmap.recycle()
         }
         isBusy = false
       }
@@ -137,10 +144,19 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
   }
 
   private fun orientationToDegrees(orientation: String): Int = when (orientation) {
+    // VisionCamera v5 CameraOrientation strings: 'up'|'right'|'down'|'left'
+    // 'right' = frame content rotated 90° CW from portrait → rotate 270° CW (= 90° CCW) to fix
+    // 'left'  = frame content rotated 90° CCW from portrait → rotate 90° CW to fix
+    // 'down'  = frame content rotated 180°
+    // 'up'    = already portrait-oriented, no rotation needed
+    "right"              -> 270
+    "left"               -> 90
+    "down"               -> 180
+    // Legacy strings kept for backward compatibility
     "landscapeLeft"      -> 90
     "portraitUpsideDown" -> 180
     "landscapeRight"     -> 270
-    else                 -> 0  // portrait
+    else                 -> 0  // 'up' or portrait
   }
 
   // ---------------------------------------------------------------------------
@@ -175,6 +191,11 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
 
   private fun copyToSoftwareBitmap(bitmap: Bitmap): Bitmap? {
     return bitmap.copy(Bitmap.Config.ARGB_8888, false)
+  }
+
+  private fun rotateBitmap(bitmap: Bitmap, degrees: Int): Bitmap {
+    val matrix = Matrix().apply { postRotate(degrees.toFloat()) }
+    return Bitmap.createBitmap(bitmap, 0, 0, bitmap.width, bitmap.height, matrix, true)
   }
 
   private fun buildRecognizedText(result: Text): RecognizedText {

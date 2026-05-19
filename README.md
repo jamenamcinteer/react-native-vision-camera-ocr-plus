@@ -28,6 +28,7 @@ On-device OCR and text translation for React Native, powered by [VisionCamera](h
 | Android Minimum SDK | 26 |
 | Android Target SDK | 36 |
 | react-native-vision-camera | 5.0.0 |
+| react-native-worklets | 6.0.0 |
 | Expo (if used) | 54 |
 
 ## Migration from v1.x
@@ -168,6 +169,19 @@ function MyCamera() {
   return <Camera device={device} isActive outputs={[frameOutput]} />
 }
 
+> **Tip — Scan region:** Pass `scanRegion` in the options to restrict OCR to a portion of the frame.
+> The coordinates are percentage strings (`"0%"` – `"100%"`) relative to the display-oriented frame.
+> Pair it with a matching `<View>` overlay so the visible box aligns with what is actually scanned:
+>
+> ```tsx
+> const scanRegion = { left: '10%', top: '25%', width: '80%', height: '30%' }
+> const { scanText } = useTextRecognition({ language: 'latin', scanRegion })
+>
+> // Render a matching overlay:
+> <View style={{ position: 'absolute', left: '10%', top: '25%', width: '80%', height: '30%',
+>                borderWidth: 2, borderColor: 'red' }} />
+> ```
+
 #### `useTranslate`
 
 Returns a `TranslatorHandle` with a worklet-safe `scanText` function for OCR and an async `translate` function for translation.
@@ -180,6 +194,8 @@ import { scheduleOnRN } from 'react-native-worklets'
 function MyCamera() {
   const device = useCameraDevice('back')
   const { scanText, translate } = useTranslate({ from: 'fr', to: 'en' })
+  // To restrict OCR to a region, pass scanRegion:
+  // const { scanText, translate } = useTranslate({ from: 'fr', to: 'en', scanRegion: { left: '10%', top: '25%', width: '80%', height: '30%' } })
 
   const frameOutput = useFrameOutput({
     pixelFormat: 'rgb', // required on Android
@@ -324,6 +340,7 @@ type TextRecognitionOptions = {
 type TranslatorOptions = {
   from: Languages
   to: Languages
+  scanRegion?: ScanRegion  // restrict OCR to a percentage-based region of the frame
 }
 
 type PhotoOptions = {

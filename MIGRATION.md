@@ -39,6 +39,7 @@ v2 raises the minimum supported versions across the board. Ensure your project m
 | Android Minimum SDK | 26 |
 | Android Target SDK | 36 |
 | react-native-vision-camera | 5.0.0 |
+| react-native-worklets | 6.0.0 |
 | Expo (if used) | 54 |
 
 If your project targets Android SDK < 26 or iOS < 15.1, you will need to raise those targets before upgrading. In your `android/build.gradle` set `minSdkVersion = 26`; in your iOS Podfile ensure `platform :ios, '15.1'` (or higher).

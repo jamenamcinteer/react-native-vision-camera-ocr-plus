@@ -11,6 +11,14 @@ export function createTranslatorPlugin(options) {
     language: 'latin',
     frameSkipThreshold: 1,
     useLightweightMode: false,
+    ...(options?.scanRegion && {
+      scanRegion: {
+        left: parseFloat(options.scanRegion.left),
+        top: parseFloat(options.scanRegion.top),
+        width: parseFloat(options.scanRegion.width),
+        height: parseFloat(options.scanRegion.height),
+      },
+    }),
   };
   const recognizer = NitroModules.createHybridObject('TextRecognizer');
   recognizer.configure(recognizerConfig);

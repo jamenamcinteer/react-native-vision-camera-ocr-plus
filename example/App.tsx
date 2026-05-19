@@ -69,7 +69,7 @@ export default function App() {
     LANGUAGES.find((l) => l.value === targetLanguage)?.label ?? targetLanguage;
 
   const translatorOptions = React.useMemo(
-    () => ({ from: 'en' as Languages, to: targetLanguage }),
+    () => ({ from: 'en' as Languages, to: targetLanguage, scanRegion }),
     [targetLanguage]
   );
 
@@ -124,6 +124,8 @@ export default function App() {
       const scannedText = scanText(frame);
       if (scannedText?.resultText) {
         scheduleOnRN(translateAndSet, scannedText.resultText);
+      } else {
+        scheduleOnRN(setDetectedText, undefined);
       }
       frame.dispose();
     },

@@ -108,6 +108,11 @@ export type TextRecognitionOptions = {
 export type TranslatorOptions = {
   from: Languages;
   to: Languages;
+  /**
+   * Scan region within the frame to focus text recognition on
+   * @default undefined
+   */
+  scanRegion?: ScanRegion;
 };
 
 export type CameraTypes = {

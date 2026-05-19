@@ -36,7 +36,7 @@ jobs:
           cd example
           yarn clean:android
           cd android
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
   build-ios-latest:
     runs-on: macos-latest
@@ -83,7 +83,7 @@ jobs:
           yarn use:expo-54
           yarn clean:android
           cd android
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
   build-ios-expo-54:
     runs-on: macos-latest
@@ -131,7 +131,7 @@ jobs:
           yarn use:next
           yarn clean:android
           cd android
-          ./gradlew assembleDebug
+          ./gradlew assembleRelease
 
   build-ios-next:
     runs-on: macos-latest
