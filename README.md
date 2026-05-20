@@ -55,7 +55,7 @@ npm install react-native-vision-camera-ocr-plus react-native-nitro-modules react
 | `react-native-vision-camera` | `>=5.0.0` |
 | `react-native-nitro-modules` | `*` |
 | `react-native-vision-camera-worklets` | `*` |
-| `react-native-worklets` | `>=6.0.0` |
+| `react-native-worklets` | `>=0.8.0` |
 
 ### 🔥 Firebase Compatibility
 If you have Firebase in your project, you will need to set your iOS Deployment Target to at least 16.0.
