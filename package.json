@@ -9,6 +9,10 @@
   "source": "src/index",
   "files": [
     "src",
+    "!src/**/__tests__/**",
+    "!src/**/*.{test,spec}.{js,jsx,ts,tsx}",
+    "!src/**/__fixtures__/**",
+    "!src/**/*.fixture.{js,jsx,ts,tsx,json}",
     "react-native.config.js",
     "lib",
     "nitrogen",
