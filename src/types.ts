@@ -129,7 +129,7 @@ export type TextRecognitionPlugin = {
   scanText: (frame: Frame, config?: ScanTextConfig) => Text;
 };
 export type TranslatorPlugin = {
-  /** Synchronous OCR of a frame — safe to call from worklets. */
+  /** Worklet-safe synchronous call that returns the last completed OCR result while OCR runs asynchronously. */
   scanText: (frame: Frame) => Text;
   /** Async translation of a text string — runs on the JS thread. */
   translate: (text: string) => Promise<string>;
