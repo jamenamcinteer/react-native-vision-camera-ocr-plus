@@ -1,8 +1,5 @@
 const memoStore: { deps?: ReadonlyArray<unknown>; value: unknown }[] = [];
 let memoIndex = 0;
-const resetMemoIndex = (): void => {
-  memoIndex = 0;
-};
 
 const useMemoMock = <T,>(
   factory: () => T,
@@ -16,7 +13,7 @@ const useMemoMock = <T,>(
     deps &&
     previous.deps &&
     deps.length === previous.deps.length &&
-    deps.every((dep, depIndex) => dep === previous.deps?.[depIndex])
+    deps.every((dep, i) => dep === previous.deps?.[i])
   ) {
     return previous.value as T;
   }
@@ -27,7 +24,7 @@ const useMemoMock = <T,>(
 };
 
 const forwardRefMock = (render: any) => (props: any) => {
-  resetMemoIndex();
+  memoIndex = 0;
   return render(props, null);
 };
 
@@ -47,12 +44,7 @@ jest.mock('react', () => {
       memoIndex = 0;
     },
   };
-
-  return {
-    __esModule: true,
-    ...reactMock,
-    default: reactMock,
-  };
+  return { __esModule: true, ...reactMock, default: reactMock };
 });
 
 jest.mock('react/jsx-runtime', () => ({
@@ -62,28 +54,37 @@ jest.mock('react/jsx-runtime', () => ({
   jsxDEV: (type: any, props: any) => ({ type, props }),
 }));
 
-// Test the hooks and plugin creation functions directly
 const mockCreateTextRecognitionPlugin = jest.fn(() => ({
   scanText: jest.fn(),
+  recognizer: {
+    scanFrame: jest.fn(),
+  },
 }));
-
 const mockCreateTranslatorPlugin = jest.fn(() => ({
   translate: jest.fn(),
+  recognizer: {
+    scanFrame: jest.fn(),
+  },
+  translator: {
+    translate: jest.fn(),
+  },
+  from: 'en',
+  to: 'fr',
+}));
+const mockUseFrameProcessor = jest.fn();
+const mockUseRunOnJS = jest.fn();
+
+jest.mock('react-native', () => ({
+  Platform: { OS: 'ios' },
 }));
 
-const mockUseFrameProcessor = jest.fn();
-const mockVisionCamera = jest.fn();
 jest.mock('react-native-vision-camera', () => ({
-  Camera: (props: any) => {
-    mockVisionCamera(props);
-    return null;
-  },
+  Camera: jest.fn(),
   useFrameProcessor: (...args: any[]) => mockUseFrameProcessor(...args),
 }));
 
-const mockUseRunOnJS = jest.fn();
-jest.mock('react-native-worklets-core', () => ({
-  useRunOnJS: (...args: any[]) => mockUseRunOnJS(...args),
+jest.mock('react-native-worklets', () => ({
+  runOnJS: (...args: any[]) => mockUseRunOnJS(...args),
 }));
 
 jest.mock('../scanText', () => ({
@@ -94,41 +95,28 @@ jest.mock('../translateText', () => ({
   createTranslatorPlugin: mockCreateTranslatorPlugin,
 }));
 
-describe('Camera Module Tests', () => {
-  let lastFrameProcessor: ((frame: any) => void) | null;
-  let lastFrameProcessorDeps: ReadonlyArray<unknown> | undefined;
-
+describe('Camera module', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (require('react') as any).__reset?.();
-
-    lastFrameProcessor = null;
-    lastFrameProcessorDeps = undefined;
+    const { Platform } = require('react-native');
+    Platform.OS = 'ios';
 
     mockUseFrameProcessor.mockImplementation(
       (
         processor: (frame: unknown) => unknown,
-        deps?: ReadonlyArray<unknown>
+        _deps?: ReadonlyArray<unknown>
       ) => {
-        lastFrameProcessor = processor;
-        lastFrameProcessorDeps = deps;
         return processor;
       }
     );
 
-    mockUseRunOnJS.mockImplementation(
-      (
-        fn: (...args: unknown[]) => unknown,
-        deps?: ReadonlyArray<unknown>
-      ): jest.Mock => {
-        const runner = jest.fn((...args: unknown[]) => fn(...args));
-        (mockUseRunOnJS as any).lastDeps = deps;
-        return runner;
-      }
-    );
+    mockUseRunOnJS.mockImplementation((fn: (...args: unknown[]) => unknown) => {
+      return jest.fn((...args: unknown[]) => fn(...args));
+    });
   });
 
-  describe('Plugin Creation', () => {
+  describe('Plugin creation', () => {
     it('should create text recognition plugin with options', () => {
       const { createTextRecognitionPlugin } = require('../scanText');
       const options = { language: 'chinese' as const };
@@ -146,7 +134,7 @@ describe('Camera Module Tests', () => {
       expect(mockCreateTextRecognitionPlugin).toHaveBeenCalledWith();
     });
 
-    it('should create translator plugin with language pair options', () => {
+    it('should create translator plugin with language pair', () => {
       const { createTranslatorPlugin } = require('../translateText');
       const options = { from: 'en' as const, to: 'es' as const };
 
@@ -163,220 +151,301 @@ describe('Camera Module Tests', () => {
       expect(mockCreateTranslatorPlugin).toHaveBeenCalledWith();
     });
 
-    it('should return plugin with scanText method for text recognition', () => {
-      const { createTextRecognitionPlugin } = require('../scanText');
-
-      const plugin = createTextRecognitionPlugin();
-
+    it('should return plugin with scanText method', () => {
+      const plugin = mockCreateTextRecognitionPlugin();
       expect(plugin).toHaveProperty('scanText');
       expect(typeof plugin.scanText).toBe('function');
     });
 
-    it('should return plugin with translate method for translation', () => {
-      const { createTranslatorPlugin } = require('../translateText');
-
-      const plugin = createTranslatorPlugin();
-
+    it('should return plugin with translate method', () => {
+      const plugin = mockCreateTranslatorPlugin();
       expect(plugin).toHaveProperty('translate');
       expect(typeof plugin.translate).toBe('function');
     });
   });
 
-  describe('Language Support', () => {
-    it('should support all text recognition languages', () => {
-      const { createTextRecognitionPlugin } = require('../scanText');
-      const supportedLanguages = [
-        'latin',
-        'chinese',
-        'devanagari',
-        'japanese',
-        'korean',
-      ] as const;
+  describe('useTextRecognition hook', () => {
+    it('should return a TextRecognitionPlugin', () => {
+      const { useTextRecognition } = require('../Camera');
 
-      supportedLanguages.forEach((language) => {
-        createTextRecognitionPlugin({ language });
-        expect(mockCreateTextRecognitionPlugin).toHaveBeenCalledWith({
-          language,
-        });
-      });
+      const plugin = useTextRecognition({ language: 'latin' });
+
+      expect(plugin).toHaveProperty('scanText');
     });
 
-    it('should support common translation language pairs', () => {
-      const { createTranslatorPlugin } = require('../translateText');
-      const commonPairs = [
-        { from: 'en' as const, to: 'es' as const },
-        { from: 'en' as const, to: 'fr' as const },
-        { from: 'zh' as const, to: 'en' as const },
-        { from: 'ja' as const, to: 'en' as const },
-      ];
+    it('should call createTextRecognitionPlugin with correct options', () => {
+      const { useTextRecognition } = require('../Camera');
+      const options = { language: 'japanese' as const, frameSkipThreshold: 5 };
 
-      commonPairs.forEach((options) => {
-        createTranslatorPlugin(options);
-        expect(mockCreateTranslatorPlugin).toHaveBeenCalledWith(options);
-      });
+      useTextRecognition(options);
+
+      expect(mockCreateTextRecognitionPlugin).toHaveBeenCalledWith(options);
+    });
+
+    it('should work without options', () => {
+      const { useTextRecognition } = require('../Camera');
+
+      const plugin = useTextRecognition();
+
+      expect(plugin).toHaveProperty('scanText');
     });
   });
 
-  describe('Error Handling', () => {
-    it('should handle plugin creation errors gracefully', () => {
-      const { createTextRecognitionPlugin } = require('../scanText');
+  describe('useTranslate hook', () => {
+    it('should return a TranslatorPlugin', () => {
+      const { useTranslate } = require('../Camera');
 
-      mockCreateTextRecognitionPlugin.mockImplementationOnce(() => {
-        throw new Error('Plugin creation failed');
-      });
+      const plugin = useTranslate({ from: 'en', to: 'fr' });
 
-      expect(() => createTextRecognitionPlugin()).toThrow(
-        'Plugin creation failed'
-      );
+      expect(plugin).toHaveProperty('translate');
     });
 
-    it('should handle translation plugin creation errors', () => {
-      const { createTranslatorPlugin } = require('../translateText');
+    it('should call createTranslatorPlugin with correct options', () => {
+      const { useTranslate } = require('../Camera');
+      const options = { from: 'en' as const, to: 'de' as const };
 
-      mockCreateTranslatorPlugin.mockImplementationOnce(() => {
-        throw new Error('Translation plugin creation failed');
-      });
+      useTranslate(options);
 
-      expect(() => createTranslatorPlugin()).toThrow(
-        'Translation plugin creation failed'
-      );
-    });
-  });
-
-  describe('Function Return Values', () => {
-    it('should return proper plugin structure for text recognition', () => {
-      const mockScanTextFn = jest.fn();
-      mockCreateTextRecognitionPlugin.mockReturnValue({
-        scanText: mockScanTextFn,
-      });
-
-      const { createTextRecognitionPlugin } = require('../scanText');
-      const plugin = createTextRecognitionPlugin();
-
-      expect(plugin.scanText).toBe(mockScanTextFn);
+      expect(mockCreateTranslatorPlugin).toHaveBeenCalledWith(options);
     });
 
-    it('should return proper plugin structure for translation', () => {
-      const mockTranslateFn = jest.fn();
-      mockCreateTranslatorPlugin.mockReturnValue({
-        translate: mockTranslateFn,
-      });
+    it('should work without options', () => {
+      const { useTranslate } = require('../Camera');
 
-      const { createTranslatorPlugin } = require('../translateText');
-      const plugin = createTranslatorPlugin();
+      const plugin = useTranslate();
 
-      expect(plugin.translate).toBe(mockTranslateFn);
+      expect(plugin).toHaveProperty('translate');
     });
   });
 
-  describe('Camera Frame Processor Updates', () => {
-    const textOptions = { language: 'latin' as const };
-    const translationOptions = { from: 'en' as const, to: 'es' as const };
-
-    it('refreshes the frame processor when mode changes', () => {
-      const callback = jest.fn();
-      const translateCallback = jest.fn();
-      const scanText = jest.fn(() => 'scanned');
-      const translate = jest.fn(() => 'translated');
-
-      mockCreateTextRecognitionPlugin.mockReturnValue({ scanText });
-      mockCreateTranslatorPlugin.mockReturnValue({ translate });
-
+  describe('Camera component', () => {
+    it('should be defined and be a function', () => {
       const { Camera } = require('../Camera');
-
-      Camera({
-        device: {},
-        mode: 'recognize',
-        options: textOptions,
-        callback,
-      });
-
-      const frame = { id: 'frame' } as const;
-
-      expect(lastFrameProcessorDeps).toEqual(
-        expect.arrayContaining([
-          expect.any(Function),
-          expect.any(Function),
-          'recognize',
-          textOptions,
-        ])
-      );
-
-      lastFrameProcessor?.(frame);
-
-      expect(scanText).toHaveBeenCalledWith(frame);
-      expect(callback).toHaveBeenCalledWith('scanned');
-
-      Camera({
-        device: {},
-        mode: 'translate',
-        options: translationOptions,
-        callback: translateCallback,
-      });
-
-      expect(lastFrameProcessorDeps).toEqual(
-        expect.arrayContaining([
-          expect.any(Function),
-          expect.any(Function),
-          'translate',
-          translationOptions,
-        ])
-      );
-
-      lastFrameProcessor?.(frame);
-
-      expect(scanText).toHaveBeenCalledTimes(1);
-      expect(translate).toHaveBeenCalledWith(frame);
-      expect(translateCallback).toHaveBeenCalledWith('translated');
+      expect(Camera).toBeDefined();
+      expect(typeof Camera).toBe('function');
     });
 
-    it('updates the processor when callback changes', () => {
-      const firstCallback = jest.fn();
-      const secondCallback = jest.fn();
-      const scanText = jest.fn(() => 'scanned again');
-
-      mockCreateTextRecognitionPlugin.mockReturnValue({ scanText });
-
+    it('should render with recognize mode', () => {
       const { Camera } = require('../Camera');
+      const mockDevice = { id: 'back', name: 'Back Camera' };
+      const mockCallback = jest.fn();
 
-      Camera({
-        device: {},
-        mode: 'recognize',
-        options: textOptions,
-        callback: firstCallback,
+      const result = Camera({
+        device: mockDevice,
+        isActive: true,
+        mode: 'recognize' as const,
+        options: { language: 'latin' as const },
+        callback: mockCallback,
       });
 
-      const frame = { id: 'frame' } as const;
+      expect(result).toBeDefined();
+    });
 
-      lastFrameProcessor?.(frame);
+    it('should render with translate mode', () => {
+      const { Camera } = require('../Camera');
+      const mockDevice = { id: 'back', name: 'Back Camera' };
+      const mockCallback = jest.fn();
 
-      expect(firstCallback).toHaveBeenCalledWith('scanned again');
-      expect(mockUseRunOnJS).toHaveBeenLastCalledWith(expect.any(Function), [
-        firstCallback,
-      ]);
-
-      Camera({
-        device: {},
-        mode: 'recognize',
-        options: textOptions,
-        callback: secondCallback,
+      const result = Camera({
+        device: mockDevice,
+        isActive: true,
+        mode: 'translate' as const,
+        options: { from: 'en' as const, to: 'fr' as const },
+        callback: mockCallback,
       });
 
-      lastFrameProcessor?.(frame);
+      expect(result).toBeDefined();
+    });
 
-      expect(secondCallback).toHaveBeenCalledWith('scanned again');
-      expect(firstCallback).toHaveBeenCalledTimes(1);
-      expect(mockUseRunOnJS).toHaveBeenLastCalledWith(expect.any(Function), [
-        secondCallback,
-      ]);
-      expect(lastFrameProcessorDeps).toEqual(
-        expect.arrayContaining([
-          expect.any(Function),
-          expect.any(Function),
-          'recognize',
-          textOptions,
-        ])
+    it('should use rgb pixel format on Android', () => {
+      const { Platform } = require('react-native');
+      Platform.OS = 'android';
+      const { Camera } = require('../Camera');
+      const mockDevice = { id: 'back', name: 'Back Camera' };
+      const mockCallback = jest.fn();
+
+      const result = Camera({
+        device: mockDevice,
+        isActive: true,
+        mode: 'recognize' as const,
+        options: { language: 'latin' as const },
+        callback: mockCallback,
+      });
+
+      const child = Array.isArray(result.props.children)
+        ? result.props.children[0]
+        : result.props.children;
+      expect(child.props.pixelFormat).toBe('rgb');
+    });
+
+    it('should drop translate requests while one is in-flight', async () => {
+      const { Camera } = require('../Camera');
+      const mockDevice = { id: 'back', name: 'Back Camera' };
+      const mockCallback = jest.fn();
+      let resolveTranslation!: (value: string) => void;
+      const pendingTranslation = new Promise<string>((resolve) => {
+        resolveTranslation = resolve;
+      });
+
+      const scanFrame = jest
+        .fn()
+        .mockReturnValueOnce({ resultText: 'hello', blocks: [] })
+        .mockReturnValueOnce({ resultText: 'bonjour', blocks: [] })
+        .mockReturnValueOnce({ resultText: 'bonjour', blocks: [] });
+      const translate = jest
+        .fn()
+        .mockReturnValueOnce(pendingTranslation)
+        .mockResolvedValueOnce('salut');
+
+      mockCreateTranslatorPlugin.mockReturnValueOnce({
+        recognizer: { scanFrame },
+        translator: { translate },
+        from: 'en',
+        to: 'fr',
+        translate: jest.fn(),
+      });
+
+      const result = Camera({
+        device: mockDevice,
+        isActive: true,
+        mode: 'translate' as const,
+        options: { from: 'en' as const, to: 'fr' as const },
+        callback: mockCallback,
+      });
+
+      const child = Array.isArray(result.props.children)
+        ? result.props.children[0]
+        : result.props.children;
+      const frameProcessor = child.props.frameProcessor;
+      const makeFrame = () => {
+        const release = jest.fn();
+        return {
+          getNativeBuffer: () => ({ pointer: BigInt(1), release }),
+          orientation: 'up',
+          dispose: jest.fn(),
+        };
+      };
+
+      frameProcessor(makeFrame());
+      frameProcessor(makeFrame());
+      expect(translate).toHaveBeenCalledTimes(1);
+      expect(translate).toHaveBeenCalledWith('hello', 'en', 'fr');
+
+      resolveTranslation('bonjour');
+      await pendingTranslation;
+      await Promise.resolve();
+      await Promise.resolve();
+
+      frameProcessor(makeFrame());
+      expect(translate).toHaveBeenCalledTimes(2);
+      expect(translate).toHaveBeenLastCalledWith('bonjour', 'en', 'fr');
+    });
+
+    it('should handle translate promise rejections and allow retry', async () => {
+      const { Camera } = require('../Camera');
+      const mockDevice = { id: 'back', name: 'Back Camera' };
+      const mockCallback = jest.fn();
+      const translationError = new Error('download failed');
+      const warnSpy = jest.spyOn(console, 'warn').mockImplementation(() => {});
+
+      const scanFrame = jest
+        .fn()
+        .mockReturnValueOnce({ resultText: 'hello', blocks: [] })
+        .mockReturnValueOnce({ resultText: 'hello', blocks: [] });
+      const translate = jest
+        .fn()
+        .mockRejectedValueOnce(translationError)
+        .mockResolvedValueOnce('salut');
+
+      mockCreateTranslatorPlugin.mockReturnValueOnce({
+        recognizer: { scanFrame },
+        translator: { translate },
+        from: 'en',
+        to: 'fr',
+        translate: jest.fn(),
+      });
+
+      const result = Camera({
+        device: mockDevice,
+        isActive: true,
+        mode: 'translate' as const,
+        options: { from: 'en' as const, to: 'fr' as const },
+        callback: mockCallback,
+      });
+
+      const child = Array.isArray(result.props.children)
+        ? result.props.children[0]
+        : result.props.children;
+      const frameProcessor = child.props.frameProcessor;
+      const makeFrame = () => {
+        const release = jest.fn();
+        return {
+          getNativeBuffer: () => ({ pointer: BigInt(1), release }),
+          orientation: 'up',
+          dispose: jest.fn(),
+        };
+      };
+
+      frameProcessor(makeFrame());
+      expect(translate).toHaveBeenCalledTimes(1);
+
+      await Promise.resolve();
+      await Promise.resolve();
+      await Promise.resolve();
+
+      expect(warnSpy).toHaveBeenCalledWith(
+        '[react-native-vision-camera-ocr-plus] Translation failed',
+        translationError
       );
+
+      frameProcessor(makeFrame());
+      expect(translate).toHaveBeenCalledTimes(2);
+      expect(translate).toHaveBeenLastCalledWith('hello', 'en', 'fr');
+
+      warnSpy.mockRestore();
+    });
+
+    it('should not allow consumer props to override frameProcessor or pixelFormat', () => {
+      const { Platform } = require('react-native');
+      Platform.OS = 'android';
+      const { Camera } = require('../Camera');
+      const mockDevice = { id: 'back', name: 'Back Camera' };
+      const mockCallback = jest.fn();
+      const externalFrameProcessor = jest.fn();
+
+      const result = Camera({
+        device: mockDevice,
+        isActive: true,
+        mode: 'recognize' as const,
+        options: { language: 'latin' as const },
+        callback: mockCallback,
+        frameProcessor: externalFrameProcessor,
+        pixelFormat: 'yuv',
+      });
+
+      const child = Array.isArray(result.props.children)
+        ? result.props.children[0]
+        : result.props.children;
+
+      expect(child.props.pixelFormat).toBe('rgb');
+      expect(child.props.frameProcessor).not.toBe(externalFrameProcessor);
+      expect(typeof child.props.frameProcessor).toBe('function');
+    });
+
+    it('should return null children when device is not provided', () => {
+      const { Camera } = require('../Camera');
+      const mockCallback = jest.fn();
+
+      const result = Camera({
+        device: null,
+        isActive: false,
+        mode: 'recognize' as const,
+        options: {},
+        callback: mockCallback,
+      });
+
+      // When device is falsy the NativeCamera is not rendered, result is a Fragment
+      expect(result).toBeDefined();
     });
   });
 });

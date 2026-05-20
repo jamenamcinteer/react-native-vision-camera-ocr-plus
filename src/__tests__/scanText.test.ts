@@ -1,64 +1,63 @@
 import type { Frame } from '../types';
 
-// Mock Vision Camera Proxy
-const mockPlugin = {
-  call: jest.fn(),
+const mockScanFrame = jest.fn();
+const mockConfigure = jest.fn();
+const mockRecognizer = {
+  scanFrame: mockScanFrame,
+  configure: mockConfigure,
 };
 
-const mockVisionCameraProxy = {
-  initFrameProcessorPlugin: jest.fn(),
-};
-
-jest.mock('react-native-vision-camera', () => ({
-  VisionCameraProxy: mockVisionCameraProxy,
+jest.mock('react-native-nitro-modules', () => ({
+  NitroModules: {
+    createHybridObject: jest.fn(() => mockRecognizer),
+  },
 }));
 
-// Import after mocking
 const { createTextRecognitionPlugin } = require('../scanText');
 
 describe('createTextRecognitionPlugin', () => {
   beforeEach(() => {
     jest.clearAllMocks();
+    const { NitroModules } = require('react-native-nitro-modules');
+    NitroModules.createHybridObject.mockReturnValue(mockRecognizer);
   });
 
-  describe('Plugin initialization', () => {
-    it('should create plugin with default options', () => {
-      mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(
-        mockPlugin
+  describe('Plugin creation', () => {
+    it('creates a recognizer with default options', () => {
+      const { NitroModules } = require('react-native-nitro-modules');
+      createTextRecognitionPlugin();
+      expect(NitroModules.createHybridObject).toHaveBeenCalledWith(
+        'TextRecognizer'
       );
-
-      const plugin = createTextRecognitionPlugin();
-
-      expect(
-        mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenCalledWith('scanText', {
+      expect(mockConfigure).toHaveBeenCalledWith({
+        language: 'latin',
         frameSkipThreshold: 10,
         useLightweightMode: false,
-        language: 'latin' as const,
       });
-      expect(plugin).toHaveProperty('scanText');
-      expect(typeof plugin.scanText).toBe('function');
     });
 
-    it('should create plugin with custom options', () => {
-      const options = {
-        language: 'chinese' as const,
-        frameSkipThreshold: 10,
-        useLightweightMode: true,
-      };
-      mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(
-        mockPlugin
+    it('creates a recognizer with custom language', () => {
+      createTextRecognitionPlugin({ language: 'chinese' });
+      expect(mockConfigure).toHaveBeenCalledWith(
+        expect.objectContaining({ language: 'chinese' })
       );
-
-      const plugin = createTextRecognitionPlugin(options);
-
-      expect(
-        mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenCalledWith('scanText', options);
-      expect(plugin).toHaveProperty('scanText');
     });
 
-    it('should handle all supported languages', () => {
+    it('creates a recognizer with custom frameSkipThreshold', () => {
+      createTextRecognitionPlugin({ frameSkipThreshold: 5 });
+      expect(mockConfigure).toHaveBeenCalledWith(
+        expect.objectContaining({ frameSkipThreshold: 5 })
+      );
+    });
+
+    it('creates a recognizer with useLightweightMode', () => {
+      createTextRecognitionPlugin({ useLightweightMode: true });
+      expect(mockConfigure).toHaveBeenCalledWith(
+        expect.objectContaining({ useLightweightMode: true })
+      );
+    });
+
+    it('handles all supported recognition languages', () => {
       const languages = [
         'latin',
         'chinese',
@@ -66,235 +65,109 @@ describe('createTextRecognitionPlugin', () => {
         'japanese',
         'korean',
       ] as const;
-
       languages.forEach((language) => {
-        mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(
-          mockPlugin
-        );
-
-        const options = {
-          language,
-          frameSkipThreshold: 10,
-          useLightweightMode: true,
-        };
-        const plugin = createTextRecognitionPlugin(options);
-
-        expect(
-          mockVisionCameraProxy.initFrameProcessorPlugin
-        ).toHaveBeenCalledWith('scanText', options);
+        const plugin = createTextRecognitionPlugin({ language });
         expect(plugin).toHaveProperty('scanText');
       });
     });
 
-    it('should parse scanRegion percentage strings into numeric values', () => {
-      mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(
-        mockPlugin
-      );
-
-      const options = {
-        scanRegion: {
-          left: '25%',
-          top: '50%',
-          width: '12.5%',
-          height: '100%',
-        },
-      } as const;
-
-      const plugin = createTextRecognitionPlugin(options);
-
-      expect(
-        mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenCalledWith('scanText', {
-        frameSkipThreshold: 10,
-        useLightweightMode: false,
-        language: 'latin',
-        scanRegion: {
-          left: 25,
-          top: 50,
-          width: 12.5,
-          height: 100,
-        },
-      });
-      expect(plugin).toHaveProperty('scanText');
-    });
-
-    it('should throw error when plugin initialization fails', () => {
-      mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(null);
-
-      expect(() => createTextRecognitionPlugin()).toThrow(
-        "Can't load plugin scanText. Try cleaning cache or reinstall plugin."
+    it('parses scanRegion percentage strings into numeric values', () => {
+      createTextRecognitionPlugin({
+        scanRegion: { left: '25%', top: '50%', width: '12.5%', height: '100%' },
+      } as any);
+      expect(mockConfigure).toHaveBeenCalledWith(
+        expect.objectContaining({
+          scanRegion: { left: 25, top: 50, width: 12.5, height: 100 },
+        })
       );
     });
 
-    it('should throw error when plugin initialization returns undefined', () => {
-      mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(undefined);
-
-      expect(() => createTextRecognitionPlugin()).toThrow(
-        "Can't load plugin scanText. Try cleaning cache or reinstall plugin."
+    it('parses scanRegion with 0% values', () => {
+      createTextRecognitionPlugin({
+        scanRegion: { left: '0%', top: '0%', width: '100%', height: '100%' },
+      } as any);
+      expect(mockConfigure).toHaveBeenCalledWith(
+        expect.objectContaining({
+          scanRegion: { left: 0, top: 0, width: 100, height: 100 },
+        })
       );
+    });
+
+    it('returns a handle with scanText function and recognizer', () => {
+      const handle = createTextRecognitionPlugin();
+      expect(handle).toHaveProperty('scanText');
+      expect(handle).toHaveProperty('recognizer');
+      expect(typeof handle.scanText).toBe('function');
     });
   });
 
   describe('scanText function', () => {
-    let plugin: any;
-    const mockFrame: Frame = {} as Frame;
+    const makeFrame = (extra: Record<string, unknown> = {}): Frame => {
+      const nb = { pointer: BigInt(12345), release: jest.fn() };
+      return {
+        getNativeBuffer: jest.fn(() => nb),
+        orientation: 'up',
+        width: 1920,
+        height: 1080,
+        ...extra,
+      } as unknown as Frame;
+    };
 
-    beforeEach(() => {
-      mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(
-        mockPlugin
-      );
-      plugin = createTextRecognitionPlugin();
-    });
-
-    it('should call plugin with frame and return text array', () => {
-      const mockTextResults: any = [
-        {
-          blocks: [],
-          resultText: 'hello world',
-        },
-      ];
-
-      mockPlugin.call.mockReturnValue(mockTextResults);
-
-      const result = plugin.scanText(mockFrame);
-
-      expect(mockPlugin.call).toHaveBeenCalledWith(mockFrame);
-      expect(result).toEqual(mockTextResults);
-    });
-
-    it('should return empty array when no text is detected', () => {
-      const emptyResults: any = [];
-      mockPlugin.call.mockReturnValue(emptyResults);
-
-      const result = plugin.scanText(mockFrame);
-
-      expect(mockPlugin.call).toHaveBeenCalledWith(mockFrame);
-      expect(result).toEqual(emptyResults);
-    });
-
-    it('should handle multiple text blocks', () => {
-      const multipleTextResults: any = [
-        {
-          blocks: [],
-          resultText: 'first block second block',
-        },
-      ];
-
-      mockPlugin.call.mockReturnValue(multipleTextResults);
-
-      const result = plugin.scanText(mockFrame);
-
-      expect(result).toEqual(multipleTextResults);
-    });
-  });
-
-  describe('Error handling', () => {
-    it('should handle native plugin errors gracefully', () => {
-      mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(
-        mockPlugin
-      );
+    it('calls scanFrame with the native buffer pointer and orientation', () => {
+      const mockResult = { resultText: 'Hello', blocks: [] };
+      mockScanFrame.mockReturnValue(mockResult);
+      const frame = makeFrame();
       const plugin = createTextRecognitionPlugin();
 
-      mockPlugin.call.mockImplementation(() => {
-        throw new Error('Native plugin error');
-      });
+      const result = plugin.scanText(frame);
 
-      const mockFrame: Frame = {} as Frame;
-
-      expect(() => plugin.scanText(mockFrame)).toThrow('Native plugin error');
+      expect((frame as any).getNativeBuffer).toHaveBeenCalled();
+      expect(mockScanFrame).toHaveBeenCalledWith(BigInt(12345), 'up');
+      expect(result).toEqual(mockResult);
     });
 
-    it('should handle null return values from native plugin', () => {
-      mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(
-        mockPlugin
-      );
+    it('releases the native buffer after scanFrame', () => {
+      mockScanFrame.mockReturnValue({ resultText: 'ok', blocks: [] });
+      const frame = makeFrame();
       const plugin = createTextRecognitionPlugin();
-
-      mockPlugin.call.mockReturnValue(null);
-
-      const mockFrame: Frame = {} as Frame;
-      const result = plugin.scanText(mockFrame);
-
-      expect(result).toBeNull();
-    });
-  });
-
-  describe('Plugin lifecycle', () => {
-    it('should create different plugin instances for different options', () => {
-      const plugin1 = createTextRecognitionPlugin({
-        language: 'latin',
-        useLightweightMode: true,
-      });
-      const plugin2 = createTextRecognitionPlugin({
-        language: 'chinese',
-        useLightweightMode: true,
-      });
-      const plugin3 = createTextRecognitionPlugin({
-        frameSkipThreshold: 1,
-        useLightweightMode: true,
-      });
-      const plugin4 = createTextRecognitionPlugin({
-        useLightweightMode: false,
-      });
-
-      expect(
-        mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenCalledTimes(4);
-      expect(
-        mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenNthCalledWith(1, 'scanText', {
-        language: 'latin',
-        frameSkipThreshold: 10,
-        useLightweightMode: true,
-      });
-      expect(
-        mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenNthCalledWith(2, 'scanText', {
-        language: 'chinese',
-        frameSkipThreshold: 10,
-        useLightweightMode: true,
-      });
-      expect(
-        mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenNthCalledWith(3, 'scanText', {
-        language: 'latin',
-        frameSkipThreshold: 1,
-        useLightweightMode: true,
-      });
-      expect(
-        mockVisionCameraProxy.initFrameProcessorPlugin
-      ).toHaveBeenNthCalledWith(4, 'scanText', {
-        language: 'latin',
-        frameSkipThreshold: 10,
-        useLightweightMode: false,
-      });
-
-      expect(plugin1).not.toBe(plugin2);
-      expect(plugin3).not.toBe(plugin4);
+      plugin.scanText(frame);
+      const nb = (frame as any).getNativeBuffer();
+      expect(nb.release).toHaveBeenCalled();
     });
 
-    it('should maintain plugin state between calls', () => {
-      mockVisionCameraProxy.initFrameProcessorPlugin.mockReturnValue(
-        mockPlugin
-      );
+    it('releases the native buffer even when scanFrame throws', () => {
+      mockScanFrame.mockImplementation(() => {
+        throw new Error('OCR failed');
+      });
+      const frame = makeFrame();
       const plugin = createTextRecognitionPlugin();
+      expect(() => plugin.scanText(frame)).toThrow('OCR failed');
+      const nb = (frame as any).getNativeBuffer();
+      expect(nb.release).toHaveBeenCalled();
+    });
 
-      const mockFrame: Frame = {} as Frame;
-      const mockResults: any = [
-        {
-          blocks: [],
-          resultText: 'test',
-        },
-      ];
+    it('returns empty result when scanFrame returns null', () => {
+      mockScanFrame.mockReturnValue(null);
+      const frame = makeFrame();
+      const plugin = createTextRecognitionPlugin();
+      const result = plugin.scanText(frame);
+      expect(result).toEqual({ resultText: '', blocks: [] });
+    });
 
-      mockPlugin.call.mockReturnValue(mockResults);
+    it('returns empty result when scanFrame returns undefined', () => {
+      mockScanFrame.mockReturnValue(undefined);
+      const frame = makeFrame();
+      const plugin = createTextRecognitionPlugin();
+      const result = plugin.scanText(frame);
+      expect(result).toEqual({ resultText: '', blocks: [] });
+    });
 
-      const result1 = plugin.scanText(mockFrame);
-      const result2 = plugin.scanText(mockFrame);
-
-      expect(result1).toEqual(mockResults);
-      expect(result2).toEqual(mockResults);
-      expect(mockPlugin.call).toHaveBeenCalledTimes(2);
+    it('defaults orientation to "up" when frame has no orientation', () => {
+      mockScanFrame.mockReturnValue({ resultText: '', blocks: [] });
+      const frame = makeFrame({ orientation: undefined });
+      const plugin = createTextRecognitionPlugin();
+      plugin.scanText(frame);
+      expect(mockScanFrame).toHaveBeenCalledWith(expect.anything(), 'up');
     });
   });
 });

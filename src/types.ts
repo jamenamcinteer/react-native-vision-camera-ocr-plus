@@ -1,13 +1,12 @@
 export type {
   Frame,
-  ReadonlyFrameProcessor,
-  FrameProcessorPlugin,
-  FrameInternal,
   CameraProps,
   CameraDevice,
 } from 'react-native-vision-camera';
 export type { ForwardedRef } from 'react';
 import type { CameraProps, Frame } from 'react-native-vision-camera';
+
+export type ReadonlyFrameProcessor = (frame: Frame) => void;
 
 export type Languages =
   | 'af'
@@ -109,6 +108,11 @@ export type TextRecognitionOptions = {
 export type TranslatorOptions = {
   from: Languages;
   to: Languages;
+  /**
+   * Scan region within the frame to focus text recognition on
+   * @default undefined
+   */
+  scanRegion?: ScanRegion;
 };
 
 export type CameraTypes = {
@@ -125,7 +129,10 @@ export type TextRecognitionPlugin = {
   scanText: (frame: Frame, config?: ScanTextConfig) => Text;
 };
 export type TranslatorPlugin = {
-  translate: (frame: Frame) => string;
+  /** Worklet-safe synchronous call that returns the last completed OCR result while OCR runs asynchronously. */
+  scanText: (frame: Frame) => Text;
+  /** Async translation of a text string — runs on the JS thread. */
+  translate: (text: string) => Promise<string>;
 };
 
 export type Text = {
@@ -133,16 +140,16 @@ export type Text = {
   resultText: string;
 };
 
-type BlockData = {
+export type BlockData = {
   blockText: string;
-  blockCornerPoints?: CornerPointsType; // Always present on iOS, omitted on Android when useLightweightMode is true
+  blockCornerPoints?: CornerPointsType;
   blockFrame: FrameType;
   lines: LineData[];
 };
 
-type CornerPointsType = { x: number; y: number }[];
+export type CornerPointsType = { x: number; y: number }[];
 
-type FrameType = {
+export type FrameType = {
   boundingCenterX: number;
   boundingCenterY: number;
   height: number;
@@ -151,17 +158,17 @@ type FrameType = {
   y: number;
 };
 
-type LineData = {
+export type LineData = {
   lineText: string;
-  lineCornerPoints?: CornerPointsType; // Always present on iOS, omitted on Android when useLightweightMode is true
+  lineCornerPoints?: CornerPointsType;
   lineFrame: FrameType;
-  lineLanguages?: string[]; // Always present on iOS, omitted on Android when useLightweightMode is true
-  elements: ElementData[]; // Always populated on iOS, empty array on Android when useLightweightMode is true
+  lineLanguages?: string[];
+  elements: ElementData[];
 };
 
-type ElementData = {
+export type ElementData = {
   elementText: string;
-  elementCornerPoints?: CornerPointsType; // Always present on iOS, may be present on Android
+  elementCornerPoints?: CornerPointsType;
   elementFrame: FrameType;
 };
 

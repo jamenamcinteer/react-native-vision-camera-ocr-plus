@@ -2,7 +2,7 @@
   "compilerOptions": {
     "rootDir": ".",
     "paths": {
-      "react-native-vision-camera-ocr": ["./src/index"]
+      "react-native-vision-camera-ocr-plus": ["./src/index"]
     },
     "allowUnreachableCode": false,
     "allowUnusedLabels": false,
@@ -10,6 +10,7 @@
     "forceConsistentCasingInFileNames": true,
     "jsx": "react",
     "lib": ["esnext"],
+    "types": ["jest"],
     "module": "esnext",
     "moduleResolution": "node",
     "ignoreDeprecations": "6.0",
@@ -25,5 +26,6 @@
     "strict": true,
     "target": "esnext",
     "verbatimModuleSyntax": true
-  }
+  },
+  "exclude": ["lib"]
 }

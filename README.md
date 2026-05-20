@@ -1,55 +1,61 @@
-# 📷 react-native-vision-camera-ocr-plus
+# react-native-vision-camera-ocr-plus
 
 [![CI Status](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml/badge.svg)](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/actions/workflows/ci.yml)
 [![npm version](https://img.shields.io/npm/v/react-native-vision-camera-ocr-plus.svg)](https://www.npmjs.com/package/react-native-vision-camera-ocr-plus)
 
-<div align="center">
-  <img src="https://raw.githubusercontent.com/jamenamcinteer/react-native-vision-camera-ocr/next-release/example/assets/icon.png" alt="" width="100" height="100" />
-</div>
+<table>
+<tr style="border: 0;">
+<td valign="top" style="border: 0;">
 
-A **React Native Vision Camera** frame processor for **on-device text recognition (OCR)** and **translation** using **ML Kit**.
+On-device OCR and text translation for React Native, powered by [VisionCamera](https://github.com/mrousavy/react-native-vision-camera) and [Nitro Modules](https://github.com/mrousavy/nitro). Uses Google ML Kit under the hood for both text recognition and on-device translation.
 
-✨ Actively maintained fork of [`react-native-vision-camera-text-recognition`](https://www.npmjs.com/package/react-native-vision-camera-text-recognition), with modern improvements, bug fixes, and support for the latest Vision Camera and React Native versions.
+### Features
 
----
+- **Live OCR** — read text from every camera frame via a VisionCamera frame processor
+- **Live translation** — recognize and translate camera frame text in real time
+- **Photo OCR** — recognize text asynchronously from a still image URI
+- **Model management** — remove downloaded translation language models to free storage
+- Supports Latin, Chinese, Devanagari, Japanese, and Korean scripts
+- Optional scan-region cropping to focus recognition on a sub-area of the frame
+- Configurable frame skipping for performance tuning
 
-## 🌟 Why Use This Fork?
+</td>
+<td valign="top" style="border: 0;">
+  <img src="demo.gif" width="360" />
+</td>
+</tr>
+</table>
 
-The original packages are **no longer actively maintained**.  
-This fork provides:
+## Requirements
 
-- ✅ Ongoing maintenance and compatibility with **React Native 0.76+** and **Vision Camera v4+**  
-- 🧠 **Translation support** (not just OCR) powered by ML Kit  
-- 🛠 **Improved stability and error handling**  
-- 🚀 **Faster processing** and frame optimization  
-- 📦 **TypeScript definitions** included  
-- 🧩 Consistent API that works seamlessly with modern React Native projects
+| Requirement | Minimum version |
+|---|---|
+| React Native | 0.81 |
+| iOS | 15.1 |
+| Android Minimum SDK | 26 |
+| Android Target SDK | 36 |
+| react-native-vision-camera | 5.0.0 |
+| react-native-worklets | 0.8.x |
+| Expo (if used) | 54 |
 
----
+## Migration from v1.x
 
-## 🚀 Features
+Upgrading from v1? See the **[Migration Guide](MIGRATION.md)** for a full list of breaking changes and step-by-step instructions.
 
-- 🧩 Simple drop-in API  
-- ⚡ Fast, accurate on-device OCR  
-- 📱 Works on **Android** and **iOS**  
-- 🌐 Built-in translation via ML Kit  
-- 📸 Recognize text from live camera or static photos  
-- 🪄 Written in **Kotlin** and **Swift**  
-- 🔧 Compatible with `react-native-vision-camera` and `react-native-worklets-core`
-- 🔥 Compatible with Firebase
+## Installation
 
----
-
-## 💻 Installation
-
-> **Peer dependencies:**  
-> You must have `react-native-vision-camera` and `react-native-worklets-core` installed.
-
-```bash
-npm install react-native-vision-camera-ocr-plus
-# or
-yarn add react-native-vision-camera-ocr-plus
+```sh
+npm install react-native-vision-camera-ocr-plus react-native-nitro-modules react-native-vision-camera-worklets react-native-worklets
 ```
+
+### Peer dependencies
+
+| Package | Version |
+|---|---|
+| `react-native-vision-camera` | `>=5.0.0` |
+| `react-native-nitro-modules` | `*` |
+| `react-native-vision-camera-worklets` | `*` |
+| `react-native-worklets` | `>=0.8.0` |
 
 ### 🔥 Firebase Compatibility
 If you have Firebase in your project, you will need to set your iOS Deployment Target to at least 16.0.
@@ -63,281 +69,329 @@ The library works correctly on **physical iOS devices** and on the **iOS Simulat
 
 👉 [Full context and discussion](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/91#issuecomment-3768407842)
 
+### iOS
+
+```sh
+cd ios && pod install
+```
+
+### Android
+
+No additional steps — the library is auto-linked.
+
 ---
 
-## 🔄 Migration
-
-| Previous Package | Replacement | Notes |
-|------------------|-------------|-------|
-| `react-native-vision-camera-text-recognition` | ✅ `react-native-vision-camera-ocr-plus` | Drop-in replacement with fixes and updates |
-| `vision-camera-ocr` | ✅ `react-native-vision-camera-ocr-plus` | Actively maintained alternative |
-
----
-
-## 💡 Usage
+## Usage
 
 👉 See the [example app](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/tree/main/example) for a working demo.
 
-### 📚 Live Text Recognition
+### `<Camera />` — live OCR
 
-```jsx
-import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { useCameraDevice } from 'react-native-vision-camera';
-import { Camera } from 'react-native-vision-camera-ocr-plus';
+A drop-in replacement for VisionCamera's `<Camera>` that automatically runs OCR on every frame and fires `callback` with the recognized text.
+
+```tsx
+import { Camera, type Text } from 'react-native-vision-camera-ocr-plus'
+import { useCameraDevice } from 'react-native-vision-camera'
 
 export default function App() {
-  const [data, setData] = useState(null);
-  const device = useCameraDevice('back');
+  const device = useCameraDevice('back')
 
   return (
-    <>
-      {!!device && (
-        <Camera
-          style={StyleSheet.absoluteFill}
-          device={device}
-          isActive
-          mode="recognize"
-          options={{ language: 'latin' }}
-          callback={(result) => setData(result)}
-        />
-      )}
-    </>
-  );
+    <Camera
+      style={{ flex: 1 }}
+      device={device}
+      isActive
+      mode="recognize"
+      options={{
+        language: 'latin',         // 'latin' | 'chinese' | 'devanagari' | 'japanese' | 'korean'
+        frameSkipThreshold: 10,    // process every Nth frame (default: 10)
+        useLightweightMode: false, // Android only — skip corner points, languages, element data
+        // scanRegion: { left: '10%', top: '20%', width: '80%', height: '30%' },
+      }}
+      callback={(data) => {
+        const text = data as Text
+        console.log(text.resultText)
+        console.log(text.blocks) // TextBlock[]
+      }}
+    />
+  )
 }
 ```
 
----
+### `<Camera />` — live translation
 
-### 🌍 Translate Text in Real Time
+Recognizes and translates text from every camera frame. The `callback` receives the translated string.
 
-```jsx
-import React, { useState } from 'react';
-import { StyleSheet } from 'react-native';
-import { useCameraDevice } from 'react-native-vision-camera';
-import { Camera } from 'react-native-vision-camera-ocr-plus';
+```tsx
+import { Camera } from 'react-native-vision-camera-ocr-plus'
+import { useCameraDevice } from 'react-native-vision-camera'
 
 export default function App() {
-  const [data, setData] = useState(null);
-  const device = useCameraDevice('back');
+  const device = useCameraDevice('back')
 
   return (
-    <>
-      {!!device && (
-        <Camera
-          style={StyleSheet.absoluteFill}
-          device={device}
-          isActive
-          mode="translate"
-          options={{ from: 'en', to: 'de' }}
-          callback={(result) => setData(result)}
-        />
-      )}
-    </>
-  );
+    <Camera
+      style={{ flex: 1 }}
+      device={device}
+      isActive
+      mode="translate"
+      options={{ from: 'fr', to: 'en' }}
+      callback={(data) => console.log(data as string)}
+    />
+  )
 }
 ```
 
----
+### Hooks — build your own frame processor
 
-### ⚙️ Using a Frame Processor
+Use `useTextRecognition` or `useTranslate` to integrate the plugins into a custom frame processor.
 
-```jsx
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Camera, useCameraDevice, useFrameProcessor } from 'react-native-vision-camera';
-import { useTextRecognition } from 'react-native-vision-camera-ocr-plus';
+#### `useTextRecognition`
 
-export default function App() {
-  const device = useCameraDevice('back');
-  const { scanText } = useTextRecognition({ language: 'latin' });
+Returns a `TextRecognitionHandle` with a worklet-safe `scanText` function and the raw `recognizer` HybridObject.
 
-  const frameProcessor = useFrameProcessor((frame) => {
-    'worklet';
-    const data = scanText(frame);
-    console.log('Detected text:', data);
-  }, []);
+In VisionCamera v5, `pixelFormat` is configured via `useFrameOutput` (not a `<Camera>` prop). **Android requires `pixelFormat: 'rgb'`** so the AHardwareBuffer is in RGBA format and can be CPU-locked; on iOS any format works.
 
-  return (
-    <>
-      {!!device && (
-        <Camera
-          style={StyleSheet.absoluteFill}
-          device={device}
-          isActive
-          frameProcessor={frameProcessor}
-          mode="recognize"
-        />
-      )}
-    </>
-  );
-}
-```
+```tsx
+import { useTextRecognition, type Text } from 'react-native-vision-camera-ocr-plus'
+import { Camera, useFrameOutput, useCameraDevice } from 'react-native-vision-camera'
+import { scheduleOnRN } from 'react-native-worklets'
 
----
+function MyCamera() {
+  const device = useCameraDevice('back')
+  const { scanText } = useTextRecognition({ language: 'latin', frameSkipThreshold: 5 })
 
-## ⚙️ Options
-
-| Option | Type | Values | Default | Description |
-|:-------|:-----|:--------|:---------|:------------|
-| `language` | `string` | `latin`, `chinese`, `devanagari`, `japanese`, `korean` | `latin` | Text recognition language |
-| `mode` | `string` | `recognize`, `translate` | `recognize` | Processing mode |
-| `from`, `to` | `string` | See [Supported Languages](#-supported-languages) | `en`, `de` | Translation languages |
-| `scanRegion` | `object` | `{ left, top, width, height }` | `undefined` | Define a specific region to scan (values are string percentage proportions 0-100) |
-| `frameSkipThreshold` | `number` | Any positive integer | `10` | Skip frames for better performance (higher = faster) |
-| `useLightweightMode` | `boolean` | `true`, `false` | `false` | (Android Only) Use lightweight processing for better performance |
-
----
-
-## 🎯 Scan Region
-
-You can specify a specific region of the camera frame to scan for text. This is useful for improving performance, focusing on specific areas, or reducing false positives from background text.
-
-**Important:** All `scanRegion` values are **percentage proportions** from 0 to 100
-
-### Example
-
-```jsx
-import React from 'react';
-import { StyleSheet } from 'react-native';
-import { Camera, useCameraDevice, useFrameProcessor } from 'react-native-vision-camera';
-import { useTextRecognition } from 'react-native-vision-camera-ocr-plus';
-
-export default function App() {
-  const device = useCameraDevice('back');
-  const { scanText } = useTextRecognition({
-    language: 'latin',
-    scanRegion: {
-      left: '5%',    // Start 5% from the left edge
-      top: '25%',     // Start 25% from the top edge
-      width: '80%',   // Span 80% of frame width
-      height: '40%'   // Span 40% of frame height
-    }
-  });
-
-  const frameProcessor = useFrameProcessor((frame) => {
-    'worklet';
-    const data = scanText(frame);
-    console.log('Detected text in region:', data);
-  }, []);
-
-  return (
-    <>
-      {!!device && (
-        <Camera
-          style={StyleSheet.absoluteFill}
-          device={device}
-          isActive
-          frameProcessor={frameProcessor}
-        />
-      )}
-    </>
-  );
-}
-```
-
-## 🚀 Performance Optimization
-
-For better performance on Android devices, especially mid-range phones, you can adjust these options:
-
-```jsx
-// Higher performance (recommended for real-time scanning)
-const { scanText } = useTextRecognition({
-  language: 'latin',
-  frameSkipThreshold: 10,      // Process every 10th frame
-  useLightweightMode: true    // Skip detailed corner points and element processing
-});
-
-// Balanced performance/accuracy
-const { scanText } = useTextRecognition({
-  language: 'latin',
-  frameSkipThreshold: 3,      // Process every 3rd frame
-  useLightweightMode: true
-});
-
-// Maximum accuracy (slower)
-const { scanText } = useTextRecognition({
-  language: 'latin',
-  frameSkipThreshold: 1,      // Process every frame
-  useLightweightMode: false   // Full detailed data
-});
-```
-
-You can also improve the performance by using `runAtTargetFps` in your frame processor:
-```jsx
-const frameProcessor = useFrameProcessor(
-    (frame) => {
-        'worklet';
-        runAtTargetFps(2, () => {
-            const data = scanText(frame);
-        });
+  const frameOutput = useFrameOutput({
+    pixelFormat: 'rgb', // required on Android
+    onFrame: (frame) => {
+      'worklet'
+      const result = scanText(frame)
+      if (result.resultText) {
+        scheduleOnRN(setDetectedText, result.resultText)
+      }
+      frame.dispose()
     },
-    [scanText],
-);
+  })
+
+  return <Camera device={device} isActive outputs={[frameOutput]} />
+}
+
+> **Tip — Scan region:** Pass `scanRegion` in the options to restrict OCR to a portion of the frame.
+> The coordinates are percentage strings (`"0%"` – `"100%"`) relative to the display-oriented frame.
+> Pair it with a matching `<View>` overlay so the visible box aligns with what is actually scanned:
+>
+> ```tsx
+> const scanRegion = { left: '10%', top: '25%', width: '80%', height: '30%' }
+> const { scanText } = useTextRecognition({ language: 'latin', scanRegion })
+>
+> // Render a matching overlay:
+> <View style={{ position: 'absolute', left: '10%', top: '25%', width: '80%', height: '30%',
+>                borderWidth: 2, borderColor: 'red' }} />
+> ```
+
+#### `useTranslate`
+
+Returns a `TranslatorHandle` with a worklet-safe `scanText` function for OCR and an async `translate` function for translation.
+
+```tsx
+import { useTranslate } from 'react-native-vision-camera-ocr-plus'
+import { Camera, useFrameOutput, useCameraDevice } from 'react-native-vision-camera'
+import { scheduleOnRN } from 'react-native-worklets'
+
+function MyCamera() {
+  const device = useCameraDevice('back')
+  const { scanText, translate } = useTranslate({ from: 'fr', to: 'en' })
+  // To restrict OCR to a region, pass scanRegion:
+  // const { scanText, translate } = useTranslate({ from: 'fr', to: 'en', scanRegion: { left: '10%', top: '25%', width: '80%', height: '30%' } })
+
+  const frameOutput = useFrameOutput({
+    pixelFormat: 'rgb', // required on Android
+    onFrame: (frame) => {
+      'worklet'
+      const result = scanText(frame)
+      if (result.resultText) {
+        translate(result.resultText).then((translated) => {
+          scheduleOnRN(setTranslated, translated)
+        })
+      }
+      frame.dispose()
+    },
+  })
+
+  return <Camera device={device} isActive outputs={[frameOutput]} />
+}
 ```
 
-Performance may also be better in production builds than in dev.
+#### Low-level factories
 
-### Performance Tips:
-- **Higher `frameSkipThreshold`** = better performance, less CPU usage
-- **`useLightweightMode: true`** = faster processing, reduced memory usage
-- These optimizations are especially beneficial on Android devices
+The hooks call `createTextRecognitionPlugin` and `createTranslatorPlugin` internally. You can use them directly outside of React components:
 
----
+```ts
+import { createTextRecognitionPlugin } from 'react-native-vision-camera-ocr-plus'
 
-## 🖼 Recognize Text from a Photo
-
-```js
-import { PhotoRecognizer } from 'react-native-vision-camera-ocr-plus';
-
-const result = await PhotoRecognizer({
-  uri: asset.uri,
-  orientation: 'portrait',
-});
-
-console.log(result);
+const { scanText, recognizer } = createTextRecognitionPlugin({ language: 'latin' })
 ```
 
-> ⚠️ **Note (iOS only):**  
-> The `orientation` option is available only on iOS and is recommended when using photos captured via the camera.
+### `PhotoRecognizer` — still image OCR
 
-| Property | Type | Values | Required | Default | Platform |
-|:----------|:------|:--------|:----------|:----------|:-----------|
-| `uri` | `string` | — | ✅ Yes | — | Android, iOS |
-| `orientation` | `string` | `portrait`, `portraitUpsideDown`, `landscapeLeft`, `landscapeRight` | ❌ No | `portrait` | iOS only |
+Asynchronously recognizes text in a still photo URI.
 
----
+```tsx
+import { PhotoRecognizer, type Text } from 'react-native-vision-camera-ocr-plus'
 
-## 🧹 Remove Unused Translation Models
+const result: Text = await PhotoRecognizer({
+  uri: 'file:///path/to/photo.jpg',
+  orientation: 'portrait', // 'portrait' | 'portraitUpsideDown' | 'landscapeLeft' | 'landscapeRight'
+})
 
-```js
-import { RemoveLanguageModel } from 'react-native-vision-camera-ocr-plus';
+console.log(result.resultText)
+console.log(result.blocks) // TextBlock[]
+```
 
-await RemoveLanguageModel('en');
+The `orientation` parameter is optional and defaults to `'portrait'`. On iOS the `file://` scheme is stripped automatically; on Android it is added if missing.
+
+### `RemoveLanguageModel` — free storage
+
+Removes a downloaded ML Kit translation model from the device. Returns `true` on success.
+
+```tsx
+import { RemoveLanguageModel } from 'react-native-vision-camera-ocr-plus'
+
+const success: boolean = await RemoveLanguageModel('fr')
 ```
 
 ---
 
-## 🌍 Supported Languages
+## API Reference
 
-| Language | Code | Flag |
-|:----------|:------|:------|
-| Afrikaans | `af` | 🇿🇦 |
-| Arabic | `ar` | 🇸🇦 |
-| Bengali | `bn` | 🇧🇩 |
-| Chinese | `zh` | 🇨🇳 |
-| English | `en` | 🇺🇸🇬🇧 |
-| French | `fr` | 🇫🇷 |
-| German | `de` | 🇩🇪 |
-| Hindi | `hi` | 🇮🇳 |
-| Japanese | `ja` | 🇯🇵 |
-| Korean | `ko` | 🇰🇷 |
-| Portuguese | `pt` | 🇵🇹 |
-| Russian | `ru` | 🇷🇺 |
-| Spanish | `es` | 🇪🇸 |
-| ...and [many more](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/blob/next-release/src/types.ts). |
+### `<Camera />`
+
+Accepts all standard VisionCamera `CameraProps` plus:
+
+| Prop | Type | Description |
+|---|---|---|
+| `mode` | `'recognize' \| 'translate'` | Whether to run OCR or OCR + translation |
+| `options` | `TextRecognitionOptions \| TranslatorOptions` | Mode-specific options (see below) |
+| `callback` | `(data: Text \| string) => void` | Called with `Text` in recognize mode or a translated `string` in translate mode |
+
+### Functions
+
+| Function | Signature | Description |
+|---|---|---|
+| `PhotoRecognizer` | `(options: PhotoOptions) => Promise<Text>` | OCR a still image by URI |
+| `RemoveLanguageModel` | `(code: Languages) => Promise<boolean>` | Delete a downloaded translation model |
+| `createTextRecognitionPlugin` | `(options?: TextRecognitionOptions) => TextRecognitionHandle` | Create a frame-processor OCR plugin |
+| `createTranslatorPlugin` | `(options?: TranslatorOptions) => TranslatorHandle` | Create a frame-processor translation plugin |
+
+### Hooks
+
+| Hook | Returns | Description |
+|---|---|---|
+| `useTextRecognition(options?)` | `TextRecognitionHandle` | Memoized OCR plugin |
+| `useTranslate(options?)` | `TranslatorHandle` | Memoized translation plugin |
+
+### Types
+
+```ts
+type Text = {
+  resultText: string
+  blocks: BlockData[]
+}
+
+type BlockData = {
+  blockText: string
+  blockFrame: FrameType
+  blockCornerPoints?: CornerPointsType
+  lines: LineData[]
+}
+
+type LineData = {
+  lineText: string
+  lineFrame: FrameType
+  lineCornerPoints?: CornerPointsType
+  lineLanguages?: string[]
+  elements: ElementData[]
+}
+
+type ElementData = {
+  elementText: string
+  elementFrame: FrameType
+  elementCornerPoints?: CornerPointsType
+}
+
+type FrameType = {
+  boundingCenterX: number
+  boundingCenterY: number
+  height: number
+  width: number
+  x: number
+  y: number
+}
+
+type CornerPointsType = { x: number; y: number }[]
+
+type ScanRegion = {
+  left: Percentage   // e.g. "10%"
+  top: Percentage
+  width: Percentage
+  height: Percentage
+}
+
+type TextRecognitionOptions = {
+  language?: 'latin' | 'chinese' | 'devanagari' | 'japanese' | 'korean'
+  scanRegion?: ScanRegion
+  frameSkipThreshold?: number   // default: 10
+  useLightweightMode?: boolean  // Android only — skips corner points, languages, and element data; default: false
+}
+
+type TranslatorOptions = {
+  from: Languages
+  to: Languages
+  scanRegion?: ScanRegion  // restrict OCR to a percentage-based region of the frame
+}
+
+type PhotoOptions = {
+  uri: string
+  orientation?: 'portrait' | 'portraitUpsideDown' | 'landscapeLeft' | 'landscapeRight'
+}
+
+type TextRecognitionHandle = {
+  scanText: (frame: Frame) => Text  // worklet-safe
+  recognizer: TextRecognizer        // raw Nitro HybridObject
+}
+
+type TranslatorHandle = {
+  scanText: (frame: Frame) => Text        // worklet-safe OCR
+  translate: (text: string) => Promise<string>  // JS-thread translation
+  recognizer: TextRecognizer
+  translator: Translator
+  from: string
+  to: string
+}
+```
+
+`Languages` is a union of BCP-47 language codes: `'af' | 'sq' | 'ar' | 'be' | 'bn' | 'bg' | 'ca' | 'zh' | 'cs' | 'da' | 'nl' | 'en' | ...` (full list in [src/types.ts](src/types.ts)).
 
 ---
+
+## Structure
+
+```
+android/           Kotlin HybridObject implementations (HybridTextRecognizer, HybridTranslator)
+ios/               Swift HybridObject implementations
+src/
+  specs/
+    TextRecognizer.nitro.ts   Nitro HybridObject spec for OCR
+    Translator.nitro.ts       Nitro HybridObject spec for translation
+  Camera.tsx                  <Camera> component + useTextRecognition / useTranslate hooks
+  scanText.ts                 createTextRecognitionPlugin (frame processor factory)
+  translateText.ts            createTranslatorPlugin (frame processor factory)
+  PhotoRecognizer.ts          Async still-photo OCR
+  RemoveLanguageModel.ts      Delete downloaded translation models
+  types.ts                    All shared TypeScript types
+  index.ts                    Public API surface
+nitro.json         Nitrogen config — registers HybridTextRecognizer & HybridTranslator
+```
 
 ## 🧠 Contributing
 

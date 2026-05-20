@@ -2,21 +2,24 @@
   "name": "react-native-vision-camera-ocr-plus",
   "version": "1.2.9",
   "description": "React Native Vision Camera plugin for on-device text recognition (OCR) and translation using ML Kit. Maintained fork of react-native-vision-camera-text-recognition",
-  "main": "lib/commonjs/index",
-  "module": "lib/module/index",
+  "main": "lib/commonjs/index.js",
+  "module": "lib/module/index.js",
   "types": "lib/typescript/src/index.d.ts",
   "react-native": "src/index",
   "source": "src/index",
   "files": [
     "src",
+    "react-native.config.js",
     "lib",
+    "nitrogen",
     "android",
-    "ios",
     "cpp",
+    "ios",
+    "app.plugin.js",
+    "nitro.json",
     "*.podspec",
+    "README.md",
     "!ios/build",
-    "!android/build",
-    "!android/gradle",
     "!android/gradlew",
     "!android/gradlew.bat",
     "!android/local.properties",
@@ -29,8 +32,12 @@
     "test": "jest",
     "test:coverage": "jest --coverage",
     "typecheck": "tsc --noEmit",
+    "clean": "rm -rf android/build android/.cxx node_modules lib example/android example/ios example/node_modules example/.expo yarn-error.log",
     "lint": "eslint \"**/*.{js,ts,tsx}\"",
-    "clean": "del-cli android/build example/android/build example/android/app/build example/ios/build lib",
+    "lint:fix": "eslint \"**/*.{js,ts,tsx}\" --fix",
+    "lint-ci": "eslint \"**/*.{js,ts,tsx}\" -f @jamesacarr/github-actions",
+    "typescript": "tsc",
+    "specs": "tsc --noEmit false && nitrogen --logLevel=\"debug\"",
     "prepare": "bob build",
     "release": "standard-version"
   },
@@ -56,7 +63,8 @@
     "react-native-camera",
     "react-native-ocr",
     "vision-camera-ocr",
-    "react-native-vision-camera-text-recognition"
+    "react-native-vision-camera-text-recognition",
+    "nitro"
   ],
   "repository": {
     "type": "git",
@@ -87,25 +95,29 @@
     "eslint-plugin-ft-flow": "^3.0.11",
     "eslint-plugin-prettier": "^5.5.5",
     "jest": "^30.3.0",
+    "nitrogen": "*",
     "prettier": "^3.8.2",
     "react": "19.2.5",
     "react-native": "^0.85.1",
     "react-native-builder-bob": "^0.41.0",
-    "react-native-vision-camera": "^4.7.3",
-    "react-native-worklets-core": "^1.6.3",
+    "react-native-nitro-modules": "*",
+    "react-native-vision-camera": "^5.0.9",
+    "react-native-vision-camera-worklets": "^5.0.9",
+    "react-native-worklets": "^0.8.3",
     "standard-version": "^9.5.0",
     "typescript": "^6.0.2"
   },
-  "resolutions": {
-    "@types/react": "^19.1.0"
-  },
   "peerDependencies": {
-    "react": "*"
+    "react": "*",
+    "react-native": ">=0.81.0",
+    "react-native-nitro-modules": "*",
+    "react-native-vision-camera": ">=5.0.0",
+    "react-native-vision-camera-worklets": "*",
+    "react-native-worklets": ">=0.8.0"
   },
   "jest": {
     "preset": "@react-native/jest-preset",
     "modulePathIgnorePatterns": [
-      "<rootDir>/example/node_modules",
       "<rootDir>/lib/"
     ],
     "testMatch": [
@@ -125,7 +137,7 @@
     ],
     "testEnvironment": "node",
     "transformIgnorePatterns": [
-      "node_modules/(?!(react-native|@react-native|react-native-vision-camera|react-native-worklets-core)/)"
+      "node_modules/(?!(react-native|@react-native|react-native-vision-camera|react-native-worklets|react-native-vision-camera-worklets|react-native-nitro-modules)/)"
     ]
   },
   "commitlint": {
@@ -146,7 +158,5 @@
         }
       ]
     ]
-  },
-  "packageManager": "yarn@1.22.21+sha1.1959a18351b811cdeedbd484a8f86c3cc3bbaf72",
-  "dependencies": {}
+  }
 }

@@ -20,10 +20,10 @@
       "bundleIdentifier": "com.visionocr.example"
     },
     "android": {
-      "edgeToEdgeEnabled": true,
       "predictiveBackGestureEnabled": false,
       "permissions": [
-        "android.permission.CAMERA"
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ],
       "package": "com.visionocr.example"
     },
@@ -31,8 +31,15 @@
       "favicon": "./assets/favicon.png"
     },
     "plugins": [
-      "react-native-vision-camera",
-      "expo-image-picker"
+      "expo-image-picker",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "minSdkVersion": 26
+          }
+        }
+      ]
     ]
   }
 }

@@ -8,7 +8,8 @@ const workspaceRoot = path.resolve(projectRoot, '..'); // repo root (your lib)
 // Small helper to escape paths for a RegExp
 const esc = (p) => p.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 
-// Block the library's own node_modules to avoid duplicate React/RN
+// Block node_modules from the workspace root
+// to prevent duplicate React/RN instances being bundled
 const blockListRE = new RegExp(
   `${esc(workspaceRoot)}[\\\\/]node_modules[\\\\/].*`
 );
