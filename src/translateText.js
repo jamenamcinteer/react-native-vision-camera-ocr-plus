@@ -10,7 +10,7 @@ import { NitroModules } from 'react-native-nitro-modules';
 export function createTranslatorPlugin(options) {
   const recognizerConfig = {
     language: 'latin',
-    frameSkipThreshold: 1,
+    frameSkipThreshold: 10,
     useLightweightMode: false,
     ...(options?.scanRegion && {
       scanRegion: {

@@ -42,7 +42,7 @@ describe('createTranslatorPlugin', () => {
       createTranslatorPlugin({ from: 'en', to: 'es' });
       expect(mockConfigure).toHaveBeenCalledWith({
         language: 'latin',
-        frameSkipThreshold: 1,
+        frameSkipThreshold: 10,
         useLightweightMode: false,
       });
     });

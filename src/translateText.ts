@@ -27,7 +27,7 @@ export function createTranslatorPlugin(
 ): TranslatorHandle {
   const recognizerConfig = {
     language: 'latin' as const,
-    frameSkipThreshold: 1,
+    frameSkipThreshold: 10,
     useLightweightMode: false,
     ...(options?.scanRegion && {
       scanRegion: {
