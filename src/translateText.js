@@ -2,9 +2,10 @@ import { NitroModules } from 'react-native-nitro-modules';
 /**
  * Creates a plugin for live frame OCR + translation.
  *
- * The returned `scanText` worklet function performs synchronous OCR on the UI
- * thread. Dispatch the resulting text to `translator.translate()` on the JS
- * thread via `runOnJS`.
+ * The returned `scanText` worklet function is non-blocking and returns the
+ * last completed OCR result while the current frame is processed on a native
+ * background queue. Dispatch the resulting text to `translator.translate()`
+ * on the JS thread via `runOnJS`.
  */
 export function createTranslatorPlugin(options) {
   const recognizerConfig = {
