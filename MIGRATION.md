@@ -34,7 +34,7 @@ v2 raises the minimum supported versions across the board. Ensure your project m
 
 | Requirement | Minimum version |
 |---|---|
-| React Native | 0.78 |
+| React Native | 0.81 |
 | iOS | 15.1 |
 | Android Minimum SDK | 26 |
 | Android Target SDK | 36 |
@@ -295,7 +295,7 @@ If you have Firebase in your project, set your iOS Deployment Target to **at lea
 
 ## Quick checklist
 
-- [ ] Verify minimum platform versions: React Native ≥ 0.78, iOS ≥ 15.1, Android `minSdkVersion` ≥ 26 (targetSdkVersion ≥ 36), Expo ≥ 54 (if used)
+- [ ] Verify minimum platform versions: React Native ≥ 0.81, iOS ≥ 15.1, Android `minSdkVersion` ≥ 26 (targetSdkVersion ≥ 36), Expo ≥ 54 (if used)
 - [ ] Remove `react-native-worklets-core`, add `react-native-nitro-modules`, `react-native-vision-camera-worklets`, and `react-native-worklets`
 - [ ] Upgrade `react-native-vision-camera` to `>=5.0.0`
 - [ ] Run `cd ios && pod install`

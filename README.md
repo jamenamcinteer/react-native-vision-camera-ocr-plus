@@ -30,7 +30,7 @@ On-device OCR and text translation for React Native, powered by [VisionCamera](h
 
 | Requirement | Minimum version |
 |---|---|
-| React Native | 0.78 |
+| React Native | 0.81 |
 | iOS | 15.1 |
 | Android Minimum SDK | 26 |
 | Android Target SDK | 36 |
