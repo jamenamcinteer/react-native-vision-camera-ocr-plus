@@ -71,8 +71,8 @@ const mockCreateTranslatorPlugin = jest.fn(() => ({
   from: 'en',
   to: 'fr',
 }));
-const mockUseFrameProcessor = jest.fn();
-const mockUseRunOnJS = jest.fn();
+const mockUseFrameOutput = jest.fn();
+const mockScheduleOnRN = jest.fn();
 
 jest.mock('react-native', () => ({
   Platform: { OS: 'ios' },
@@ -80,11 +80,11 @@ jest.mock('react-native', () => ({
 
 jest.mock('react-native-vision-camera', () => ({
   Camera: jest.fn(),
-  useFrameProcessor: (...args: any[]) => mockUseFrameProcessor(...args),
+  useFrameOutput: (...args: any[]) => mockUseFrameOutput(...args),
 }));
 
 jest.mock('react-native-worklets', () => ({
-  runOnJS: (...args: any[]) => mockUseRunOnJS(...args),
+  scheduleOnRN: (...args: any[]) => mockScheduleOnRN(...args),
 }));
 
 jest.mock('../scanText', () => ({
@@ -102,18 +102,21 @@ describe('Camera module', () => {
     const { Platform } = require('react-native');
     Platform.OS = 'ios';
 
-    mockUseFrameProcessor.mockImplementation(
-      (
-        processor: (frame: unknown) => unknown,
-        _deps?: ReadonlyArray<unknown>
-      ) => {
-        return processor;
+    mockUseFrameOutput.mockImplementation(
+      ({
+        onFrame,
+        pixelFormat,
+      }: {
+        onFrame: (frame: unknown) => void;
+        pixelFormat?: string;
+      }) => {
+        return { _onFrame: onFrame, _pixelFormat: pixelFormat };
       }
     );
 
-    mockUseRunOnJS.mockImplementation((fn: (...args: unknown[]) => unknown) => {
-      return jest.fn((...args: unknown[]) => fn(...args));
-    });
+    mockScheduleOnRN.mockImplementation(
+      (fn: (...args: unknown[]) => unknown, ...args: unknown[]) => fn(...args)
+    );
   });
 
   describe('Plugin creation', () => {
@@ -264,7 +267,7 @@ describe('Camera module', () => {
       const mockDevice = { id: 'back', name: 'Back Camera' };
       const mockCallback = jest.fn();
 
-      const result = Camera({
+      Camera({
         device: mockDevice,
         isActive: true,
         mode: 'recognize' as const,
@@ -272,10 +275,9 @@ describe('Camera module', () => {
         callback: mockCallback,
       });
 
-      const child = Array.isArray(result.props.children)
-        ? result.props.children[0]
-        : result.props.children;
-      expect(child.props.pixelFormat).toBe('rgb');
+      expect(mockUseFrameOutput).toHaveBeenCalledWith(
+        expect.objectContaining({ pixelFormat: 'rgb' })
+      );
     });
 
     it('should drop translate requests while one is in-flight', async () => {
@@ -316,7 +318,7 @@ describe('Camera module', () => {
       const child = Array.isArray(result.props.children)
         ? result.props.children[0]
         : result.props.children;
-      const frameProcessor = child.props.frameProcessor;
+      const onFrame = child.props.outputs[0]._onFrame;
       const makeFrame = () => {
         const release = jest.fn();
         return {
@@ -326,8 +328,8 @@ describe('Camera module', () => {
         };
       };
 
-      frameProcessor(makeFrame());
-      frameProcessor(makeFrame());
+      onFrame(makeFrame());
+      onFrame(makeFrame());
       expect(translate).toHaveBeenCalledTimes(1);
       expect(translate).toHaveBeenCalledWith('hello', 'en', 'fr');
 
@@ -336,7 +338,7 @@ describe('Camera module', () => {
       await Promise.resolve();
       await Promise.resolve();
 
-      frameProcessor(makeFrame());
+      onFrame(makeFrame());
       expect(translate).toHaveBeenCalledTimes(2);
       expect(translate).toHaveBeenLastCalledWith('bonjour', 'en', 'fr');
     });
@@ -376,7 +378,7 @@ describe('Camera module', () => {
       const child = Array.isArray(result.props.children)
         ? result.props.children[0]
         : result.props.children;
-      const frameProcessor = child.props.frameProcessor;
+      const onFrame = child.props.outputs[0]._onFrame;
       const makeFrame = () => {
         const release = jest.fn();
         return {
@@ -386,7 +388,7 @@ describe('Camera module', () => {
         };
       };
 
-      frameProcessor(makeFrame());
+      onFrame(makeFrame());
       expect(translate).toHaveBeenCalledTimes(1);
 
       await Promise.resolve();
@@ -398,20 +400,20 @@ describe('Camera module', () => {
         translationError
       );
 
-      frameProcessor(makeFrame());
+      onFrame(makeFrame());
       expect(translate).toHaveBeenCalledTimes(2);
       expect(translate).toHaveBeenLastCalledWith('hello', 'en', 'fr');
 
       warnSpy.mockRestore();
     });
 
-    it('should not allow consumer props to override frameProcessor or pixelFormat', () => {
+    it('should not allow consumer props to override outputs or pixelFormat', () => {
       const { Platform } = require('react-native');
       Platform.OS = 'android';
       const { Camera } = require('../Camera');
       const mockDevice = { id: 'back', name: 'Back Camera' };
       const mockCallback = jest.fn();
-      const externalFrameProcessor = jest.fn();
+      const externalOutput = {};
 
       const result = Camera({
         device: mockDevice,
@@ -419,7 +421,7 @@ describe('Camera module', () => {
         mode: 'recognize' as const,
         options: { language: 'latin' as const },
         callback: mockCallback,
-        frameProcessor: externalFrameProcessor,
+        outputs: [externalOutput],
         pixelFormat: 'yuv',
       });
 
@@ -427,9 +429,13 @@ describe('Camera module', () => {
         ? result.props.children[0]
         : result.props.children;
 
-      expect(child.props.pixelFormat).toBe('rgb');
-      expect(child.props.frameProcessor).not.toBe(externalFrameProcessor);
-      expect(typeof child.props.frameProcessor).toBe('function');
+      // outputs should be our controlled array, not the consumer-supplied one
+      expect(child.props.outputs).toHaveLength(1);
+      expect(child.props.outputs[0]).not.toBe(externalOutput);
+      // pixelFormat should be determined by Platform, not the consumer-supplied value
+      expect(mockUseFrameOutput).toHaveBeenCalledWith(
+        expect.objectContaining({ pixelFormat: 'rgb' })
+      );
     });
 
     it('should return null children when device is not provided', () => {
@@ -446,6 +452,24 @@ describe('Camera module', () => {
 
       // When device is falsy the NativeCamera is not rendered, result is a Fragment
       expect(result).toBeDefined();
+    });
+
+    it('should preserve consumer outputs in pass-through mode when callback/mode are missing', () => {
+      const { Camera } = require('../Camera');
+      const mockDevice = { id: 'back', name: 'Back Camera' };
+      const externalOutput = { id: 'external-output' };
+
+      const result = Camera({
+        device: mockDevice,
+        isActive: true,
+        outputs: [externalOutput],
+      } as any);
+
+      const child = Array.isArray(result.props.children)
+        ? result.props.children[0]
+        : result.props.children;
+
+      expect(child.props.outputs).toEqual([externalOutput]);
     });
   });
 });

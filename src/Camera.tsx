@@ -6,12 +6,11 @@ import {
   type TextRecognitionHandle,
 } from './scanText';
 import { createTranslatorPlugin, type TranslatorHandle } from './translateText';
-import { runOnJS } from 'react-native-worklets';
+import { scheduleOnRN } from 'react-native-worklets';
 import type {
   CameraTypes,
   Text,
   Frame,
-  ReadonlyFrameProcessor,
   TextRecognitionOptions,
   TranslatorOptions,
 } from './types';
@@ -47,12 +46,22 @@ export const Camera = forwardRef(function Camera(
   ref: ForwardedRef<any>
 ) {
   const NativeCamera = (VisionCameraModule as any).Camera;
-  const useFrameProcessor = (VisionCameraModule as any).useFrameProcessor as (
-    processor: (frame: Frame) => void,
-    deps?: ReadonlyArray<unknown>
-  ) => ReadonlyFrameProcessor;
+  const useFrameOutput = (VisionCameraModule as any).useFrameOutput as (opts: {
+    onFrame?: (frame: Frame) => void;
+    pixelFormat?: string;
+  }) => any;
 
-  const { device, callback, options, mode, ...p } = props;
+  const {
+    device,
+    callback,
+    options,
+    mode,
+    outputs: externalOutputs,
+    ...p
+  } = props as CameraTypes & { outputs?: any[] };
+  const hasManagedOutput =
+    typeof callback === 'function' &&
+    (mode === 'recognize' || mode === 'translate');
 
   const recognizerHandle = useTextRecognition(
     mode === 'recognize' ? (options as TextRecognitionOptions) : undefined
@@ -72,12 +81,6 @@ export const Camera = forwardRef(function Camera(
   const fromLang = translatorHandle.from;
   const toLang = translatorHandle.to;
 
-  // JS-thread handler for recognize mode
-  const runData = useMemo(
-    () => runOnJS((data: Text) => callback(data)),
-    [callback]
-  );
-
   // JS-thread handler for translate mode
   const runTranslate = useMemo(() => {
     const translationState = {
@@ -86,7 +89,7 @@ export const Camera = forwardRef(function Camera(
       requestId: 0,
     };
 
-    return runOnJS((text: string) => {
+    return (text: string) => {
       if (!text) return;
       if (
         translationState.inFlight ||
@@ -120,56 +123,56 @@ export const Camera = forwardRef(function Camera(
             translationState.inFlight = false;
           }
         });
-    });
+    };
   }, [translator, fromLang, toLang, callback]);
 
-  const processFrame = (frame: Frame): void => {
-    'worklet';
-    // Call the Nitro HybridObject directly — no wrapper function involved.
-    const nb = (frame as any).getNativeBuffer() as {
-      pointer: bigint;
-      release: () => void;
-    };
-    const orientation: string = (frame as any).orientation ?? 'up';
-    let ocrResult: Text | undefined | null;
-    try {
-      ocrResult = (recognizer as any).scanFrame(nb.pointer, orientation) as
-        | Text
-        | undefined
-        | null;
-    } finally {
-      nb.release();
-    }
-    const result: Text = ocrResult ?? { resultText: '', blocks: [] };
-    if (mode === 'translate') {
-      if (result.resultText) {
-        runTranslate(result.resultText);
-      }
-    } else {
-      runData(result);
-    }
-    (frame as any).dispose?.();
-  };
+  const onFrame = useMemo(
+    () =>
+      (frame: Frame): void => {
+        'worklet';
+        // Call the Nitro HybridObject directly — no wrapper function involved.
+        const nb = (frame as any).getNativeBuffer() as {
+          pointer: bigint;
+          release: () => void;
+        };
+        const orientation: string = (frame as any).orientation ?? 'up';
+        let ocrResult: Text | undefined | null;
+        try {
+          ocrResult = (recognizer as any).scanFrame(nb.pointer, orientation) as
+            | Text
+            | undefined
+            | null;
+        } finally {
+          nb.release();
+        }
+        const result: Text = ocrResult ?? { resultText: '', blocks: [] };
+        if (mode === 'translate') {
+          if (result.resultText) {
+            scheduleOnRN(runTranslate, result.resultText);
+          }
+        } else {
+          if (hasManagedOutput) {
+            scheduleOnRN(callback, result);
+          }
+        }
+        frame.dispose();
+      },
+    [recognizer, runTranslate, mode, callback, hasManagedOutput]
+  );
 
-  const frameProcessor = useFrameProcessor(processFrame, [
-    recognizer,
-    translator,
-    fromLang,
-    toLang,
-    runData,
-    runTranslate,
-    mode,
-  ]);
+  const frameOutput = useFrameOutput({
+    onFrame,
+    pixelFormat: Platform.OS === 'android' ? 'rgb' : 'yuv',
+  });
 
   return (
     <>
       {!!device && (
         <NativeCamera
           {...p}
-          pixelFormat={Platform.OS === 'android' ? 'rgb' : 'yuv'}
           ref={ref}
           device={device}
-          frameProcessor={frameProcessor}
+          outputs={hasManagedOutput ? [frameOutput] : externalOutputs}
         />
       )}
     </>
