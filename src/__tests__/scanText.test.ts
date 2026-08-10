@@ -162,12 +162,12 @@ describe('createTextRecognitionPlugin', () => {
       expect(result).toEqual({ resultText: '', blocks: [] });
     });
 
-    it('defaults orientation to "up" when frame has no orientation', () => {
+    it('defaults orientation to "unknown" when frame has no orientation', () => {
       mockScanFrame.mockReturnValue({ resultText: '', blocks: [] });
       const frame = makeFrame({ orientation: undefined });
       const plugin = createTextRecognitionPlugin();
       plugin.scanText(frame);
-      expect(mockScanFrame).toHaveBeenCalledWith(expect.anything(), 'up');
+      expect(mockScanFrame).toHaveBeenCalledWith(expect.anything(), 'unknown');
     });
   });
 });
