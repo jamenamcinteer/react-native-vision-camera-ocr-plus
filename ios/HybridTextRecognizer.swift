@@ -109,12 +109,10 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
     }
     CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
 
-    // Read device orientation directly — do NOT trust the JS-passed string.
-    // VisionCamera worklets frequently deliver orientation as undefined, which
-    // collapses to 'up' in JS and causes the sensor image to be fed to MLKit
-    // sideways (the raw CVPixelBuffer is always in the sensor's native
-    // landscape layout regardless of how the phone is held).
-    let uiOrient = deviceOrientation()
+    // Prefer VisionCamera frame orientation when provided, because it reflects
+    // the buffer orientation for the active camera stream. Fall back to
+    // physical device orientation only when frame orientation is missing.
+    let uiOrient = frameOrientation(from: orientation) ?? deviceOrientation()
     let rawImage = UIImage(cgImage: cgImage, scale: 1.0, orientation: uiOrient)
     let normalizedImage = normalizeOrientation(rawImage)
 
@@ -145,7 +143,7 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
       guard let self = self else { return }
       // capturedImage is already normalised to .up — no orientation hint needed.
       let visionImage = VisionImage(image: capturedImage)
-      visionImage.orientation = uiOrientation(from: orientation)
+      visionImage.orientation = .up
       if let result = try? recognizer.results(in: visionImage) {
         let recognized = self.buildRecognizedText(from: result)
         self.setLastResult(recognized)
@@ -278,19 +276,24 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
     isBusy = false
   }
 
-  private func uiOrientation(from string: String) -> UIImage.Orientation {
+  /// Maps VisionCamera frame-orientation strings to UIImage.Orientation.
+  /// JS/TS now forwards VC v5 values (`up/down/left/right`) or `unknown`.
+  private func frameOrientation(from string: String) -> UIImage.Orientation? {
     switch string {
-    case "portrait":           return .right
-    case "landscapeLeft":      return .up
-    case "portraitUpsideDown": return .left
-    case "landscapeRight":     return .down
-    default:                   return .up
+    // VC v5 frame-orientation values describe how the frame is rotated relative
+    // to the output target orientation. Since we normalize pixels to .up by
+    // redrawing, we must apply the inverse for 90-degree rotations.
+    case "up":                  return .up
+    case "down":                return .down
+    case "left":                return .right
+    case "right":               return .left
+    case "unknown":             return nil
+    default:                     return nil
     }
   }
 
-  /// Reads the physical device orientation directly, bypassing the JS-layer
-  /// orientation string which is frequently undefined in VisionCamera worklets
-  /// (causing a fallback to 'up' that leaves the image in sensor-landscape layout).
+  /// Reads the physical device orientation as a fallback when frame orientation
+  /// is missing/unknown.
   ///
   /// VisionCamera v5 always delivers CVPixelBuffers in the camera sensor's native
   /// landscape layout (width > height). The device orientation tells us how much

@@ -29,7 +29,7 @@ export function createTextRecognitionPlugin(options) {
     scanText: (frame) => {
       'worklet';
       const nb = frame.getNativeBuffer();
-      const orientation = frame.orientation ?? 'up';
+      const orientation = frame.orientation ?? 'unknown';
       let result;
       try {
         result = recognizer.scanFrame(nb.pointer, orientation);

@@ -135,7 +135,7 @@ export const Camera = forwardRef(function Camera(
           pointer: bigint;
           release: () => void;
         };
-        const orientation: string = (frame as any).orientation ?? 'up';
+        const orientation: string = (frame as any).orientation ?? 'unknown';
         let ocrResult: Text | undefined | null;
         try {
           ocrResult = (recognizer as any).scanFrame(nb.pointer, orientation) as

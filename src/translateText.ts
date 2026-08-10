@@ -60,7 +60,7 @@ export function createTranslatorPlugin(
         pointer: bigint;
         release: () => void;
       };
-      const orientation: string = (frame as any).orientation ?? 'up';
+      const orientation: string = (frame as any).orientation ?? 'unknown';
       let result: Text | undefined | null;
       try {
         result = (recognizer as any).scanFrame(nb.pointer, orientation) as

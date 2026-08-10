@@ -106,7 +106,7 @@ export const Camera = forwardRef(function Camera(props, ref) {
       'worklet';
       // Call the Nitro HybridObject directly — no wrapper function involved.
       const nb = frame.getNativeBuffer();
-      const orientation = frame.orientation ?? 'up';
+      const orientation = frame.orientation ?? 'unknown';
       let ocrResult;
       try {
         ocrResult = recognizer.scanFrame(nb.pointer, orientation);
