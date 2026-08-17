@@ -90,6 +90,8 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
       val croppedBitmap = applyScanRegion(bitmap)
       val inputImage = InputImage.fromBitmap(croppedBitmap, 0)
       val mlkitResult = Tasks.await(recognizer.process(inputImage))
+      if (croppedBitmap !== bitmap && !croppedBitmap.isRecycled) croppedBitmap.recycle()
+      if (!bitmap.isRecycled) bitmap.recycle()
       buildRecognizedText(mlkitResult)
     }
   }
