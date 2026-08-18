@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.4](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.0.3...v2.0.4) (2026-08-18)
+
+
+### Bug Fixes
+
+* recycle decoded Bitmaps in recognizePhoto ([#144](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/144)) ([dba9b38](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/dba9b38bd269ccc0883843abcc497c8bb16091f6))
+
 ### [2.0.3](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.0.2...v2.0.3) (2026-08-11)
 
 
