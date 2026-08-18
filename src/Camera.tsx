@@ -41,7 +41,7 @@ import type {
  * />
  * ```
  */
-export const Camera = forwardRef(function Camera(
+export const Camera = forwardRef(function CameraComponent(
   props: CameraTypes,
   ref: ForwardedRef<any>
 ) {
@@ -139,9 +139,7 @@ export const Camera = forwardRef(function Camera(
         let ocrResult: Text | undefined | null;
         try {
           ocrResult = (recognizer as any).scanFrame(nb.pointer, orientation) as
-            | Text
-            | undefined
-            | null;
+            Text | undefined | null;
         } finally {
           nb.release();
         }

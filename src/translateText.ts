@@ -64,9 +64,7 @@ export function createTranslatorPlugin(
       let result: Text | undefined | null;
       try {
         result = (recognizer as any).scanFrame(nb.pointer, orientation) as
-          | Text
-          | undefined
-          | null;
+          Text | undefined | null;
       } finally {
         nb.release();
       }
