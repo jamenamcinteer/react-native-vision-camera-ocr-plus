@@ -37,8 +37,8 @@
         "latest": {
             "description": "Latest stable versions",
             "dependencies": {
-                "expo": "~57.0.9",
-                "babel-preset-expo": "~57.0.5",
+                "expo": "~57.0.14",
+                "babel-preset-expo": "~57.0.7",
                 "expo-image-picker": "~57.0.7",
                 "expo-build-properties": "~57.0.8",
                 "react": "19.2.3",
@@ -48,7 +48,7 @@
                 "typescript": "~5.9.2"
             },
             "devDependencies": {
-                "@types/react": "~19.2.17"
+                "@types/react": "~19.2.18"
             }
         }
     },

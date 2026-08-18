@@ -24,19 +24,19 @@
     "test-version:ios:latest": "yarn use:latest && yarn clean:ios && yarn ios"
   },
   "dependencies": {
-    "babel-preset-expo": "~57.0.5",
-    "expo": "~57.0.9",
+    "babel-preset-expo": "~57.0.7",
+    "expo": "~57.0.14",
     "expo-build-properties": "~57.0.8",
     "expo-image-picker": "~57.0.7",
-    "react": "19.2.8",
+    "react": "19.2.3",
     "react-native": "0.86.2",
     "react-native-nitro-image": "^0.15.1",
     "react-native-nitro-modules": "^0.36.5",
-    "react-native-safe-area-context": "~5.8.0",
+    "react-native-safe-area-context": "~5.7.0",
     "react-native-vision-camera": "^5.2.1",
     "react-native-vision-camera-ocr-plus": "link:..",
     "react-native-vision-camera-worklets": "^5.2.1",
-    "react-native-worklets": "0.11.3"
+    "react-native-worklets": "0.10.1"
   },
   "devDependencies": {
     "@babel/core": "^8.0.1",
@@ -48,7 +48,7 @@
     "@babel/preset-env": "^8.0.2",
     "@types/react": "~19.2.18",
     "patch-package": "^8.0.1",
-    "typescript": "~7.0.2"
+    "typescript": "~5.9.2"
   },
   "private": true
 }
