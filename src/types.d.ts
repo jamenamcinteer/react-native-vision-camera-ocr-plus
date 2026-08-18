@@ -171,8 +171,5 @@ export type ElementData = {
 export type PhotoOptions = {
   uri: string;
   orientation?:
-    | 'landscapeRight'
-    | 'portrait'
-    | 'portraitUpsideDown'
-    | 'landscapeLeft';
+    'landscapeRight' | 'portrait' | 'portraitUpsideDown' | 'landscapeLeft';
 };
