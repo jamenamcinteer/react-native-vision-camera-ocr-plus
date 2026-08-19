@@ -19,6 +19,7 @@ import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.margelo.nitro.core.Promise
 import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
 
 /**
  * Android implementation of the TextRecognizer HybridObject.
@@ -124,25 +125,45 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
     // Run ML Kit off the frame thread.
     isBusy = true
     val currentRecognizer = recognizer
-    ocrExecutor.execute {
-      try {
-        val result = Tasks.await(currentRecognizer.process(inputImage))
-        lastResult = buildRecognizedText(result)
-      } catch (_: Exception) {
-        // Ignore ML Kit errors on individual frames
-      } finally {
-        if (!croppedBitmap.isRecycled) {
-          croppedBitmap.recycle()
+    try {
+      ocrExecutor.execute {
+        try {
+          val result = Tasks.await(currentRecognizer.process(inputImage))
+          lastResult = buildRecognizedText(result)
+        } catch (_: Exception) {
+          // Ignore ML Kit errors on individual frames
+        } finally {
+          if (!croppedBitmap.isRecycled) {
+            croppedBitmap.recycle()
+          }
+          if (croppedBitmap !== rotatedBitmap && !rotatedBitmap.isRecycled) {
+            rotatedBitmap.recycle()
+          }
+          isBusy = false
         }
-        if (croppedBitmap !== rotatedBitmap && !rotatedBitmap.isRecycled) {
-          rotatedBitmap.recycle()
-        }
-        isBusy = false
       }
+    } catch (_: RejectedExecutionException) {
+      // dispose() shut the executor down while a late frame was in flight — drop it.
+      if (!croppedBitmap.isRecycled) {
+        croppedBitmap.recycle()
+      }
+      if (croppedBitmap !== rotatedBitmap && !rotatedBitmap.isRecycled) {
+        rotatedBitmap.recycle()
+      }
+      isBusy = false
     }
 
     // Return the last completed result immediately — the frame thread is never blocked.
     return lastResult
+  }
+
+  override fun dispose() {
+    // The OCR executor's thread is a non-daemon thread that otherwise only dies
+    // on GC finalization — shut it down deterministically so repeated scanner
+    // mounts don't accumulate idle pool threads. shutdown() lets an in-flight
+    // job finish (its finally block recycles the bitmaps).
+    ocrExecutor.shutdown()
+    super.dispose()
   }
 
   private fun orientationToDegrees(orientation: String): Int = when (orientation) {
