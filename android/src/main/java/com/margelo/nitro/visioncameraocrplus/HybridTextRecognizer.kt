@@ -117,10 +117,16 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
 
     val rotationDegrees = orientationToDegrees(orientation)
     Log.d("VisionCameraOCR", "scanFrame: orientation=$orientation rotationDegrees=$rotationDegrees bitmapSize=${softwareBitmap.width}x${softwareBitmap.height} scanRegion=$scanRegion")
-    val rotatedBitmap = if (rotationDegrees != 0) rotateBitmap(softwareBitmap, rotationDegrees) else softwareBitmap
+    // Only the scanRegion crop needs an upright bitmap (the region is defined in
+    // rotated coordinates). Without a scanRegion, hand the rotation to ML Kit
+    // instead — InputImage.fromBitmap(bitmap, rotationDegrees) folds it into its
+    // own conversion pass and still reports coordinates in upright space, saving
+    // a full-frame Bitmap copy per scan.
+    val needsManualRotation = rotationDegrees != 0 && scanRegion != null
+    val rotatedBitmap = if (needsManualRotation) rotateBitmap(softwareBitmap, rotationDegrees) else softwareBitmap
     if (rotatedBitmap !== softwareBitmap && !softwareBitmap.isRecycled) softwareBitmap.recycle()
     val croppedBitmap = applyScanRegion(rotatedBitmap)
-    val inputImage = InputImage.fromBitmap(croppedBitmap, 0)
+    val inputImage = InputImage.fromBitmap(croppedBitmap, if (needsManualRotation) 0 else rotationDegrees)
 
     // Run ML Kit off the frame thread.
     isBusy = true
