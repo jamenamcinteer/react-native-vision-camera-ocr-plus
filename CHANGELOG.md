@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.0.6](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.0.5...v2.0.6) (2026-08-19)
+
+
+### Bug Fixes
+
+* **android:** shut down OCR executor on dispose to prevent thread accumulation ([#147](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/147)) ([505d5c3](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/505d5c383d36da54af636e805e9c9213e7e1a1e1))
+
 ### [2.0.5](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.0.4...v2.0.5) (2026-08-18)
 
 ### [2.0.4](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.0.3...v2.0.4) (2026-08-18)
