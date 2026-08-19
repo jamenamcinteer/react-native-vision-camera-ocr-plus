@@ -396,7 +396,7 @@ nitro.json         Nitrogen config — registers HybridTextRecognizer & HybridTr
 ## 🧠 Contributing
 
 Contributions, feature requests, and bug reports are always welcome!  
-Please open an [issue](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues) or [pull request](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/pulls).
+Please open an [issue](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues) or check out the [Contributing](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus?tab=contributing-ov-file) tag and open a [pull request](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/pulls).
 
 ---
 
