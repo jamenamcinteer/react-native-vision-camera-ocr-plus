@@ -6,30 +6,31 @@ We want this community to be friendly and respectful to each other. Please follo
 
 ## Development workflow
 
-This project is a monorepo managed using [Yarn workspaces](https://yarnpkg.com/features/workspaces). It contains the following packages:
+This project contains two packages:
 
 - The library package in the root directory.
 - An example app in the `example/` directory.
 
-To get started with the project, run `yarn` in the root directory to install the required dependencies for each package:
+To get started, run `yarn` in the root directory to install the library's dependencies, then run `yarn` again inside `example/` to install the example app's dependencies:
 
 ```sh
 yarn
+cd example && yarn
 ```
 
-> Since the project relies on Yarn workspaces, you cannot use [`npm`](https://github.com/npm/cli) for development.
+> This project uses Yarn. Using [`npm`](https://github.com/npm/cli) is not recommended.
 
 The [example app](/example/) demonstrates usage of the library. You need to run it to test any changes you make.
 
 It is configured to use the local version of the library, so any changes you make to the library's source code will be reflected in the example app. Changes to the library's JavaScript code will be reflected in the example app without a rebuild, but native code changes will require a rebuild of the example app.
 
-If you want to use Android Studio or XCode to edit the native code, you can open the `android` or `ios` directories respectively in those editors. To edit the Objective-C or Swift files, open `ios/VisionCameraTextRecognitionExample.xcworkspace` in XCode and find the source files at `Pods > Development Pods > react-native-vision-camera-ocr`.
+To start the example app, first `cd` into the `example` directory:
 
-To edit the Java or Kotlin files, open `android` in Android studio and find the source files at `react-native-vision-camera-ocr` under `Android`.
+```sh
+cd example
+```
 
-You can use various commands from the root directory to work with the project.
-
-To start the packager, `cd` into the `example` directory, `cd example`, and then:
+Then start the development server:
 
 ```sh
 yarn start
@@ -47,7 +48,7 @@ To run the example app on iOS:
 yarn ios
 ```
 
-Make sure your code passes TypeScript and ESLint. Run the following to verify:
+The following commands are run from the **root** directory. Make sure your code passes TypeScript and ESLint:
 
 ```sh
 yarn typecheck
@@ -57,7 +58,7 @@ yarn lint
 To fix formatting errors, run the following:
 
 ```sh
-yarn lint --fix
+yarn lint:fix
 ```
 
 Remember to add tests for your change if possible. Run the unit tests by:
@@ -89,13 +90,17 @@ Our pre-commit hooks verify that the linter and tests pass when committing.
 
 ### Scripts
 
-The `package.json` file contains various scripts for common tasks:
+The root `package.json` contains scripts for common tasks:
 
 - `yarn`: setup project by installing dependencies.
 - `yarn typecheck`: type-check files with TypeScript.
 - `yarn lint`: lint files with ESLint.
+- `yarn lint:fix`: lint and auto-fix formatting errors.
 - `yarn test`: run unit tests with Jest.
-- `yarn start`: start the Metro server for the example app.
+
+The `example/package.json` contains scripts for running the example app (run these from the `example/` directory):
+
+- `yarn start`: start the Expo development server.
 - `yarn android`: run the example app on Android.
 - `yarn ios`: run the example app on iOS.
 
@@ -105,8 +110,10 @@ The `package.json` file contains various scripts for common tasks:
 
 When you're sending a pull request:
 
+- **Target the `next-release` branch** — all pull requests should be opened against `next-release`, not `main`.
 - Prefer small pull requests focused on one change.
 - Verify that linters and tests are passing.
 - Review the documentation to make sure it looks good.
 - Follow the pull request template when opening a pull request.
 - For pull requests that change the API or implementation, discuss with maintainers first by opening an issue.
+- **Address all Copilot review comments** — either make the suggested change or leave a comment explaining why the change is not needed.
