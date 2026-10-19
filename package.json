@@ -30,6 +30,7 @@
   ],
   "scripts": {
     "test": "jest",
+    "test:native": "sh scripts/test-native.sh",
     "test:coverage": "jest --coverage",
     "typecheck": "tsc --noEmit",
     "clean": "rm -rf android/build android/.cxx node_modules lib example/android example/ios example/node_modules example/.expo yarn-error.log",

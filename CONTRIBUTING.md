@@ -67,6 +67,18 @@ Remember to add tests for your change if possible. Run the unit tests by:
 yarn test
 ```
 
+### Native frame-worker regressions
+
+Run `yarn test:native` on macOS with Xcode command-line tools and the Kotlin CLI
+installed (`brew install kotlin`). `KOTLINC` and `KOTLIN` may select alternate
+compiler and runner executables. Build outputs stay in `build/native-tests/`.
+
+These tests compile the production Swift/Kotlin workers directly and use barriers
+to inject deterministic recognition failures without a camera or ML Kit model.
+They cover sanitized failure delivery, cache invalidation, retry on the same
+processor, blank text, cleanup ordering, disposal races and executor rejection.
+They do not replace rebuilding and exercising the example app on iOS and Android.
+
 ### Commit message convention
 
 We follow the [conventional commits specification](https://www.conventionalcommits.org/en) for our commit messages:
