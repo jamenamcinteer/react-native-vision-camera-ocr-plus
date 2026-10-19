@@ -28,7 +28,14 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
   // Use GPU-backed rendering for fast CVPixelBuffer → CGImage conversion
   private let ciContext = CIContext(options: [.useSoftwareRenderer: false])
 
-  private let frameProcessor = FrameOcrProcessor<RecognizedText>()
+  // Background OCR: a dedicated serial queue so OCR never blocks the frame thread.
+  // scanFrame returns the last completed result immediately and enqueues a new OCR
+  // job only when the queue is idle (isBusy == false).
+  private let ocrQueue = DispatchQueue(label: "com.rnvcocr.ocr", qos: .userInitiated)
+  private let stateLock = NSLock()
+  private var isBusy: Bool = false
+  private var lastResult: RecognizedText? = nil
+  private var hasPendingError = false
 
   // MARK: - HybridTextRecognizerSpec
 
@@ -69,19 +76,19 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
     // Apply frame-skip for performance
     frameCounter += 1
     if frameCounter % max(1, frameSkipThreshold) != 0 {
-      return try frameProcessor.result()
+      return try getLastResult()
     }
 
     // If the OCR queue is still processing the previous frame, skip this one.
     // This is the key fix: we never block the frame thread waiting for MLKit.
-    guard try frameProcessor.reserve() else {
-      return try frameProcessor.result()
+    guard startOCRIfIdle() else {
+      return try getLastResult()
     }
 
     // Reconstruct CVPixelBuffer from the pointer (retain count +1 from caller)
     guard let rawPtr = UnsafeRawPointer(bitPattern: UInt(nativeBufferPointer)) else {
-      frameProcessor.cancel()
-      return try frameProcessor.result()
+      finishOCR()
+      return try getLastResult()
     }
     let pixelBuffer: CVPixelBuffer = Unmanaged<CVPixelBuffer>.fromOpaque(rawPtr).takeUnretainedValue()
 
@@ -98,8 +105,8 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
       colorSpace: CGColorSpaceCreateDeviceRGB()
     ) else {
       CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
-      frameProcessor.cancel()
-      return try frameProcessor.result()
+      finishOCR()
+      return try getLastResult()
     }
     CVPixelBufferUnlockBaseAddress(pixelBuffer, .readOnly)
 
@@ -133,16 +140,26 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
 
     // --- Slow path: run MLKit OCR off the frame thread.
     let recognizer = textRecognizer
-    frameProcessor.submit(operation: {
-      // capturedImage is already normalised to .up.
+    ocrQueue.async { [weak self] in
+      guard let self = self else { return }
+      // capturedImage is already normalised to .up — no orientation hint needed.
       let visionImage = VisionImage(image: capturedImage)
       visionImage.orientation = .up
-      let result = try recognizer.results(in: visionImage)
-      return self.buildRecognizedText(from: result)
-    }, cleanup: {})
+      do {
+        let result = try recognizer.results(in: visionImage)
+        let recognized = self.buildRecognizedText(from: result)
+        self.setLastResult(recognized)
+      } catch {
+        self.stateLock.lock()
+        self.lastResult = nil
+        self.hasPendingError = true
+        self.stateLock.unlock()
+      }
+      self.finishOCR()
+    }
 
     // Return the last completed result immediately — the frame thread is never blocked.
-    return try frameProcessor.result()
+    return try getLastResult()
   }
 
   func recognizePhoto(uri: String, orientation: String) throws -> Promise<RecognizedText> {
@@ -238,12 +255,37 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
     }
   }
 
-  func dispose() {
-    frameProcessor.close()
+  private func getLastResult() throws -> RecognizedText? {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    if hasPendingError {
+      hasPendingError = false
+      throw NSError(domain: "HybridTextRecognizer", code: 2,
+                    userInfo: [NSLocalizedDescriptionKey: "OCR frame recognition failed"])
+    }
+    return lastResult
   }
 
-  deinit {
-    frameProcessor.close()
+  private func setLastResult(_ result: RecognizedText) {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    lastResult = result
+  }
+
+  private func startOCRIfIdle() -> Bool {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    guard !isBusy && !hasPendingError else {
+      return false
+    }
+    isBusy = true
+    return true
+  }
+
+  private func finishOCR() {
+    stateLock.lock()
+    defer { stateLock.unlock() }
+    isBusy = false
   }
 
   /// Maps VisionCamera frame-orientation strings to UIImage.Orientation.

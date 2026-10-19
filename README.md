@@ -232,21 +232,6 @@ import { createTextRecognitionPlugin } from 'react-native-vision-camera-ocr-plus
 const { scanText, recognizer } = createTextRecognitionPlugin({ language: 'latin' })
 ```
 
-### Live-frame recognition failures
-
-If background OCR fails, `scanText` (or the raw recognizer's `scanFrame`) throws
-`OCR frame recognition failed` on the next frame poll. The cached text is cleared,
-and the error contains no underlying native exception or recognized text. Each
-failure is reported once; subsequent calls can retry using the same recognizer.
-Successful recognition with no text remains a normal result. An error cannot be
-delivered while frame polling is stopped.
-
-Handle this error in your frame worklet if you want to choose a retry or stop
-policy. Custom worklets should dispose their frame in a `finally` block even when
-`scanText` throws. The bundled camera also propagates the error to the frame-worklet caller
-while releasing its native buffer and disposing the frame. `recognizePhoto` keeps
-its existing promise rejection behavior.
-
 ### `PhotoRecognizer` — still image OCR
 
 Asynchronously recognizes text in a still photo URI.

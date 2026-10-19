@@ -130,34 +130,32 @@ export const Camera = forwardRef(function CameraComponent(
     () =>
       (frame: Frame): void => {
         'worklet';
+        // Call the Nitro HybridObject directly — no wrapper function involved.
+        const nb = (frame as any).getNativeBuffer() as {
+          pointer: bigint;
+          release: () => void;
+        };
+        const orientation: string = (frame as any).orientation ?? 'unknown';
+        let ocrResult: Text | undefined | null;
         try {
-          // Call the Nitro HybridObject directly — no wrapper function involved.
-          const nb = (frame as any).getNativeBuffer() as {
-            pointer: bigint;
-            release: () => void;
-          };
-          const orientation: string = (frame as any).orientation ?? 'unknown';
-          let ocrResult: Text | undefined | null;
-          try {
-            ocrResult = (recognizer as any).scanFrame(
-              nb.pointer,
-              orientation
-            ) as Text | undefined | null;
-          } finally {
-            nb.release();
-          }
-          const result: Text = ocrResult ?? { resultText: '', blocks: [] };
-          if (mode === 'translate') {
-            if (result.resultText) {
-              scheduleOnRN(runTranslate, result.resultText);
-            }
-          } else {
-            if (hasManagedOutput) {
-              scheduleOnRN(callback, result);
-            }
-          }
+          ocrResult = (recognizer as any).scanFrame(nb.pointer, orientation) as
+            Text | undefined | null;
         } finally {
-          frame.dispose();
+          try {
+            nb.release();
+          } finally {
+            frame.dispose();
+          }
+        }
+        const result: Text = ocrResult ?? { resultText: '', blocks: [] };
+        if (mode === 'translate') {
+          if (result.resultText) {
+            scheduleOnRN(runTranslate, result.resultText);
+          }
+        } else {
+          if (hasManagedOutput) {
+            scheduleOnRN(callback, result);
+          }
         }
       },
     [recognizer, runTranslate, mode, callback, hasManagedOutput]

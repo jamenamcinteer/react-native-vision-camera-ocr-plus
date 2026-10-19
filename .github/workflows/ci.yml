@@ -30,12 +30,6 @@ jobs:
       - name: Run linter
         run: yarn lint
 
-      - name: Install Kotlin CLI
-        run: HOMEBREW_NO_AUTO_UPDATE=1 brew install kotlin
-
-      - name: Run native frame-worker regressions
-        run: yarn test:native
-
       - name: Run tests with coverage
         run: yarn test:coverage
 

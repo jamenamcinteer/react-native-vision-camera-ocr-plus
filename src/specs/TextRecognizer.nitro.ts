@@ -71,10 +71,6 @@ export interface TextRecognizer extends HybridObject<{
    * Schedule OCR for a live camera frame and return the last completed result.
    * This method is non-blocking: native code enqueues OCR work on a background
    * queue and immediately returns the most recently completed recognition output.
-   * If background recognition fails, the cached text is cleared and the next
-   * scanFrame call throws "OCR frame recognition failed" once. No native error
-   * details are included. Later calls may schedule OCR again on this recognizer;
-   * successful blank text remains a normal result. Delivery requires another poll.
    * On iOS the pointer is a CVPixelBufferRef with retain count +1;
    * callers must call NativeBuffer.release() after this returns.
    * On Android the pointer is an AHardwareBuffer*.

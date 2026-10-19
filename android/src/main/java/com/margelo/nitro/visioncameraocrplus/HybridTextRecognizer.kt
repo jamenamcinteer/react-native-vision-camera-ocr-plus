@@ -18,6 +18,8 @@ import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
 import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.margelo.nitro.core.Promise
+import java.util.concurrent.Executors
+import java.util.concurrent.RejectedExecutionException
 
 /**
  * Android implementation of the TextRecognizer HybridObject.
@@ -52,7 +54,13 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
   private var frameSkipThreshold: Int = 3
   private var useLightweightMode: Boolean = false
 
-  private val frameProcessor = FrameOcrProcessor<RecognizedText>()
+  // Background OCR: a single-thread executor so OCR never blocks the frame thread.
+  // scanFrame returns the last completed result immediately and enqueues a new job
+  // only when the executor is idle (isBusy == false).
+  private val ocrExecutor = Executors.newSingleThreadExecutor()
+  @Volatile private var isBusy: Boolean = false
+  @Volatile private var lastResult: RecognizedText? = null
+  private var hasPendingError: Boolean = false
   private var frameCounter: Int = 0
 
   override fun configure(config: TextRecognitionConfig) {
@@ -91,54 +99,93 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
   }
 
   override fun scanFrame(nativeBufferPointer: ULong, orientation: String): RecognizedText? {
-    // Poll on every frame so frame skipping does not delay a pending error.
-    val previousResult = frameProcessor.result()
+    // Report a pending failure before accepting another frame.
+    getLastResult()
+
+    // Apply frame-skip for performance
     frameCounter++
-    if (frameCounter % maxOf(1, frameSkipThreshold) != 0) return previousResult
-    if (!frameProcessor.reserve()) return frameProcessor.result()
-
-    val bitmaps = mutableListOf<Bitmap>()
-    fun releaseBitmaps() {
-      for (bitmap in bitmaps) {
-        if (!bitmap.isRecycled) bitmap.recycle()
-      }
+    if (frameCounter % maxOf(1, frameSkipThreshold) != 0) {
+      return getLastResult()
     }
-    var submitted = false
+
+    // If the OCR executor is still processing the previous frame, skip this one.
+    // This is the key fix: we never block the frame thread waiting for ML Kit.
+    if (isBusy) return getLastResult()
+
+    val sourceBitmap = nativeCreateBitmapFromHardwareBuffer(nativeBufferPointer.toLong())
+      ?: return getLastResult()
+
+    val softwareBitmap = copyToSoftwareBitmap(sourceBitmap)
+    sourceBitmap.recycle()
+    softwareBitmap ?: return getLastResult()
+
+    val rotationDegrees = orientationToDegrees(orientation)
+    Log.d("VisionCameraOCR", "scanFrame: orientation=$orientation rotationDegrees=$rotationDegrees bitmapSize=${softwareBitmap.width}x${softwareBitmap.height} scanRegion=$scanRegion")
+    // Only the scanRegion crop needs an upright bitmap (the region is defined in
+    // rotated coordinates). Without a scanRegion, hand the rotation to ML Kit
+    // instead — InputImage.fromBitmap(bitmap, rotationDegrees) folds it into its
+    // own conversion pass and still reports coordinates in upright space, saving
+    // a full-frame Bitmap copy per scan.
+    val needsManualRotation = rotationDegrees != 0 && scanRegion != null
+    val rotatedBitmap = if (needsManualRotation) rotateBitmap(softwareBitmap, rotationDegrees) else softwareBitmap
+    if (rotatedBitmap !== softwareBitmap && !softwareBitmap.isRecycled) softwareBitmap.recycle()
+    val croppedBitmap = applyScanRegion(rotatedBitmap)
+    val inputImage = InputImage.fromBitmap(croppedBitmap, if (needsManualRotation) 0 else rotationDegrees)
+
+    // Run ML Kit off the frame thread.
+    isBusy = true
+    val currentRecognizer = recognizer
     try {
-      val sourceBitmap = nativeCreateBitmapFromHardwareBuffer(nativeBufferPointer.toLong())
-        ?: return frameProcessor.result()
-      bitmaps.add(sourceBitmap)
-      val softwareBitmap = copyToSoftwareBitmap(sourceBitmap)
-      sourceBitmap.recycle()
-      softwareBitmap ?: return frameProcessor.result()
-      bitmaps.add(softwareBitmap)
-
-      val rotationDegrees = orientationToDegrees(orientation)
-      // A scan region uses upright coordinates. Otherwise let ML Kit rotate.
-      val needsManualRotation = rotationDegrees != 0 && scanRegion != null
-      val rotatedBitmap = if (needsManualRotation) rotateBitmap(softwareBitmap, rotationDegrees) else softwareBitmap
-      bitmaps.add(rotatedBitmap)
-      if (rotatedBitmap !== softwareBitmap && !softwareBitmap.isRecycled) softwareBitmap.recycle()
-      val croppedBitmap = applyScanRegion(rotatedBitmap)
-      bitmaps.add(croppedBitmap)
-      val inputImage = InputImage.fromBitmap(croppedBitmap, if (needsManualRotation) 0 else rotationDegrees)
-      val currentRecognizer = recognizer
-      // From this point the processor owns cleanup, including submission rejection.
-      submitted = true
-      frameProcessor.submit({
-        val result = Tasks.await(currentRecognizer.process(inputImage))
-        buildRecognizedText(result)
-      }, { releaseBitmaps() })
-      return frameProcessor.result()
-    } finally {
-      if (!submitted) {
-        try { releaseBitmaps() } finally { frameProcessor.cancel() }
+      ocrExecutor.execute {
+        try {
+          val result = Tasks.await(currentRecognizer.process(inputImage))
+          val recognized = buildRecognizedText(result)
+          synchronized(this) { lastResult = recognized }
+        } catch (_: Exception) {
+          synchronized(this) {
+            lastResult = null
+            hasPendingError = true
+          }
+        } finally {
+          if (!croppedBitmap.isRecycled) {
+            croppedBitmap.recycle()
+          }
+          if (croppedBitmap !== rotatedBitmap && !rotatedBitmap.isRecycled) {
+            rotatedBitmap.recycle()
+          }
+          isBusy = false
+        }
       }
+    } catch (_: RejectedExecutionException) {
+      // dispose() shut the executor down while a late frame was in flight — drop it.
+      if (!croppedBitmap.isRecycled) {
+        croppedBitmap.recycle()
+      }
+      if (croppedBitmap !== rotatedBitmap && !rotatedBitmap.isRecycled) {
+        rotatedBitmap.recycle()
+      }
+      isBusy = false
     }
+
+    // Return the last completed result immediately — the frame thread is never blocked.
+    return getLastResult()
+  }
+
+  @Synchronized
+  private fun getLastResult(): RecognizedText? {
+    if (hasPendingError) {
+      hasPendingError = false
+      throw IllegalStateException("OCR frame recognition failed")
+    }
+    return lastResult
   }
 
   override fun dispose() {
-    frameProcessor.close()
+    // The OCR executor's thread is a non-daemon thread that otherwise only dies
+    // on GC finalization — shut it down deterministically so repeated scanner
+    // mounts don't accumulate idle pool threads. shutdown() lets an in-flight
+    // job finish (its finally block recycles the bitmaps).
+    ocrExecutor.shutdown()
     super.dispose()
   }
 

@@ -30,7 +30,7 @@ import { scheduleOnRN } from 'react-native-worklets';
  * />
  * ```
  */
-export const Camera = forwardRef(function CameraComponent(props, ref) {
+export const Camera = forwardRef(function Camera(props, ref) {
   const NativeCamera = VisionCameraModule.Camera;
   const useFrameOutput = VisionCameraModule.useFrameOutput;
   const {
@@ -104,28 +104,28 @@ export const Camera = forwardRef(function CameraComponent(props, ref) {
   const onFrame = useMemo(
     () => (frame) => {
       'worklet';
+      // Call the Nitro HybridObject directly — no wrapper function involved.
+      const nb = frame.getNativeBuffer();
+      const orientation = frame.orientation ?? 'unknown';
+      let ocrResult;
       try {
-        // Call the Nitro HybridObject directly — no wrapper function involved.
-        const nb = frame.getNativeBuffer();
-        const orientation = frame.orientation ?? 'unknown';
-        let ocrResult;
-        try {
-          ocrResult = recognizer.scanFrame(nb.pointer, orientation);
-        } finally {
-          nb.release();
-        }
-        const result = ocrResult ?? { resultText: '', blocks: [] };
-        if (mode === 'translate') {
-          if (result.resultText) {
-            scheduleOnRN(runTranslate, result.resultText);
-          }
-        } else {
-          if (hasManagedOutput) {
-            scheduleOnRN(callback, result);
-          }
-        }
+        ocrResult = recognizer.scanFrame(nb.pointer, orientation);
       } finally {
-        frame.dispose();
+        try {
+          nb.release();
+        } finally {
+          frame.dispose();
+        }
+      }
+      const result = ocrResult ?? { resultText: '', blocks: [] };
+      if (mode === 'translate') {
+        if (result.resultText) {
+          scheduleOnRN(runTranslate, result.resultText);
+        }
+      } else {
+        if (hasManagedOutput) {
+          scheduleOnRN(callback, result);
+        }
       }
     },
     [recognizer, runTranslate, mode, callback, hasManagedOutput]
