@@ -4,10 +4,12 @@ import CoreImage
 import NitroModules
 import MLKitVision
 import MLKitTextRecognition
+#if !OCR_PLUS_NO_NON_LATIN
 import MLKitTextRecognitionChinese
 import MLKitTextRecognitionDevanagari
 import MLKitTextRecognitionJapanese
 import MLKitTextRecognitionKorean
+#endif
 import MLKitCommon
 
 /// Nitro HybridObject implementation for on-device OCR text recognition.
@@ -15,10 +17,12 @@ import MLKitCommon
 class HybridTextRecognizer: HybridTextRecognizerSpec {
 
   private static let latinOptions = TextRecognizerOptions()
+#if !OCR_PLUS_NO_NON_LATIN
   private static let chineseOptions = ChineseTextRecognizerOptions()
   private static let devanagariOptions = DevanagariTextRecognizerOptions()
   private static let japaneseOptions = JapaneseTextRecognizerOptions()
   private static let koreanOptions = KoreanTextRecognizerOptions()
+#endif
 
   private var textRecognizer: TextRecognizer = TextRecognizer.textRecognizer(options: TextRecognizerOptions())
   private var scanRegion: ScanRegion? = nil
@@ -58,6 +62,7 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
     }
 
     switch config.language {
+#if !OCR_PLUS_NO_NON_LATIN
     case "chinese":
       textRecognizer = TextRecognizer.textRecognizer(options: HybridTextRecognizer.chineseOptions)
     case "devanagari":
@@ -66,6 +71,12 @@ class HybridTextRecognizer: HybridTextRecognizerSpec {
       textRecognizer = TextRecognizer.textRecognizer(options: HybridTextRecognizer.japaneseOptions)
     case "korean":
       textRecognizer = TextRecognizer.textRecognizer(options: HybridTextRecognizer.koreanOptions)
+#else
+    case "chinese", "devanagari", "japanese", "korean":
+      throw NSError(
+        domain: "HybridTextRecognizer", code: 2,
+        userInfo: [NSLocalizedDescriptionKey: "Non-Latin text recognition models are disabled. Re-enable them in the native build configuration and reinstall pods."])
+#endif
     default:
       textRecognizer = TextRecognizer.textRecognizer(options: HybridTextRecognizer.latinOptions)
     }

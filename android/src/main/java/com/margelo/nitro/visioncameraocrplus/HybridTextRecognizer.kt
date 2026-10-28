@@ -12,10 +12,6 @@ import com.google.mlkit.vision.common.InputImage
 import com.google.mlkit.vision.text.Text
 import com.google.mlkit.vision.text.TextRecognition
 import com.google.mlkit.vision.text.TextRecognizer
-import com.google.mlkit.vision.text.chinese.ChineseTextRecognizerOptions
-import com.google.mlkit.vision.text.devanagari.DevanagariTextRecognizerOptions
-import com.google.mlkit.vision.text.japanese.JapaneseTextRecognizerOptions
-import com.google.mlkit.vision.text.korean.KoreanTextRecognizerOptions
 import com.google.mlkit.vision.text.latin.TextRecognizerOptions
 import com.margelo.nitro.core.Promise
 import java.util.concurrent.Executors
@@ -74,10 +70,8 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
     }
 
     recognizer = when (config.language.lowercase()) {
-      "chinese" -> TextRecognition.getClient(ChineseTextRecognizerOptions.Builder().build())
-      "devanagari" -> TextRecognition.getClient(DevanagariTextRecognizerOptions.Builder().build())
-      "japanese" -> TextRecognition.getClient(JapaneseTextRecognizerOptions.Builder().build())
-      "korean" -> TextRecognition.getClient(KoreanTextRecognizerOptions.Builder().build())
+      "chinese", "devanagari", "japanese", "korean" ->
+        NonLatinTextRecognizerFactory.create(config.language.lowercase())
       else -> TextRecognition.getClient(TextRecognizerOptions.DEFAULT_OPTIONS)
     }
   }
