@@ -1,0 +1,58 @@
+name: Release Merged
+
+on:
+  pull_request:
+    types: [closed]
+    branches: [main]
+
+permissions:
+  contents: write
+  actions: write
+
+concurrency:
+  group: release-merged
+  cancel-in-progress: false
+
+jobs:
+  release:
+    if: >-
+      github.event.pull_request.merged == true &&
+      github.event.pull_request.head.ref == 'next-release' &&
+      github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    env:
+      GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      REPO: ${{ github.repository }}
+    steps:
+      - name: Checkout next-release
+        uses: actions/checkout@v4
+        with:
+          ref: next-release
+          fetch-depth: 0
+
+      - name: Create GitHub release
+        id: release
+        run: |
+          VERSION=$(jq -r .version package.json)
+          TAG="v$VERSION"
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+          if gh release view "$TAG" >/dev/null 2>&1; then
+            echo "Release $TAG already exists."
+          else
+            # Tag was created and pushed by the release-prep workflow
+            gh release create "$TAG" --verify-tag --title "$TAG" --generate-notes
+          fi
+
+      # Releases created with GITHUB_TOKEN don't trigger other workflows,
+      # so start the publish workflow explicitly.
+      - name: Trigger npm publish
+        run: gh workflow run npm-publish.yml --ref "${{ steps.release.outputs.tag }}"
+
+      - name: Recreate main from next-release
+        run: |
+          SHA=$(git rev-parse HEAD)
+          gh api -X DELETE "/repos/$REPO/git/refs/heads/main"
+          gh api -X POST "/repos/$REPO/git/refs" \
+            -f ref="refs/heads/main" \
+            -f sha="$SHA"
