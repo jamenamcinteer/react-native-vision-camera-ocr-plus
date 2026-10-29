@@ -12,6 +12,7 @@ Pod::Spec.new do |s|
 
   s.platforms    = { :ios => min_ios_version_supported, :visionos => 1.0 }
   s.source       = { :git => "https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus.git", :tag => "#{s.version}" }
+  s.static_framework = true
 
   # Opt-out via env var or Podfile.properties.json ("visionCameraOcrPlus.disableTranslate": "true").
   podfile_props_path = File.join(Pod::Config.instance.installation_root.to_s, 'Podfile.properties.json')
