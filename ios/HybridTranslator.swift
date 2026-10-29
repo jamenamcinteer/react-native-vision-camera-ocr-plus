@@ -1,5 +1,22 @@
 import Foundation
 import NitroModules
+
+#if OCR_PLUS_NO_TRANSLATE
+/// Stub used when translation is disabled; keeps the generated Nitro registration compiling.
+class HybridTranslator: HybridTranslatorSpec {
+  private static let disabledError = NSError(
+    domain: "HybridTranslator", code: 2,
+    userInfo: [NSLocalizedDescriptionKey: "Translation is disabled. Unset VISION_CAMERA_OCR_PLUS_DISABLE_TRANSLATE (or visionCameraOcrPlus.disableTranslate) and re-run pod install."])
+
+  func translate(text: String, from: String, to: String) throws -> Promise<String> {
+    return Promise.rejected(withError: HybridTranslator.disabledError)
+  }
+
+  func removeLanguageModel(languageCode: String) throws -> Promise<Bool> {
+    return Promise.rejected(withError: HybridTranslator.disabledError)
+  }
+}
+#else
 import MLKitTranslate
 
 /// Nitro HybridObject implementation for on-device text translation using ML Kit.
@@ -89,3 +106,5 @@ class HybridTranslator: HybridTranslatorSpec {
     return promise
   }
 }
+
+#endif

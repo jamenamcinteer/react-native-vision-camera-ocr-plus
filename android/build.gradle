@@ -28,6 +28,10 @@ apply plugin: 'org.jetbrains.kotlin.android'
 apply from: '../nitrogen/generated/android/NitroVisionCameraOcrPlus+autolinking.gradle'
 apply from: "./fix-prefab.gradle"
 
+// Set either flag to true in the app's gradle.properties to omit that ML Kit feature.
+def translateDisabled = (rootProject.findProperty("VisionCameraOcrPlus_disableTranslate") ?: project.findProperty("VisionCameraOcrPlus_disableTranslate") ?: "false").toString() == "true"
+def nonLatinTextRecognitionDisabled = (rootProject.findProperty("VisionCameraOcrPlus_disableNonLatinTextRecognition") ?: project.findProperty("VisionCameraOcrPlus_disableNonLatinTextRecognition") ?: "false").toString() == "true"
+
 def getExtOrDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : project.properties["NitroVisionCameraOcrPlus_" + name]
 }
@@ -115,6 +119,13 @@ android {
     disable "GradleCompatible"
   }
 
+  sourceSets {
+    main {
+      java.srcDirs += translateDisabled ? "src/translateStub/java" : "src/translate/java"
+      java.srcDirs += nonLatinTextRecognitionDisabled ? "src/nonLatinStub/java" : "src/nonLatin/java"
+    }
+  }
+
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_1_8
     targetCompatibility JavaVersion.VERSION_1_8
@@ -138,11 +149,15 @@ dependencies {
 
   // ML Kit Text Recognition
   implementation "com.google.mlkit:text-recognition:16.0.1"
-  implementation "com.google.mlkit:text-recognition-chinese:16.0.0"
-  implementation "com.google.mlkit:text-recognition-devanagari:16.0.0"
-  implementation "com.google.mlkit:text-recognition-japanese:16.0.0"
-  implementation "com.google.mlkit:text-recognition-korean:16.0.0"
+  if (!nonLatinTextRecognitionDisabled) {
+    implementation "com.google.mlkit:text-recognition-chinese:16.0.0"
+    implementation "com.google.mlkit:text-recognition-devanagari:16.0.0"
+    implementation "com.google.mlkit:text-recognition-japanese:16.0.0"
+    implementation "com.google.mlkit:text-recognition-korean:16.0.0"
+  }
 
   // ML Kit Translation
-  implementation "com.google.mlkit:translate:17.0.3"
+  if (!translateDisabled) {
+    implementation "com.google.mlkit:translate:17.0.3"
+  }
 }
