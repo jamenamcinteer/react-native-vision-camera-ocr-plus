@@ -3,7 +3,6 @@ module.exports = function (api) {
   return {
     presets: [
       'babel-preset-expo',
-      ['@babel/preset-env', { targets: { node: 'current' } }],
     ],
     plugins: [
       ['react-native-worklets/plugin'], // required for worklet support
