@@ -79,6 +79,26 @@ cd ios && pod install
 
 No additional steps — the library is auto-linked.
 
+### Reducing app size (opt out of ML Kit models)
+
+Translation and non-Latin text-recognition models are included by default. Disable either feature if your app does not use it. Calling translation APIs while translation is disabled rejects with a "Translation is disabled" error. Configuring `chinese`, `devanagari`, `japanese`, or `korean` OCR while those models are disabled reports that the models are unavailable.
+
+- **Android:** add `VisionCameraOcrPlus_disableTranslate=true` to `android/gradle.properties`.
+- **iOS:** run `VISION_CAMERA_OCR_PLUS_DISABLE_TRANSLATE=1 pod install`, or add `"visionCameraOcrPlus.disableTranslate": "true"` to `ios/Podfile.properties.json`.
+- **Non-Latin OCR:** set `VisionCameraOcrPlus_disableNonLatinTextRecognition=true` in Android `gradle.properties`; on iOS use `VISION_CAMERA_OCR_PLUS_DISABLE_NON_LATIN_TEXT_RECOGNITION=1 pod install` or add `"visionCameraOcrPlus.disableNonLatinTextRecognition": "true"` to `ios/Podfile.properties.json`.
+- **Expo:** add the config plugin options you need, then run prebuild:
+
+```json
+{
+  "expo": {
+    "plugins": [["react-native-vision-camera-ocr-plus", {
+      "disableTranslate": true,
+      "disableNonLatinTextRecognition": true
+    }]]
+  }
+}
+```
+
 ---
 
 ## Usage

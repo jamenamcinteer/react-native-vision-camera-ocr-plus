@@ -2,6 +2,24 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.1](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.1.0...v2.1.1) (2026-10-29)
+
+
+### Bug Fixes
+
+* Set static_framework to true ([#161](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/161)) ([5753c40](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/5753c403fa2759e7391a7bb1ca680e0448a3c846))
+
+## [2.1.0](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.0.7...v2.1.0) (2026-10-29)
+
+
+### Features
+
+* Allow opting out of ML Kit models ([#157](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/157)) ([42cfb7b](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/42cfb7b42b3d382cde449961e690058f66f9e4be))
+
+### [2.0.8](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.0.7...v2.0.8) (2026-10-29)
+
+### [2.0.7](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.0.6...v2.0.7) (2026-08-29)
+
 ### [2.0.6](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.0.5...v2.0.6) (2026-08-19)
 
 

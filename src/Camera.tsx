@@ -66,20 +66,24 @@ export const Camera = forwardRef(function CameraComponent(
   const recognizerHandle = useTextRecognition(
     mode === 'recognize' ? (options as TextRecognitionOptions) : undefined
   );
-  const translatorHandle = useTranslate(
-    mode === 'translate' ? (options as TranslatorOptions) : undefined
+  // Only translate mode touches the native Translator, which may be disabled at build time.
+  const translatorHandle = useMemo(
+    () =>
+      mode === 'translate'
+        ? createTranslatorPlugin(options as TranslatorOptions)
+        : undefined,
+    [mode, options]
   );
 
   // Pull the raw Nitro HybridObjects out so the worklet compiler can capture
   // them directly. Nitro HybridObjects are JSI HostObjects — they are worklet-
   // safe and can be called synchronously on the UI thread without any wrapper.
-  const recognizer =
-    mode === 'translate'
-      ? translatorHandle.recognizer
-      : recognizerHandle.recognizer;
-  const translator = translatorHandle.translator;
-  const fromLang = translatorHandle.from;
-  const toLang = translatorHandle.to;
+  const recognizer = translatorHandle
+    ? translatorHandle.recognizer
+    : recognizerHandle.recognizer;
+  const translator = translatorHandle?.translator;
+  const fromLang = translatorHandle?.from;
+  const toLang = translatorHandle?.to;
 
   // JS-thread handler for translate mode
   const runTranslate = useMemo(() => {
@@ -141,7 +145,11 @@ export const Camera = forwardRef(function CameraComponent(
           ocrResult = (recognizer as any).scanFrame(nb.pointer, orientation) as
             Text | undefined | null;
         } finally {
-          nb.release();
+          try {
+            nb.release();
+          } finally {
+            frame.dispose();
+          }
         }
         const result: Text = ocrResult ?? { resultText: '', blocks: [] };
         if (mode === 'translate') {
@@ -153,7 +161,6 @@ export const Camera = forwardRef(function CameraComponent(
             scheduleOnRN(callback, result);
           }
         }
-        frame.dispose();
       },
     [recognizer, runTranslate, mode, callback, hasManagedOutput]
   );

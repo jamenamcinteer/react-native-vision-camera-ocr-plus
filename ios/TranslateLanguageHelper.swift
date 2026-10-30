@@ -1,3 +1,4 @@
+#if !OCR_PLUS_NO_TRANSLATE
 import Foundation
 import MLKitTranslate
 
@@ -63,3 +64,5 @@ func translateLanguage(from language: String) -> TranslateLanguage? {
   default:   return nil
   }
 }
+
+#endif

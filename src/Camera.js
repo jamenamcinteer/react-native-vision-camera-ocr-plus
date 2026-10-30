@@ -111,7 +111,11 @@ export const Camera = forwardRef(function Camera(props, ref) {
       try {
         ocrResult = recognizer.scanFrame(nb.pointer, orientation);
       } finally {
-        nb.release();
+        try {
+          nb.release();
+        } finally {
+          frame.dispose();
+        }
       }
       const result = ocrResult ?? { resultText: '', blocks: [] };
       if (mode === 'translate') {
@@ -123,7 +127,6 @@ export const Camera = forwardRef(function Camera(props, ref) {
           scheduleOnRN(callback, result);
         }
       }
-      frame.dispose();
     },
     [recognizer, runTranslate, mode, callback, hasManagedOutput]
   );
