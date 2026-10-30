@@ -9,6 +9,8 @@ description: Review dependency upgrade PRs (Dependabot/Renovate/manual) for this
 - `gh pr view <n> --json title,body,files` and `gh pr diff <n>`.
 - Classify: root `package.json` (library, peer deps), `example/package.json`, `example/version-configs.json`, lockfile only, native (`android/`, `ios/`, podspec, `nitro.json`).
 - Flag major bumps, peer-dependency range changes, and bumps of `react-native`, `react-native-vision-camera`, `react-native-nitro-modules`, `nitrogen`, `expo`.
+- Keep `typescript` on the latest 6.x (`^6.0.3` at root, `~6.0.3` in example configs): typescript-eslint does not support TS 7.0. Request changes on any PR bumping it to 7+ until typescript-eslint supports it.
+- Keep `eslint` and `@eslint/js` on 9.x (`^9.39.5`): `@react-native/eslint-config` (via FlatCompat) and its plugins/parsers only support ESLint 8/9, and ESLint 10 crashes `yarn lint`. Request changes on bumps to 10+ until `@react-native/eslint-config` declares support; always run `yarn lint` on lint-tooling PRs.
 - Verify the lockfile change matches the manifest change (no unrelated packages updated, no registry URL changes).
 
 ## 2. Read release notes
