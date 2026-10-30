@@ -4141,7 +4141,7 @@ react-native-safe-area-context@~5.10.1:
   integrity sha512-ax0T3cAHQIhuAjDQpJ9C1Le96aRiM9PF+Kmgg7Y8+mD7QJMEIx04cG0eG3EGUTdvymgOkCrkakgZFwuOIuNQGw==
 
 "react-native-vision-camera-ocr-plus@link:..":
-  version "2.0.7"
+  version "2.1.1"
 
 react-native-vision-camera-worklets@^5.2.3:
   version "5.2.3"
