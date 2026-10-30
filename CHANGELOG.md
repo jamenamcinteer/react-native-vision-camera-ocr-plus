@@ -2,6 +2,13 @@
 
 All notable changes to this project will be documented in this file. See [standard-version](https://github.com/conventional-changelog/standard-version) for commit guidelines.
 
+### [2.1.2](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.1.1...v2.1.2) (2026-10-30)
+
+
+### Bug Fixes
+
+* Bugfix/154/propagate frame ocr failures ([#155](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/issues/155)) ([6a9fa3d](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/commit/6a9fa3ddbfd4e15b80877b1888ba316659ae9453))
+
 ### [2.1.1](https://github.com/jamenamcinteer/react-native-vision-camera-ocr-plus/compare/v2.1.0...v2.1.1) (2026-10-29)
 
 

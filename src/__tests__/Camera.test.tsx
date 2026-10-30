@@ -260,6 +260,49 @@ describe('Camera module', () => {
       expect(result).toBeDefined();
     });
 
+    it('releases the native buffer and disposes the frame when OCR throws, then permits retry', () => {
+      const { Camera } = require('../Camera');
+      const callback = jest.fn();
+      const scanFrame = jest
+        .fn()
+        .mockImplementationOnce(() => {
+          throw new Error('OCR frame recognition failed');
+        })
+        .mockReturnValueOnce({ resultText: 'recovered', blocks: [] });
+      mockCreateTextRecognitionPlugin.mockReturnValueOnce({
+        scanText: jest.fn(),
+        recognizer: { scanFrame },
+      });
+      const result = Camera({
+        device: { id: 'back' },
+        isActive: true,
+        mode: 'recognize',
+        callback,
+      });
+      const child = Array.isArray(result.props.children)
+        ? result.props.children[0]
+        : result.props.children;
+      const onFrame = child.props.outputs[0]._onFrame;
+      const release = jest.fn();
+      const dispose = jest.fn();
+      const frame = {
+        getNativeBuffer: () => ({ pointer: BigInt(1), release }),
+        orientation: 'up',
+        dispose,
+      };
+      expect(() => onFrame(frame)).toThrow('OCR frame recognition failed');
+      expect(release).toHaveBeenCalledTimes(1);
+      expect(dispose).toHaveBeenCalledTimes(1);
+      expect(callback).not.toHaveBeenCalled();
+      onFrame(frame);
+      expect(callback).toHaveBeenCalledWith({
+        resultText: 'recovered',
+        blocks: [],
+      });
+      expect(release).toHaveBeenCalledTimes(2);
+      expect(dispose).toHaveBeenCalledTimes(2);
+    });
+
     it('should use rgb pixel format on Android', () => {
       const { Platform } = require('react-native');
       Platform.OS = 'android';

@@ -56,6 +56,7 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
   private val ocrExecutor = Executors.newSingleThreadExecutor()
   @Volatile private var isBusy: Boolean = false
   @Volatile private var lastResult: RecognizedText? = null
+  private var hasPendingError: Boolean = false
   private var frameCounter: Int = 0
 
   override fun configure(config: TextRecognitionConfig) {
@@ -92,22 +93,25 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
   }
 
   override fun scanFrame(nativeBufferPointer: ULong, orientation: String): RecognizedText? {
+    // Report a pending failure before accepting another frame.
+    getLastResult()
+
     // Apply frame-skip for performance
     frameCounter++
     if (frameCounter % maxOf(1, frameSkipThreshold) != 0) {
-      return lastResult
+      return getLastResult()
     }
 
     // If the OCR executor is still processing the previous frame, skip this one.
     // This is the key fix: we never block the frame thread waiting for ML Kit.
-    if (isBusy) return lastResult
+    if (isBusy) return getLastResult()
 
     val sourceBitmap = nativeCreateBitmapFromHardwareBuffer(nativeBufferPointer.toLong())
-      ?: return lastResult
+      ?: return getLastResult()
 
     val softwareBitmap = copyToSoftwareBitmap(sourceBitmap)
     sourceBitmap.recycle()
-    softwareBitmap ?: return lastResult
+    softwareBitmap ?: return getLastResult()
 
     val rotationDegrees = orientationToDegrees(orientation)
     Log.d("VisionCameraOCR", "scanFrame: orientation=$orientation rotationDegrees=$rotationDegrees bitmapSize=${softwareBitmap.width}x${softwareBitmap.height} scanRegion=$scanRegion")
@@ -129,9 +133,13 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
       ocrExecutor.execute {
         try {
           val result = Tasks.await(currentRecognizer.process(inputImage))
-          lastResult = buildRecognizedText(result)
+          val recognized = buildRecognizedText(result)
+          synchronized(this) { lastResult = recognized }
         } catch (_: Exception) {
-          // Ignore ML Kit errors on individual frames
+          synchronized(this) {
+            lastResult = null
+            hasPendingError = true
+          }
         } finally {
           if (!croppedBitmap.isRecycled) {
             croppedBitmap.recycle()
@@ -154,6 +162,15 @@ class HybridTextRecognizer : HybridTextRecognizerSpec() {
     }
 
     // Return the last completed result immediately — the frame thread is never blocked.
+    return getLastResult()
+  }
+
+  @Synchronized
+  private fun getLastResult(): RecognizedText? {
+    if (hasPendingError) {
+      hasPendingError = false
+      throw IllegalStateException("OCR frame recognition failed")
+    }
     return lastResult
   }
 
