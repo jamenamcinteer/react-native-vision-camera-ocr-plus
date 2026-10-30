@@ -1,12 +1,9 @@
 name: Validate Expo/React Native Versions
 
 on:
-  push:
-    branches:
-      - next-release # runs on direct pushes to next-release
   pull_request:
     branches:
-      - main # runs on PRs targeting main
+      - main # runs on PRs targeting main (jobs are limited to release PRs)
   workflow_dispatch: # Optional: Allow manual trigger
 
 permissions:
@@ -15,6 +12,7 @@ permissions:
 
 jobs:
   build-android-latest:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'next-release'
     runs-on: macos-latest
 
     steps:
@@ -39,6 +37,7 @@ jobs:
           ./gradlew assembleRelease
 
   build-ios-latest:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'next-release'
     runs-on: macos-latest
 
     steps:
@@ -61,6 +60,7 @@ jobs:
           yarn clean:ios
 
   build-android-expo-54:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'next-release'
     runs-on: macos-latest
 
     steps:
@@ -86,6 +86,7 @@ jobs:
           ./gradlew assembleRelease
 
   build-ios-expo-54:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'next-release'
     runs-on: macos-latest
 
     steps:
@@ -109,6 +110,7 @@ jobs:
           yarn clean:ios
 
   build-android-next:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'next-release'
     runs-on: macos-latest
 
     steps:
@@ -134,6 +136,7 @@ jobs:
           ./gradlew assembleRelease
 
   build-ios-next:
+    if: github.event_name == 'workflow_dispatch' || github.head_ref == 'next-release'
     runs-on: macos-latest
 
     steps:
