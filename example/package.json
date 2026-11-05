@@ -42,7 +42,7 @@
     "@babel/core": "^8.0.10",
     "@types/react": "~19.3.0",
     "patch-package": "^8.0.1",
-    "typescript": "~7.0.2"
+    "typescript": "~6.0.3"
   },
   "private": true
 }
